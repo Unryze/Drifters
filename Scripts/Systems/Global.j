@@ -162,7 +162,15 @@
 
 	function AngleBetweenUnits takes unit CasterUnit, unit TargetUnit returns real
 		return 180.0 / 3.14159 * Atan2( GetUnitY( TargetUnit ) - GetUnitY( CasterUnit ), GetUnitX( TargetUnit ) - GetUnitX( CasterUnit ) )
-	endfunction	
+	endfunction
+	
+	function MUIAngleCoord takes real x, real y, real x2, real y2 returns real
+		return Atan2(y2 - y, x2 - x)
+	endfunction
+	
+	function MUIAngleUnits takes unit u, unit u2 returns real
+		return AngleBetweenCoord(GetUnitX(u), GetUnitY(u), GetUnitX(u2), GetUnitY(u2))
+	endfunction
 
 	function DistanceBetweenPointsRW takes location locA, location locB returns real
 		local real dx = GetLocationX( locB ) - GetLocationX( locA )
