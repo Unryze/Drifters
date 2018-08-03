@@ -25,7 +25,7 @@
 		call FillHeroPickInfo( 10, 'H009', 3.0, "Reinforce" 	)
 		call FillHeroPickInfo( 11, 'H00A', 2.4, "Arcueid" 	)
 		call FillHeroPickInfo( 12, 'H00B', 2.0, "SaberArtoria"  )
-		call FillHeroPickInfo( 13, 'H00B', 2.0, "RubyRouse" 	)
+		call FillHeroPickInfo( 13, 'H00C', 2.0, "RubyRouse" 	)
 		call SaveUnitHandle( HashTable, GetHandleId( HashTable ), 8000, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u005', -1800, 5525, 270 ) )
 		call ScaleUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 8000 ), 2.5 )
 		call SaveEffectHandle( HashTable, GetHandleId( HashTable ), 8001, AddSpecialEffectTarget( "HeroSelectionSystem\\HeroSelectionEffect.mdl", LoadUnitHandle( HashTable, GetHandleId( HashTable ), 8000 ), "origin" ) )
