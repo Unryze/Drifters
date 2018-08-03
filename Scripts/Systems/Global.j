@@ -169,7 +169,7 @@
 	endfunction
 	
 	function MUIAngleUnits takes unit u, unit u2 returns real
-		return AngleBetweenCoord(GetUnitX(u), GetUnitY(u), GetUnitX(u2), GetUnitY(u2))
+		return MUIAngleCoord(GetUnitX(u), GetUnitY(u), GetUnitX(u2), GetUnitY(u2))
 	endfunction
 
 	function DistanceBetweenPointsRW takes location locA, location locB returns real
