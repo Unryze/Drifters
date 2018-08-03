@@ -15,7 +15,7 @@ function RubyRouseSpellQFunction3 takes nothing returns nothing
     local real      x   = 0
     local real      y   = 0
     
-    if GetUnitCurrentOrder(u) == OrderId("avatar") then
+    if GetUnitCurrentOrder(u) == OrderId("shockwave") then
         if d > 0 then
             set x = GetUnitX(u) + 25 * Cos(a)
             set y = GetUnitY(u) + 25 * Sin(a)
@@ -51,7 +51,7 @@ function RubyRouseSpellQFunction2 takes nothing returns nothing
 	call SetUnitAnimationByIndex(GetTriggerUnit(), 14)
 	
 	call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-	call SaveReal( HashTable, HandleID, 101, AngleBetweenUnits(GetTriggerUnit( ), GetSpellTargetUnit( ) ) * 3.14159 / 180 )
+	call SaveReal( HashTable, HandleID, 101, MUIAngleCoord(GetUnitX(GetTriggerUnit( ) ), GetUnitY(GetTriggerUnit( ) ), GetSpellTargetX( ), GetSpellTargetY( ) ) )
 	call SaveReal( HashTable, HandleID, 102, 400)
 	
 	call TimerStart( LoadMUITimer( LocPID ), .01, true, function RubyRouseSpellQFunction3 )	
