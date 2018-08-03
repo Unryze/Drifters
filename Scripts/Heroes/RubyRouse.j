@@ -58,18 +58,12 @@ function RubyRouseSpellQFunction2 takes nothing returns nothing
 endfunction
 
 function RubyRouseSpellQFunction1 takes nothing returns boolean
-    return GetSpellAbilityId() == 'RRQ1'
+    return GetSpellAbilityId() == 'A000'
 endfunction
 
 function HeroInit13 takes nothing returns nothing
 		/*
-		call SaveSound( "RubyRouseD1", "RubyRouse\\SpellD1.mp3" )
-		call SaveSound( "RubyRouseQ1", "RubyRouse\\SpellQ1.mp3" )
-		call SaveSound( "RubyRouseW1", "RubyRouse\\SpellW1.mp3" )
-		call SaveSound( "RubyRouseE1", "RubyRouse\\SpellE1.mp3" )
-		call SaveSound( "RubyRouseR1", "RubyRouse\\SpellR1.mp3" )
-		call SaveSound( "RubyRouseR2", "RubyRouse\\SpellR2.mp3" )
-		call SaveSound( "RubyRouseT1", "RubyRouse\\SpellT1.mp3" )
+		call SaveSound( "RubyRouseD1", "RubyRouse\\null.mp3" )
 		*/
 
 		/*
