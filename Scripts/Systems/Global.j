@@ -6,7 +6,7 @@
 	function Char2Id takes string LocalString1 returns integer
 		local integer LocalInteger1 = 0
 		local string  LocalString3
-		
+
 		loop
 			set LocalString3 = SubString( LoadStr( HashTable, GetHandleId( CameraSet ), StringHash( "Letters" ) ), LocalInteger1, LocalInteger1 + 1 )
 			exitwhen LocalString3 == null or LocalString3 == LocalString1
@@ -229,7 +229,38 @@
 
 	function MUIDummy takes integer ID, integer UID, integer LocID, real LocFacing returns nothing
 		call SaveUnitHandle( HashTable, MUIHandle( ), ID, CreateUnitAtLoc( Player( PLAYER_NEUTRAL_PASSIVE ), UID, LoadLocationHandle( HashTable, MUIHandle( ), LocID ), LocFacing ) )
+	endfunction
+	
+	function LoadTargType takes nothing returns string
+		return LoadStr( HashTable, MUIHandle( ), StringHash( "TargType" ) )
 	endfunction	
+	
+	function LoadDmgType takes nothing returns string
+		return LoadStr( HashTable, MUIHandle( ), StringHash( "DmgType" ) )
+	endfunction
+	
+	function IsUnitIgnored takes unit LocUnit returns integer
+		return LoadInteger( HashTable, MUIHandle( ), GetHandleId( LocUnit ) )
+	endfunction
+	
+	function GetStunDur takes nothing returns integer
+		return LoadInteger( HashTable, MUIHandle( ), StringHash( "StunDuration" ) )
+	endfunction
+	
+	function IsDamageRepeated takes nothing returns boolean 
+		return LoadBoolean( HashTable, MUIHandle( ), StringHash( "IsRepeated" ) )
+	endfunction
+	
+	function LoadGroupDamage takes nothing returns real
+		return LoadReal( HashTable, MUIHandle( ), StringHash( "Damage" ) )
+	endfunction		
+	
+	function UnitSelect takes unit LocUnit returns nothing
+		if GetLocalPlayer( ) == GetOwningPlayer( LocUnit ) then
+			call ClearSelection( )
+			call SelectUnit( LocUnit, true )
+		endif
+	endfunction
 
 	function SetUnitData takes unit LocUnit, integer ID, integer Amount returns nothing
 		call SaveInteger( HashTable, GetHandleId( LocUnit ), ID, Amount )
