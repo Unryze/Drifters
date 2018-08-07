@@ -1,3 +1,8 @@
+	function SimpleMovement takes integer HandleID, integer LocationID, integer IsEnabled returns nothing
+		call SaveInteger( HashTable, HandleID, StringHash( "LocationID" ), LocationID )
+		call SaveInteger( HashTable, HandleID, StringHash( "IsEnabled" ), IsEnabled )
+	endfunction
+
 	function LinearDisplacementAction takes nothing returns nothing
 		local integer 	HandleID 	= MUIHandle( )
 		local real 		LocCos 		= LoadReal( HashTable, HandleID, 0 )

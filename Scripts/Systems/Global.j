@@ -217,7 +217,7 @@
 
 	function MUIReal takes integer ID returns real
 		return LoadReal( HashTable, MUIHandle( ), ID )
-	endfunction		
+	endfunction	
 
 	function MUIEffect takes integer ID returns effect
 		return LoadEffectHandle( HashTable, MUIHandle( ), ID )
@@ -230,31 +230,31 @@
 	function MUIDummy takes integer ID, integer UID, integer LocID, real LocFacing returns nothing
 		call SaveUnitHandle( HashTable, MUIHandle( ), ID, CreateUnitAtLoc( Player( PLAYER_NEUTRAL_PASSIVE ), UID, LoadLocationHandle( HashTable, MUIHandle( ), LocID ), LocFacing ) )
 	endfunction
-	
-	function LoadTargType takes nothing returns string
-		return LoadStr( HashTable, MUIHandle( ), StringHash( "TargType" ) )
-	endfunction	
-	
-	function LoadDmgType takes nothing returns string
-		return LoadStr( HashTable, MUIHandle( ), StringHash( "DmgType" ) )
+
+	function GetLoc takes string HashName returns location
+		return LoadLocationHandle( HashTable, MUIHandle( ), StringHash( HashName ) )
 	endfunction
+
+	function GetStr takes string HashName returns string
+		return LoadStr( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction
+	
+	function GetInt takes string HashName returns integer
+		return LoadInteger( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
+
+	function GetReal takes string HashName returns real
+		return LoadReal( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction
+	
+	function GetBool takes string HashName returns boolean 
+		return LoadBoolean( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
 	
 	function IsUnitIgnored takes unit LocUnit returns integer
 		return LoadInteger( HashTable, MUIHandle( ), GetHandleId( LocUnit ) )
 	endfunction
-	
-	function GetStunDur takes nothing returns integer
-		return LoadInteger( HashTable, MUIHandle( ), StringHash( "StunDuration" ) )
-	endfunction
-	
-	function IsDamageRepeated takes nothing returns boolean 
-		return LoadBoolean( HashTable, MUIHandle( ), StringHash( "IsRepeated" ) )
-	endfunction
-	
-	function LoadGroupDamage takes nothing returns real
-		return LoadReal( HashTable, MUIHandle( ), StringHash( "Damage" ) )
-	endfunction		
-	
+
 	function UnitSelect takes unit LocUnit returns nothing
 		if GetLocalPlayer( ) == GetOwningPlayer( LocUnit ) then
 			call ClearSelection( )

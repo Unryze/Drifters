@@ -1,29 +1,46 @@
 	function AoEDamageAction takes nothing returns boolean
 		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) and UnitLife( GetFilterUnit( ) ) > 0 and IsUnitIgnored( GetFilterUnit( ) ) != 1 then
-			if IsDamageRepeated( ) == false then
+			if GetBool( "IsRepeated" ) == false then
 				call SaveInteger( HashTable, MUIHandle( ), GetHandleId( GetFilterUnit( ) ), 1 )
 			endif
-			
-			if GetStunDur( ) > 0 then
-				call StunUnit( GetFilterUnit( ), GetStunDur( ) )
+
+			if GetReal( "CCDuration" ) > 0 then
+				if GetStr( "CCType" ) == "Stun" then
+					call StunUnit( GetFilterUnit( ), GetReal( "CCDuration" ) )
+				endif
 			endif
-			
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), LoadTargType( ), LoadDmgType( ), LoadGroupDamage( ) )
+
+			if GetReal( "Distance" ) != 0 then
+				call AoEDisplaceAction( GetFilterUnit( ) )
+			endif
+
+			if GetInt( "IsEnabled" ) != 0 and MUILocation( GetInt( "LocationID" ) ) != null then
+				call SetUnitPositionLoc( GetFilterUnit( ), MUILocation( GetInt( "LocationID" ) ) )
+			endif
+
+			if GetStr( "UnitEffect" ) != "" then
+				call DestroyEffect( AddSpecialEffectTarget( GetStr( "UnitEffect" ), GetFilterUnit( ), "chest" ) )
+			endif
+
+			if GetReal( "Damage" ) > 0 then
+				call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), GetStr( "TargType" ), GetStr( "DmgType" ), GetReal( "Damage" ) )
+			endif
 		endif
 
 		return true
 	endfunction	
-	
-	function AoEDamage takes integer HandleID, location GetLoc, real GetAoE, string TargType, string DmgType, real Damage, boolean IsRepeated, real StunDur returns nothing
-		if LoadBoolean( HashTable, HandleID, StringHash( "IsUpdated" ) ) == false then
+
+	function AoEDamage takes integer HandleID, location AoELoc, real GetAoE, string TargType, string DmgType, real Damage, boolean IsRepeated, string CCType, real CCDur returns nothing
+		if GetBool( "IsUpdated" ) == false then
 			call SaveStr( HashTable, HandleID, StringHash( "TargType" ), TargType )
 			call SaveStr( HashTable, HandleID, StringHash( "DmgType" ), DmgType )
-			call SaveReal( HashTable, HandleID, StringHash( "StunDuration" ), StunDur )
+			call SaveStr( HashTable, HandleID, StringHash( "CCType" ), CCType )
+			call SaveReal( HashTable, HandleID, StringHash( "CCDuration" ), CCDur )
 			call SaveBoolean( HashTable, HandleID, StringHash( "IsRepeated" ), IsRepeated )
 			call SaveBoolean( HashTable, HandleID, StringHash( "IsUpdated" ), true )
 		endif
 
 		call SaveReal( HashTable, HandleID, StringHash( "Damage" ), Damage )
-		call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), GetLoc, GetAoE, Filter( function AoEDamageAction ) )
+		call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), AoELoc, GetAoE, Filter( function AoEDamageAction ) )
 	endfunction
 

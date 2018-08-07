@@ -1,7 +1,7 @@
 	function SetDamageDealt takes unit LocTrigUnit, unit LocTargUnit, string GetTargetType, attacktype GetAtkType, damagetype GetDmgType, real LocDamage, boolean IsHealed returns nothing
 		local real Healing
 
-		if GetDmgType == DAMAGE_TYPE_MAGIC and GetUnitAbilityLevel( LocTargUnit, 'B04J' ) > 0 and UnitLife( LocTargUnit ) > LocDamage then
+		if GetUnitAbilityLevel( LocTargUnit, 'B04J' ) > 0 and UnitLife( LocTargUnit ) > LocDamage then
 			call SaveReal( HashTable, GetHandleId( LocTargUnit ), 500, LocDamage + LoadReal( HashTable, GetHandleId( LocTargUnit ), 500 ) )
 			set LocDamage = 0
 			call DisplayTextToPlayer( GetOwningPlayer( LocTargUnit ), 0, 0, "Damage Absorbed: " + I2S( R2I( LoadReal( HashTable, GetHandleId( LocTargUnit ), 500 ) ) ) )
