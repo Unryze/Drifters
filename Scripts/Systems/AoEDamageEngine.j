@@ -5,9 +5,7 @@
 			endif
 
 			if GetReal( "CCDuration" ) > 0 then
-				if GetStr( "CCType" ) == "Stun" then
-					call StunUnit( GetFilterUnit( ), GetReal( "CCDuration" ) )
-				endif
+				call CCUnit( GetFilterUnit( ), GetReal( "CCDuration" ), GetStr( "CCType" ) )
 			endif
 
 			if GetReal( "Distance" ) != 0 then

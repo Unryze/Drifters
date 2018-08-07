@@ -349,44 +349,6 @@
 		return value / maxValue * 100.0
 	endfunction
 
-	function CheckForStun takes nothing returns nothing
-		local integer LocData = GetUnitData( MUIUnit( 0 ), 0 )
-
-		if LocData > 0 then
-			call SetUnitData( MUIUnit( 0 ), 0, LocData - 1 )
-		else
-			call UnitRemoveAbility( MUIUnit( 0 ), 'B00A' )
-			call PauseTimer( GetExpiredTimer( ) )
-			call FlushChildHashtable( HashTable, MUIHandle( ) )
-			call DestroyTimer( GetExpiredTimer( ) )
-		endif
-	endfunction 
-
-	function StunUnit takes unit LocUnit, real LocReal returns nothing
-		local integer LocPID = GetPlayerId( GetOwningPlayer( LocUnit ) )
-		local integer HandleID
-
-		call SetUnitData( LocUnit, 0, R2I( LocReal * 100 ) + GetUnitData( LocUnit, 0 ) )
-
-		if GetUnitAbilityLevel( LocUnit, 'B00A' ) == 0 then
-			set HandleID = NewMUITimer( LocPID )
-			call UnitShareVision( LocUnit, Player( PLAYER_NEUTRAL_PASSIVE ), true )
-			call IssueTargetOrder( CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u004', GetUnitX( LocUnit ), GetUnitY( LocUnit ), 0 ), "firebolt", LocUnit )
-			call SaveUnitHandle( HashTable, HandleID, 0, LocUnit )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function CheckForStun )
-		endif
-	endfunction
-
-	function SlowUnit takes unit LocUnit returns nothing
-		call UnitShareVision( LocUnit, Player( PLAYER_NEUTRAL_PASSIVE ), true )
-		call IssueTargetOrder( CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u004', GetUnitX( LocUnit ), GetUnitY( LocUnit ), 0 ), "slow", LocUnit )
-	endfunction	
-
-	function SilenceUnit takes unit LocUnit returns nothing
-		call UnitShareVision( LocUnit, Player( PLAYER_NEUTRAL_PASSIVE ), true )
-		call IssueTargetOrder( CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u004', GetUnitX( LocUnit ), GetUnitY( LocUnit ), 0 ), "silence", LocUnit )
-	endfunction	
-
 	function MakeUnitAirborne takes unit AirUnit, real AirHeight, real AirRate returns nothing
 		call UnitAddAbility( AirUnit, 'Amrf' )
 		call SetUnitFlyHeight( AirUnit, AirHeight, AirRate )
