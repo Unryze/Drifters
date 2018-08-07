@@ -180,16 +180,7 @@
 		return GetSpellAbilityId( ) == 'A041'
 	endfunction
 
-	function ScathachSpellWFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 2 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-		endif
-
-		return true
-	endfunction
-
-	function ScathachSpellWFunction3 takes nothing returns nothing
+	function ScathachSpellWFunction2 takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -209,7 +200,7 @@
 
 			if LocTime == 50 then
 				call PlaySoundWithVolume( LoadSound( "ScathachQ3" ), 100, 0 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 400, Filter( function ScathachSpellWFunction2 ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\LightningStrike1.mdl", MUILocation( 103 ) ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\SlamEffect.mdl", MUILocation( 103 ) ) )
 				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2., MUILocation( 103 ), 0, 0 )
@@ -218,7 +209,7 @@
 		endif
 	endfunction
 
-	function ScathachSpellWFunction4 takes nothing returns nothing
+	function ScathachSpellWFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
@@ -226,7 +217,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellWFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellWFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -248,15 +239,7 @@
 		call RemoveLocation( MUILocation( 124 ) )
 	endfunction
 
-	function ScathachSpellEFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 75 + MUIPower( ) )
-		endif
-
-		return true
-	endfunction
-
-	function ScathachSpellEFunction3 takes nothing returns nothing
+	function ScathachSpellEFunction2 takes nothing returns nothing
 		local real i			= 1
 		local integer HandleID  = MUIHandle( )
 		local boolean IsCounted = LoadBoolean( HashTable, HandleID, 10 )
@@ -350,7 +333,7 @@
 				
 				if MUIDistance( 115, 116 ) <= 100 then
 					call KillUnit( MUIUnit( 106 ) )
-					call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 109 ), 600, Filter( function ScathachSpellEFunction2 ) )
+					call AoEDamage( HandleID, MUILocation( 109 ), 600, "AoE", "Physical", MUILevel( ) * 75 + MUIPower( ), false, "", 0 )
 					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
 					set i = 1
 
@@ -373,7 +356,7 @@
 		endif
 	endfunction
 
-	function ScathachSpellEFunction4 takes nothing returns nothing
+	function ScathachSpellEFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
@@ -381,7 +364,7 @@
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 		call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellEFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellEFunction2 )
 	endfunction
 
 	function ScathachSpellRFunction1 takes nothing returns boolean
@@ -462,23 +445,6 @@
 		return GetSpellAbilityId( ) == 'A044'
 	endfunction
 
-	function ScathachSpellTLinearMovementAction takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SetUnitPositionLoc( GetFilterUnit( ), MUILocation( 109 ) )
-		endif
-
-		return true
-	endfunction
-
-	function ScathachSpellTAoEDamageAction takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 1 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 300 + MUIPower( ) )
-		endif
-
-		return true
-	endfunction
-
 	function ScathachSpellTFunction2 takes nothing returns nothing
 		local real    i			= 1
 		local integer HandleID  = MUIHandle( )
@@ -515,6 +481,7 @@
 				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell Four" )
 				call RemoveLocation( MUILocation( 102 ) )
+				call SimpleMovement( HandleID, 109, 1 )
 			endif
 
 			if LocTime >= 100 then
@@ -522,11 +489,11 @@
 				call SaveLocationHandle( HashTable, HandleID, 109, CreateLocation( MUILocation( 107 ), 50, MUIAngle( 107, 103 ) ) )
 				call SetUnitPositionLoc( MUIUnit( 106 ), MUILocation( 109 ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 107 ) ) )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 400, Filter( function ScathachSpellTLinearMovementAction ) )
+				call AoEDamage( HandleID, MUILocation( 107 ), 400, "", "", 0, true, "", 0 )
 
 				if MUIDistance( 103, 109 ) <= 100 then
 					call PlaySoundWithVolume( LoadSound( "GlassShatter1" ), 80, 0 )
-					call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 450, Filter( function ScathachSpellTAoEDamageAction ) )
+					call AoEDamage( HandleID, MUILocation( 107 ), 450, "AoE", "Physical", MUILevel( ) * 300 + MUIPower( ), false, "Stun", 1 )
 					set i = 1
 
 					loop
@@ -540,6 +507,8 @@
 					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
 					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 103 ) ) )
 					call ClearAllData( HandleID )
+				else
+					call RemoveLocation( MUILocation( 109 ) )
 				endif
 			endif
 		endif
@@ -582,7 +551,7 @@
 		call SaveTrig( "ScathachTrigW" )
 		call GetUnitEvent( LoadTrig( "ScathachTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ScathachTrigW" ), Condition( function ScathachSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigW" ), function ScathachSpellWFunction4 )
+		call TriggerAddAction( LoadTrig( "ScathachTrigW" ), function ScathachSpellWFunction3 )
 
 		call SaveTrig( "ScathachTrigE" )
 		call GetUnitEvent( LoadTrig( "ScathachTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
@@ -592,7 +561,7 @@
 		call SaveTrig( "ScathachTrigR" )
 		call GetUnitEvent( LoadTrig( "ScathachTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ScathachTrigR" ), Condition( function ScathachSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigR" ), function ScathachSpellEFunction4 )
+		call TriggerAddAction( LoadTrig( "ScathachTrigR" ), function ScathachSpellEFunction3 )
 
 		call SaveTrig( "ScathachTrigT" )
 		call GetUnitEvent( LoadTrig( "ScathachTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )

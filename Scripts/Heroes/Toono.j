@@ -10,19 +10,7 @@
 		return GetSpellAbilityId( ) == 'A02U'
 	endfunction
 
-	function ToonoShikiSpellQFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SaveLocationHandle( HashTable, MUIHandle( ), 109, GetUnitLoc( GetFilterUnit( ) ) )
-			call LinearDisplacement( GetFilterUnit( ), MUIAngle( 109, 103 ), 200, .5, .01, false, false, "origin", DashEff( ) )
-			call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetUnitX( GetFilterUnit( ) ), GetUnitY( GetFilterUnit( ) ) ) )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-			call RemoveLocation( MUILocation( 109 ) )	
-		endif 
-
-		return true
-	endfunction
-
-	function ToonoShikiSpellQFunction3 takes nothing returns nothing
+	function ToonoShikiSpellQFunction2 takes nothing returns nothing
 		local integer LocTime = MUIInteger( 0 )
 
 		if StopSpell( MUIHandle( ), 0 ) == false then
@@ -39,14 +27,16 @@
 				call SaveLocationHandle( HashTable, MUIHandle( ), 107, CreateLocation( MUILocation( 102 ), MUIDistance( 102, 103 ) * .5, MUIAngle( 102, 103 ) ) )
 				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ), .1, .01, false, true, "origin", DashEff( ) )
 				call AddEffect( "Effects\\Toono\\LinearSlashBlue1.mdl", 3, MUILocation( 107 ), MUIAngle( 102, 103 ), 0 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 400, Filter( function ToonoShikiSpellQFunction2 ) )
+				call SaveStr( HashTable, MUIHandle( ), StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
+				call AoEDisplace( MUIHandle( ), 103, -200, .5, .01, 0, DashEff( ) )
+				call AoEDamage( MUIHandle( ), MUILocation( 107 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell four" )
 				call ClearAllData( MUIHandle( ) )
 			endif
 		endif
 	endfunction
 
-	function ToonoShikiSpellQFunction4 takes nothing returns nothing
+	function ToonoShikiSpellQFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
@@ -54,7 +44,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellQFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellQFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -64,27 +54,7 @@
 		return GetSpellAbilityId( ) == 'A02V'
 	endfunction
 
-	function ToonoShikiSpellWFunction2 takes nothing returns boolean
-		local integer LocCount = MUIInteger( 110 )
-
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call IssueImmediateOrder( GetFilterUnit( ), "stop" )
-			
-			if LocCount == 5 or LocCount == 15 or LocCount == 25 then
-				call DestroyEffect( AddSpecialEffectTarget( "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl", GetFilterUnit( ), "chest" ) )
-			endif
-			
-			if LocCount == 29 then
-				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", GetFilterUnit( ), "chest" ) )
-			endif
-
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 5 + MUIPower( ) * 0.033 )
-		endif
-		
-		return true
-	endfunction
-
-	function ToonoShikiSpellWFunction3 takes nothing returns nothing
+	function ToonoShikiSpellWFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 
 		if StopSpell( HandleID, 0 ) == false then
@@ -101,7 +71,7 @@
 			call AddEffect( "Effects\\Nanaya\\Sensa1.mdl", 2, MUILocation( 102 ), GetUnitFacing( MUIUnit( 100 ) ) + GetRandomReal( -45, 45 ), 0 )
 			call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 200, 200, 255, 255 )
 			call KillUnit( LoadUnit( "DummyUnit" ) )
-			call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 350, Filter( function ToonoShikiSpellWFunction2 ) )
+			call AoEDamage( HandleID, MUILocation( 107 ), 350, "AoE", "Physical", MUILevel( ) * 5 + MUIPower( ) * 0.033, true, "", 0 )
 			call RemoveLocation( MUILocation( 102 ) )
 			call RemoveLocation( MUILocation( 107 ) )
 
@@ -112,14 +82,14 @@
 		endif
 	endfunction
 
-	function ToonoShikiSpellWFunction4 takes nothing returns nothing
+	function ToonoShikiSpellWFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
 		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .025, true, function ToonoShikiSpellWFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .025, true, function ToonoShikiSpellWFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -188,18 +158,9 @@
 
 	function ToonoShikiSpellRFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A02Y'
-	endfunction
-
-	function ToonoShikiSpellRFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 1 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 500 + MUILevel( ) * 40 + MUIPower( ) * 0.50 )
-		endif
-
-		return true
 	endfunction	
 
-	function ToonoShikiSpellRFunction3 takes nothing returns nothing
+	function ToonoShikiSpellRFunction2 takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -303,18 +264,18 @@
 				set i = i + 1
 			endloop
 
-			call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 600, Filter( function ToonoShikiSpellRFunction2 ) )
+			call AoEDamage( HandleID, MUILocation( 103 ), 600, "AoE", "Physical", 500 + MUILevel( ) * 40 + MUIPower( ) * 0.50, false, "Stun", 1 )
 			call ClearAllData( HandleID )
 		endif
 	endfunction
 
-	function ToonoShikiSpellRFunction4 takes nothing returns nothing
+	function ToonoShikiSpellRFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellRFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellRFunction2 )
 	endfunction 
 
 	function ToonoShikiSpellTFunction1 takes nothing returns boolean
@@ -405,12 +366,12 @@
 		call SaveTrig( "ToonoTrigQ" )
 		call GetUnitEvent( LoadTrig( "ToonoTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ToonoTrigQ" ), Condition( function ToonoShikiSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigQ" ), function ToonoShikiSpellQFunction4 )
+		call TriggerAddAction( LoadTrig( "ToonoTrigQ" ), function ToonoShikiSpellQFunction3 )
 		
 		call SaveTrig( "ToonoTrigW" )
 		call GetUnitEvent( LoadTrig( "ToonoTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ToonoTrigW" ), Condition( function ToonoShikiSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigW" ), function ToonoShikiSpellWFunction4 )
+		call TriggerAddAction( LoadTrig( "ToonoTrigW" ), function ToonoShikiSpellWFunction3 )
 
 		call SaveTrig( "ToonoTrigE" )	
 		call GetUnitEvent( LoadTrig( "ToonoTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
@@ -420,7 +381,7 @@
 		call SaveTrig( "ToonoTrigR" )
 		call GetUnitEvent( LoadTrig( "ToonoTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ToonoTrigR" ), Condition( function ToonoShikiSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigR" ), function ToonoShikiSpellRFunction4 )
+		call TriggerAddAction( LoadTrig( "ToonoTrigR" ), function ToonoShikiSpellRFunction3 )
 
 		call SaveTrig( "ToonoTrigT" )	
 		call GetUnitEvent( LoadTrig( "ToonoTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )

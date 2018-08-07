@@ -2,50 +2,33 @@
 		return GetSpellAbilityId( ) == 'A049'
 	endfunction
 
-	function AkainuSpellDFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 12.5 + MUIPower( ) * 0.1 )
-			call DestroyEffect( AddSpecialEffectTarget( "Abilities\\Weapons\\FireBallMissile\\FireBallMissile.mdl", GetFilterUnit( ), "chest" ) )
-		endif
-
-		return true
-	endfunction
-
-	function AkainuSpellDFunction3 takes nothing returns nothing
+	function AkainuSpellDFunction2 takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 
 		if GetUnitAbilityLevel( MUIUnit( 100 ), 'B04H' ) > 0 then
 			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-			call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 102 ), 300, Filter( function AkainuSpellDFunction2 ) )
+			call AoEDamage( HandleID, MUILocation( 102 ), 300, "AoE", "Physical", MUILevel( ) * 12.5 + MUIPower( ) * 0.1, true, "", 0 )
 			call RemoveLocation( MUILocation( 102 ) )
 		else
 			call ClearAllData( HandleID )
 		endif
 	endfunction
 
-	function AkainuSpellDFunction4 takes nothing returns nothing
+	function AkainuSpellDFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call PlaySoundWithVolume( LoadSound( "AkainuD1" ), 100, 0 )
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveEffectHandle( HashTable, HandleID, 108, AddSpecialEffectTarget( "GeneralEffects\\lavaspray.mdl", GetTriggerUnit( ), "head" ) )
-		call TimerStart( LoadMUITimer( LocPID ), .5, true, function AkainuSpellDFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .5, true, function AkainuSpellDFunction2 )
 	endfunction
 
 	function AkainuSpellQFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A04A'
 	endfunction
 
-	function AkainuSpellQFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 175 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
-		endif
-
-		return true
-	endfunction
-
-	function AkainuSpellQFunction3 takes nothing returns nothing
+	function AkainuSpellQFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -74,7 +57,7 @@
 				call StunUnit( MUIUnit( 101 ), 2 )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 175 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
 				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 300, .4, .01, false, false, "origin", DashEff( ) )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 300, Filter( function AkainuSpellQFunction2 ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 300, "AoE", "Physical", 175 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "", 0 )
 				call ClearAllData( HandleID )
 			else
 				call RemoveLocation( MUILocation( 102 ) )
@@ -84,29 +67,20 @@
 		endif
 	endfunction
 
-	function AkainuSpellQFunction4 takes nothing returns nothing
+	function AkainuSpellQFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellQFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellQFunction2 )
 	endfunction
 
 	function AkainuSpellWFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A04C'
 	endfunction
 
-	function AkainuSpellWFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 1 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-		endif
-
-		return true
-	endfunction
-
-	function AkainuSpellWFunction3 takes nothing returns nothing
+	function AkainuSpellWFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -128,13 +102,13 @@
 				call AddEffect( "GeneralEffects\\FuzzyStomp.mdl", 1.5, MUILocation( 103 ), 0, 0 )
 				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.5, MUILocation( 103 ), 0, 0 )
 				call AddEffect( "Effects\\Akainu\\MagmaBlast.mdl", 1, MUILocation( 103 ), 0, 0 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 350, Filter( function AkainuSpellWFunction2 ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 350, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function AkainuSpellWFunction4 takes nothing returns nothing
+	function AkainuSpellWFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
@@ -142,7 +116,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellWFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellWFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -230,16 +204,7 @@
 		return GetSpellAbilityId( ) == 'A04D'
 	endfunction
 
-	function AkainuSpellRFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) and IsUnitInGroup( GetFilterUnit( ), LoadGroupHandle( HashTable, MUIHandle( ), 111 ) ) == false then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 100 + MUIPower( ) )
-			call GroupAddUnit( LoadGroupHandle( HashTable, MUIHandle( ), 111 ), GetFilterUnit( ) )
-		endif
-
-		return true
-	endfunction
-
-	function AkainuSpellRFunction3 takes nothing returns nothing
+	function AkainuSpellRFunction2 takes nothing returns nothing
 		local integer i	= 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -278,7 +243,7 @@
 					set i = i + 1
 				endloop
 
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 500, Filter( function AkainuSpellRFunction2 ) )
+				call AoEDamage( HandleID, MUILocation( 107 ), 500, "AoE", "Physical", MUILevel( ) * 100 + MUIPower( ), false, "", 0 )
 				call RemoveLocation( MUILocation( 107 ) )
 
 				if LoadReal( HashTable, HandleID, 110 ) >= 1500 then
@@ -288,29 +253,20 @@
 		endif
 	endfunction
 
-	function AkainuSpellRFunction4 takes nothing returns nothing
+	function AkainuSpellRFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellRFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellRFunction2 )
 	endfunction
 
 	function AkainuSpellTFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A04E'
 	endfunction
 
-	function AkainuSpellTFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 25 + MUIPower( ) * 0.05 )
-		endif
-
-		return true
-	endfunction	
-
-	function AkainuSpellTFunction3 takes nothing returns nothing
+	function AkainuSpellTFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )	
 		local integer LocTime   = MUIInteger( 0 )
 		local integer LocCount  = LoadInteger( HashTable, HandleID, 1 )
@@ -347,7 +303,7 @@
 				call UnitApplyTimedLife( LoadUnit( "DummyUnit" ), 'BTLF', .5 )
 
 				if LocCount > 7 then
-					call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 109 ), 500, Filter( function AkainuSpellTFunction2 ) )
+					call AoEDamage( HandleID, MUILocation( 109 ), 500, "AoE", "Physical", MUILevel( ) * 25 + MUIPower( ) * 0.05, true, "", 0 )
 				endif
 
 				call RemoveLocation( MUILocation( 109 ) )
@@ -359,13 +315,13 @@
 		endif
 	endfunction
 
-	function AkainuSpellTFunction4 takes nothing returns nothing
+	function AkainuSpellTFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .05, true, function AkainuSpellTFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .05, true, function AkainuSpellTFunction2 )
 	endfunction
 
 	function HeroInit9 takes nothing returns nothing
@@ -380,17 +336,17 @@
 		call SaveTrig( "AkainuTrigD" )
 		call GetUnitEvent( LoadTrig( "AkainuTrigD" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "AkainuTrigD" ), Condition( function AkainuSpellDFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigD" ), function AkainuSpellDFunction4 )
+		call TriggerAddAction( LoadTrig( "AkainuTrigD" ), function AkainuSpellDFunction3 )
 
 		call SaveTrig( "AkainuTrigQ" )
 		call GetUnitEvent( LoadTrig( "AkainuTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "AkainuTrigQ" ), Condition( function AkainuSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigQ" ), function AkainuSpellQFunction4 )
+		call TriggerAddAction( LoadTrig( "AkainuTrigQ" ), function AkainuSpellQFunction3 )
 
 		call SaveTrig( "AkainuTrigW" )
 		call GetUnitEvent( LoadTrig( "AkainuTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "AkainuTrigW" ), Condition( function AkainuSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigW" ), function AkainuSpellWFunction4 )	
+		call TriggerAddAction( LoadTrig( "AkainuTrigW" ), function AkainuSpellWFunction3 )	
 
 		call SaveTrig( "AkainuTrigE" )
 		call GetUnitEvent( LoadTrig( "AkainuTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
@@ -400,11 +356,11 @@
 		call SaveTrig( "AkainuTrigR" )
 		call GetUnitEvent( LoadTrig( "AkainuTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "AkainuTrigR" ), Condition( function AkainuSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigR" ), function AkainuSpellRFunction4 )
+		call TriggerAddAction( LoadTrig( "AkainuTrigR" ), function AkainuSpellRFunction3 )
 
 		call SaveTrig( "AkainuTrigT" )
 		call GetUnitEvent( LoadTrig( "AkainuTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "AkainuTrigT" ), Condition( function AkainuSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigT" ), function AkainuSpellTFunction4 )
+		call TriggerAddAction( LoadTrig( "AkainuTrigT" ), function AkainuSpellRFunction3 )
 	endfunction	
 

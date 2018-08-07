@@ -10,27 +10,7 @@
 		return GetSpellAbilityId( ) == 'A02M'
 	endfunction
 
-	function NanayaShikiSpellQFunction2 takes nothing returns boolean
-		local real LocDamage = 250 + MUILevel( ) * 50 + MUIPower( )
-
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SaveLocationHandle( HashTable, MUIHandle( ), 109, GetUnitLoc( GetFilterUnit( ) ) )
-			call LinearDisplacement( GetFilterUnit( ), MUIAngle( 109, 103 ), 200, .5, .01, false, false, "origin", DashEff( ) )
-			call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetUnitX( GetFilterUnit( ) ), GetUnitY( GetFilterUnit( ) ) ) )
-
-			if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
-				set LocDamage = LocDamage * 1.5
-				call StunUnit( GetFilterUnit( ), 1 )
-			endif
-
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", LocDamage )
-			call RemoveLocation( MUILocation( 109 ) )	
-		endif 
-
-		return true
-	endfunction
-
-	function NanayaShikiSpellQFunction3 takes nothing returns nothing
+	function NanayaShikiSpellQFunction2 takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -48,7 +28,13 @@
 				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), MUIDistance( 102, 103 ) * .5, MUIAngle( 102, 103 ) ) )
 				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ), .1, .01, false, true, "origin", DashEff( ) )
 				call AddEffect( "Effects\\Nanaya\\LinearSlash1.mdl", 3, MUILocation( 107 ), MUIAngle( 102, 103 ), 0 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 400, Filter( function NanayaShikiSpellQFunction2 ) )
+				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
+				call AoEDisplace( HandleID, 103, -200, .5, .01, 0, DashEff( ) )
+				if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
+					call AoEDamage( HandleID, MUILocation( 107 ), 400, "AoE", "Physical", ( 250 + MUILevel( ) * 50 + MUIPower( ) ) * 1.5, false, "Stun", 1 )
+				else
+					call AoEDamage( HandleID, MUILocation( 107 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
+				endif
 				call UnitRemoveAbility( MUIUnit( 100 ), 'B001' )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw six" )
 				call ClearAllData( HandleID )
@@ -56,7 +42,7 @@
 		endif
 	endfunction
 
-	function NanayaShikiSpellQFunction4 takes nothing returns nothing
+	function NanayaShikiSpellQFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 		
@@ -64,7 +50,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaShikiSpellQFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaShikiSpellQFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -74,32 +60,7 @@
 		return GetSpellAbilityId( ) == 'A02N'
 	endfunction
 
-	function NanayaShikiSpellWFunction2 takes nothing returns boolean
-		local integer LocCount  = MUIInteger( 110 )
-		local real	  LocDamage = MUILevel( ) * 5 + MUIPower( ) * 0.033
-
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call IssueImmediateOrder( GetFilterUnit( ), "stop" )
-
-			if LocCount == 5 or LocCount == 15 or LocCount == 25 then
-				call DestroyEffect( AddSpecialEffectTarget( "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl", GetFilterUnit( ), "chest" ) )
-			endif
-
-			if LocCount == 29 then
-				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", GetFilterUnit( ), "chest" ) )
-			endif
-
-			if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
-				set LocDamage = LocDamage * 1.5
-			endif
-
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", LocDamage )
-		endif
-
-		return true
-	endfunction
-
-	function NanayaShikiSpellWFunction3 takes nothing returns nothing
+	function NanayaShikiSpellWFunction2 takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 
 		if StopSpell( HandleID, 0 ) == false then
@@ -116,7 +77,11 @@
 			call AddEffect( "Effects\\Nanaya\\Sensa1.mdl", 2, MUILocation( 102 ), GetUnitFacing( MUIUnit( 100 ) ) + GetRandomReal( -45, 45 ), 0 )
 			call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 100, 255, 255 )
 			call KillUnit( LoadUnit( "DummyUnit" ) )
-			call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 350, Filter( function NanayaShikiSpellWFunction2 ) )
+			if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
+				call AoEDamage( HandleID, MUILocation( 107 ), 350, "AoE", "Physical", ( MUILevel( ) * 5 + MUIPower( ) * 0.033 ) * 1.5, true, "", 0 )
+			else
+				call AoEDamage( HandleID, MUILocation( 107 ), 350, "AoE", "Physical", MUILevel( ) * 5 + MUIPower( ) * 0.033, true, "", 0 )
+			endif
 			call RemoveLocation( MUILocation( 102 ) )
 			call RemoveLocation( MUILocation( 107 ) )
 
@@ -128,14 +93,14 @@
 		endif
 	endfunction
 
-	function NanayaShikiSpellWFunction4 takes nothing returns nothing
+	function NanayaShikiSpellWFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
 		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .025, true, function NanayaShikiSpellWFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .025, true, function NanayaShikiSpellWFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 			call DestroyTimer( LoadMUITimer( LocPID ) )
@@ -146,16 +111,7 @@
 		return GetSpellAbilityId( ) == 'A02O'
 	endfunction
 
-	function NanayaShikiSpellEFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
-			call StunUnit( GetFilterUnit( ), 1 )
-		endif
-
-		return true
-	endfunction
-
-	function NanayaShikiSpellEFunction3 takes nothing returns nothing
+	function NanayaShikiSpellEFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -236,7 +192,7 @@
 				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1, MUILocation( 103 ), 0, 0 )
 				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2, MUILocation( 103 ), 0, 0 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw two" )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 500, Filter( function NanayaShikiSpellEFunction2 ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 500, "AoE", "Physical", 250 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "Stun", 1 )
 				call UnitRemoveAbility( MUIUnit( 100 ), 'B001' )
 				call ClearAllData( HandleID )
 			endif
@@ -262,13 +218,13 @@
 		endif
 	endfunction
 
-	function NanayaShikiSpellEFunction4 takes nothing returns nothing
+	function NanayaShikiSpellEFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaShikiSpellEFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaShikiSpellEFunction2 )
 	endfunction 
 
 	function NanayaShikiSpellRFunction1 takes nothing returns boolean
@@ -516,17 +472,17 @@
 		call SaveTrig( "NanayaTrigQ" )
 		call GetUnitEvent( LoadTrig( "NanayaTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "NanayaTrigQ" ), Condition( function NanayaShikiSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigQ" ), function NanayaShikiSpellQFunction4 )
+		call TriggerAddAction( LoadTrig( "NanayaTrigQ" ), function NanayaShikiSpellQFunction3 )
 
 		call SaveTrig( "NanayaTrigW" )
 		call GetUnitEvent( LoadTrig( "NanayaTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "NanayaTrigW" ), Condition( function NanayaShikiSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigW" ), function NanayaShikiSpellWFunction4 )
+		call TriggerAddAction( LoadTrig( "NanayaTrigW" ), function NanayaShikiSpellWFunction3 )
 
 		call SaveTrig( "NanayaTrigE" )
 		call GetUnitEvent( LoadTrig( "NanayaTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "NanayaTrigE" ), Condition( function NanayaShikiSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigE" ), function NanayaShikiSpellEFunction4 )
+		call TriggerAddAction( LoadTrig( "NanayaTrigE" ), function NanayaShikiSpellEFunction3 )
 
 		call SaveTrig( "NanayaTrigR" )
 		call GetUnitEvent( LoadTrig( "NanayaTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )

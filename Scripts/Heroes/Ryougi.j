@@ -10,20 +10,7 @@
 		return GetSpellAbilityId( ) == 'A033'
 	endfunction
 
-	function RyougiShikiSpellQFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 240 + MUILevel( ) * 80 + MUIPower( ) )
-			call StunUnit( GetFilterUnit( ), 1 )
-			call SaveLocationHandle( HashTable, MUIHandle( ), 107, GetUnitLoc( GetFilterUnit( ) ) )
-			call DisplaceUnitWithArgs( GetFilterUnit( ), MUIAngle( 102, 107 ), 300, .5, .01, 150 )
-			call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 107 ) ) )
-			call RemoveLocation( MUILocation( 107 ) )
-		endif
-
-		return true
-	endfunction
-
-	function RyougiShikiSpellQFunction3 takes nothing returns nothing
+	function RyougiShikiSpellQFunction2 takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -43,37 +30,27 @@
 				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 				call SaveLocationHandle( HashTable, HandleID, 103, CreateLocation( MUILocation( 102 ), 200, GetUnitFacing( MUIUnit( 100 ) ) ) )
 				call AddMultipleEffects( 5, "GeneralEffects\\FireSlashSlow\\FireSlashSlow.mdl", 4, MUILocation( 102 ), GetUnitFacing( MUIUnit( 100 ) ), 0, 65, 235, 245, 255 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 300, Filter( function RyougiShikiSpellQFunction2 ) )
+				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
+				call AoEDisplace( HandleID, 102, 300, .5, .01, 150, "" )
+				call AoEDamage( HandleID, MUILocation( 103 ), 300, "AoE", "Physical", 240 + MUILevel( ) * 80 + MUIPower( ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function RyougiShikiSpellQFunction4 takes nothing returns nothing
+	function RyougiShikiSpellQFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellQFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellQFunction2 )
 	endfunction
 
 	function RyougiShikiSpellWFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A032'
 	endfunction
 
-	function RyougiShikiSpellWFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SaveLocationHandle( HashTable, MUIHandle( ), 109, GetUnitLoc( GetFilterUnit( ) ) )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-			call LinearDisplacement( GetFilterUnit( ), MUIAngle( 102, 109 ), 150, .2, .01, false, false, "origin", DashEff( ) )
-			call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 109 ) ) )
-			call RemoveLocation( MUILocation( 109 ) )
-		endif
-
-		return true
-	endfunction
-
-	function RyougiShikiSpellWFunction3 takes nothing returns nothing
+	function RyougiShikiSpellWFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -97,13 +74,15 @@
 				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), 200, GetUnitFacing( MUIUnit( 100 ) ) ) )
 				call AddMultipleEffects( 5, "GeneralEffects\\FireSlashSlow\\FireSlashSlow.mdl", 4, MUILocation( 102 ), GetUnitFacing( MUIUnit( 100 ) ), 0, 65, 235, 245, 255 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 400, Filter( function RyougiShikiSpellWFunction2 ) )
+				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
+				call AoEDisplace( HandleID, 102, 150, .2, .01, 0, DashEff( ) )
+				call AoEDamage( HandleID, MUILocation( 107 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function RyougiShikiSpellWFunction4 takes nothing returns nothing
+	function RyougiShikiSpellWFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
@@ -121,18 +100,7 @@
 		return GetSpellAbilityId( ) == 'A034'
 	endfunction
 
-	function RyougiShikiSpellEFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SaveLocationHandle( HashTable, MUIHandle( ), 109, GetUnitLoc( GetFilterUnit( ) ) )
-			call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 109 ) ) )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 75 + MUIPower( ) )
-			call RemoveLocation( MUILocation( 109 ) )
-		endif
-
-		return true
-	endfunction
-
-	function RyougiShikiSpellEFunction3 takes nothing returns nothing
+	function RyougiShikiSpellEFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -150,15 +118,16 @@
 
 			if LocTime == 50 then
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 50, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), ( MUIDistance( 102, 103 ) * .5 ), MUIAngle( 102, 103 ) ) )
+				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), MUIDistance( 102, 103 ) * .5, MUIAngle( 102, 103 ) ) )
 				call AddEffect( "Effects\\Toono\\LinearSlashBlue1.mdl", 3, MUILocation( 107 ), MUIAngle( 102, 103 ), 0 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 600, Filter( function RyougiShikiSpellEFunction2 ) )
+				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
+				call AoEDamage( HandleID, MUILocation( 107 ), 600, "AoE", "Physical", MUILevel( ) * 75 + MUIPower( ), false, "", 0 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function RyougiShikiSpellEFunction4 takes nothing returns nothing
+	function RyougiShikiSpellEFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
@@ -166,7 +135,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellEFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellEFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -233,7 +202,7 @@
 		return GetSpellAbilityId( ) == 'A037'
 	endfunction
 
-	function RyougiShikiSpellTFunction5 takes nothing returns nothing
+	function RyougiShikiSpellTFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 		local integer LocCount  = LoadInteger( HashTable, HandleID, 1 )
@@ -322,14 +291,14 @@
 		endif
 	endfunction
 
-	function RyougiShikiSpellTFunction6 takes nothing returns nothing
+	function RyougiShikiSpellTFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveBoolean( HashTable, HandleID, 10, false )
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellTFunction5 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellTFunction2 )
 	endfunction	
 
 	function HeroInit3 takes nothing returns nothing
@@ -349,17 +318,17 @@
 		call SaveTrig( "RyougiTrigQ" )
 		call GetUnitEvent( LoadTrig( "RyougiTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "RyougiTrigQ" ), Condition( function RyougiShikiSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigQ" ), function RyougiShikiSpellQFunction4 )
+		call TriggerAddAction( LoadTrig( "RyougiTrigQ" ), function RyougiShikiSpellQFunction3 )
 
 		call SaveTrig( "RyougiTrigW" )
 		call GetUnitEvent( LoadTrig( "RyougiTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "RyougiTrigW" ), Condition( function RyougiShikiSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigW" ), function RyougiShikiSpellWFunction4 )
+		call TriggerAddAction( LoadTrig( "RyougiTrigW" ), function RyougiShikiSpellWFunction3 )
 
 		call SaveTrig( "RyougiTrigE" )
 		call GetUnitEvent( LoadTrig( "RyougiTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "RyougiTrigE" ), Condition( function RyougiShikiSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigE" ), function RyougiShikiSpellEFunction4 )
+		call TriggerAddAction( LoadTrig( "RyougiTrigE" ), function RyougiShikiSpellEFunction3 )
 
 		call SaveTrig( "RyougiTrigR" )
 		call GetUnitEvent( LoadTrig( "RyougiTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
@@ -369,6 +338,6 @@
 		call SaveTrig( "RyougiTrigT" )
 		call GetUnitEvent( LoadTrig( "RyougiTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "RyougiTrigT" ), Condition( function RyougiShikiSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigT" ), function RyougiShikiSpellTFunction6 )
+		call TriggerAddAction( LoadTrig( "RyougiTrigT" ), function RyougiShikiSpellTFunction3 )
 	endfunction	
 

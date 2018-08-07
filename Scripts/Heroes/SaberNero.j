@@ -2,19 +2,7 @@
 		return GetSpellAbilityId( ) == 'A038'
 	endfunction
 
-	function SaberNeroSpellQFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SaveLocationHandle( HashTable, MUIHandle( ), 109, GetUnitLoc( GetFilterUnit( ) ) )
-			call LinearDisplacement( GetFilterUnit( ), MUIAngle( 102, 109 ), 200, .3, .01, false, false, "origin", DashEff( ) )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-			call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 109 ) ) )
-			call RemoveLocation( MUILocation( 109 ) )
-		endif
-
-		return true
-	endfunction
-
-	function SaberNeroSpellQFunction3 takes nothing returns nothing
+	function SaberNeroSpellQFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -36,7 +24,9 @@
 				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), 200, GetUnitFacing( MUIUnit( 100 ) ) ) )
 				call AddMultipleEffects( 2, "Effects\\SaberNero\\FireCut.mdl", 2.5, MUILocation( 107 ), GetUnitFacing( MUIUnit( 100 ) ), 0, 255, 255, 255, 255 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 400, Filter( function SaberNeroSpellQFunction2 ) )
+				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
+				call AoEDisplace( HandleID, 102, 200, .3, .01, 0, DashEff( ) )
+				call AoEDamage( HandleID, MUILocation( 107 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
 			endif
 
 			if LocTime == 60 then
@@ -45,7 +35,7 @@
 		endif
 	endfunction
 
-	function SaberNeroSpellQFunction4 takes nothing returns nothing
+	function SaberNeroSpellQFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
@@ -53,7 +43,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellQFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellQFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -63,19 +53,7 @@
 		return GetSpellAbilityId( ) == 'A039'
 	endfunction
 
-	function SaberNeroSpellWFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 1 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-			call SaveLocationHandle( HashTable, MUIHandle( ), 113, GetUnitLoc( GetFilterUnit( ) ) )
-			call LinearDisplacement( GetFilterUnit( ), MUIAngle( 102, 113 ), 200, .25, .01, false, false, "origin", DashEff( ) )
-			call RemoveLocation( MUILocation( 113 ) )
-		endif
-
-		return true
-	endfunction
-
-	function SaberNeroSpellWFunction3 takes nothing returns nothing
+	function SaberNeroSpellWFunction2 takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -100,34 +78,26 @@
 					set i = i + 1
 				endloop
 
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 102 ), 450, Filter( function SaberNeroSpellWFunction2 ) )
+				call AoEDisplace( HandleID, 102, 200, .25, .01, 0, DashEff( ) )
+				call AoEDamage( HandleID, MUILocation( 102 ), 450, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function SaberNeroSpellWFunction4 takes nothing returns nothing
+	function SaberNeroSpellWFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellWFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellWFunction2 )
 	endfunction
 
 	function SaberNeroSpellEFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A03A'
 	endfunction
 
-	function SaberNeroSpellEFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 50 + MUIPower( ) )
-			call StunUnit( GetFilterUnit( ), 1 )
-		endif
-
-		return true
-	endfunction
-
-	function SaberNeroSpellEFunction3 takes nothing returns nothing
+	function SaberNeroSpellEFunction2 takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -176,52 +146,26 @@
 					set i = i + 1
 				endloop
 
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 400, Filter( function SaberNeroSpellEFunction2 ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 400, "AoE", "Physical", MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function SaberNeroSpellEFunction4 takes nothing returns nothing
+	function SaberNeroSpellEFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellEFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellEFunction2 )
 	endfunction
 
 	function SaberNeroSpellRFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A03B'
 	endfunction
 
-	function SaberNeroSpellRUnitDrag1 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SetUnitPositionLoc( GetFilterUnit( ), MUILocation( 107 ) )
-		endif
-
-		return true
-	endfunction
-
-	function SaberNeroSpellRUnitDrag2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SetUnitPositionLoc( GetFilterUnit( ), MUILocation( 109 ) )
-		endif
-
-		return true
-	endfunction
-
-	function SaberNeroSpellRFunction2 takes nothing returns boolean	
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 2 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 2000 + MUILevel( ) * 125 + MUIPower( ) )
-			call DisplaceUnitWithArgs( GetFilterUnit( ), AngleBetweenUnits( MUIUnit( 100 ), GetFilterUnit( ) ), 200, 1, .01, 1000 )
-		endif
-
-		return true
-	endfunction
-
-	function SaberNeroSpellRFunction3 takes nothing returns nothing
+	function SaberNeroSpellRFunction2 takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -234,18 +178,11 @@
 				call SaveReal( HashTable, HandleID, 110, 800 )
 				call PauseUnit( MUIUnit( 100 ), true )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell One" )
+				call InitSpiral( HandleID, 103, 300, 15, 800, "Abilities\\Spells\\Other\\Doom\\DoomDeath.mdl" )
 			endif
 
 			if LocTime < 80 then
-				call SaveReal( HashTable, HandleID, 110, LoadReal( HashTable, HandleID, 110 ) - 10 )
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), LoadReal( HashTable, HandleID, 110 ), LoadReal( HashTable, HandleID, 110 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 109, CreateLocation( MUILocation( 103 ), LoadReal( HashTable, HandleID, 110 ), LoadReal( HashTable, HandleID, 110 ) + 180 ) )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 300, Filter( function SaberNeroSpellRUnitDrag1 ) )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 109 ), 300, Filter( function SaberNeroSpellRUnitDrag2 ) )
-				call DestroyEffect( AddSpecialEffectLoc( "Abilities\\Spells\\Other\\Doom\\DoomDeath.mdl", MUILocation( 107 ) ) )
-				call DestroyEffect( AddSpecialEffectLoc( "Abilities\\Spells\\Other\\Doom\\DoomDeath.mdl", MUILocation( 109 ) ) )
-				call RemoveLocation( MUILocation( 107 ) )
-				call RemoveLocation( MUILocation( 109 ) )
+				call SpiralMovement( HandleID )
 			endif
 			
 			if LocTime == 80 then
@@ -299,19 +236,20 @@
 					set i = i + 1
 				endloop
 
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 800, Filter( function SaberNeroSpellRFunction2 ) )
+				call AoEDisplace( HandleID, 103, 200, 1., .01, 1000, DashEff( ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 800, "AoE", "Physical", 2000 + MUILevel( ) * 125 + MUIPower( ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function SaberNeroSpellRFunction4 takes nothing returns nothing
+	function SaberNeroSpellRFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellRFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellRFunction2 )
 	endfunction
 
 	function SaberNeroSpellTFunction1 takes nothing returns boolean
@@ -424,22 +362,22 @@
 		call SaveTrig( "SaberNeroTrigQ" )
 		call GetUnitEvent( LoadTrig( "SaberNeroTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "SaberNeroTrigQ" ), Condition( function SaberNeroSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigQ" ), function SaberNeroSpellQFunction4 )
+		call TriggerAddAction( LoadTrig( "SaberNeroTrigQ" ), function SaberNeroSpellQFunction3 )
 
 		call SaveTrig( "SaberNeroTrigW" )
 		call GetUnitEvent( LoadTrig( "SaberNeroTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "SaberNeroTrigW" ), Condition( function SaberNeroSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigW" ), function SaberNeroSpellWFunction4 )
+		call TriggerAddAction( LoadTrig( "SaberNeroTrigW" ), function SaberNeroSpellWFunction3 )
 
 		call SaveTrig( "SaberNeroTrigE" )
 		call GetUnitEvent( LoadTrig( "SaberNeroTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "SaberNeroTrigE" ), Condition( function SaberNeroSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigE" ), function SaberNeroSpellEFunction4 )
+		call TriggerAddAction( LoadTrig( "SaberNeroTrigE" ), function SaberNeroSpellEFunction3 )
 
 		call SaveTrig( "SaberNeroTrigR" )
 		call GetUnitEvent( LoadTrig( "SaberNeroTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "SaberNeroTrigR" ), Condition( function SaberNeroSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigR" ), function SaberNeroSpellRFunction4 )
+		call TriggerAddAction( LoadTrig( "SaberNeroTrigR" ), function SaberNeroSpellRFunction3 )
 
 		call SaveTrig( "SaberNeroTrigT" )
 		call GetUnitEvent( LoadTrig( "SaberNeroTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )

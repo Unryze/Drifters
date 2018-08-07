@@ -2,20 +2,7 @@
 		return GetSpellAbilityId( ) == 'A01N'
 	endfunction
 
-	function ArcueidSpellQFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SaveLocationHandle( HashTable, MUIHandle( ), 107, GetUnitLoc( GetFilterUnit( ) ) )
-			call DisplaceUnitWithArgs( GetFilterUnit( ), MUIAngle( 102, 107 ), -300, .5, .01, 250 )
-			call StunUnit( GetFilterUnit( ), 1 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 70 + MUIPower( ) )
-			call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 107 ) ) )
-			call RemoveLocation( MUILocation( 107 ) )
-		endif
-
-		return true
-	endfunction
-
-	function ArcueidSpellQFunction3 takes nothing returns nothing
+	function ArcueidSpellQFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -33,36 +20,27 @@
 
 			if LocTime == 20 then
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 50, 0 )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 300, Filter( function ArcueidSpellQFunction2 ) )
+				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
+				call AoEDisplace( HandleID, 102, -300, .5, .01, 250, "" )
+				call AoEDamage( HandleID, MUILocation( 103 ), 300, "AoE", "Physical", 250 + MUILevel( ) * 70 + MUIPower( ), false, "Stun", 1 )				
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function ArcueidSpellQFunction4 takes nothing returns nothing
+	function ArcueidSpellQFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellQFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellQFunction2 )
 	endfunction 
 
 	function ArcueidSpellWFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A01Y'
 	endfunction
 
-	function ArcueidSpellWFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SaveLocationHandle( HashTable, MUIHandle( ), 113, GetUnitLoc( GetFilterUnit( ) ) )
-			call LinearDisplacement( GetFilterUnit( ), MUIAngle( 102, 113 ), 200, .15, .01, false, false, "origin", DashEff( ) )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 350 + MUILevel( ) * 60 + MUIPower( ) )
-			call RemoveLocation( MUILocation( 113 ) )
-		endif
-
-		return true
-	endfunction	
-
-	function ArcueidSpellWFunction3 takes nothing returns nothing
+	function ArcueidSpellWFunction2 takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 		local integer i = 1
@@ -79,7 +57,6 @@
 			endif
 
 			if LocTime == 10 then
-
 				loop
 					exitwhen i == 3
 					call AddEffect( "GeneralEffects\\ValkDust150.mdl", GetRandomReal( 1, 2 ), MUILocation( 102 ), GetRandomReal( 0, 360 ), 0 )
@@ -88,7 +65,8 @@
 			endif
 				
 			if LocTime == 25 then
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 102 ), 450, Filter( function ArcueidSpellWFunction2 ) )
+				call AoEDisplace( HandleID, 102, 200, .15, .01, 0, "" )
+				call AoEDamage( HandleID, MUILocation( 102 ), 450, "AoE", "Physical", 350 + MUILevel( ) * 60 + MUIPower( ), false, "", 0 )
 			endif
 			
 			if LocTime == 40 then
@@ -97,28 +75,19 @@
 		endif
 	endfunction
 
-	function ArcueidSpellWFunction4 takes nothing returns nothing
+	function ArcueidSpellWFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellWFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellWFunction2 )
 	endfunction 
 
 	function ArcueidSpellEFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A026'
 	endfunction
 
-	function ArcueidSpellEFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 1 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 100 + MUIPower( ) )
-		endif
-
-		return true
-	endfunction	
-
-	function ArcueidSpellEFunction3 takes nothing returns nothing
+	function ArcueidSpellEFunction2 takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -143,13 +112,8 @@
 				call PlaySoundWithVolume( LoadSound( "SlamSound1" ), 60, 0 )
 				call SetUnitPositionLoc( MUIUnit( 100 ), MUILocation( 103 ) )
 				call ShowUnit( MUIUnit( 100 ), true )
-
-				if GetLocalPlayer( ) == GetOwningPlayer( MUIUnit( 100 ) ) then
-					call ClearSelection( )
-					call SelectUnit( MUIUnit( 100 ), true )
-				endif
-
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 400, Filter( function ArcueidSpellEFunction2 ) )
+				call UnitSelect( MUIUnit( 100 ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 400, "AoE", "Physical", MUILevel( ) * 100 + MUIPower( ), false, "Stun", 1 )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\SlamEffect.mdl", MUILocation( 103 ) ) )
 
 				loop
@@ -163,7 +127,7 @@
 		endif
 	endfunction
 
-	function ArcueidSpellEFunction4 takes nothing returns nothing
+	function ArcueidSpellEFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
@@ -171,7 +135,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellEFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellEFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -181,16 +145,7 @@
 		return GetSpellAbilityId( ) == 'A027'
 	endfunction
 
-	function ArcueidSpellRFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 1 )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 50 + MUIPower( ) )
-		endif
-
-		return true
-	endfunction
-
-	function ArcueidSpellRFunction3 takes nothing returns nothing
+	function ArcueidSpellRFunction2 takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -241,29 +196,28 @@
 				set i = i + 1
 			endloop
 
-			call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 400, Filter( function ArcueidSpellRFunction2 ) )
+			call AoEDamage( HandleID, MUILocation( 103 ), 400, "AoE", "Physical", MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
 			call ClearAllData( HandleID )
 		endif
 	endfunction
 
-	function ArcueidSpellRFunction4 takes nothing returns nothing
+	function ArcueidSpellRFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellRFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellRFunction2 )
 	endfunction
 
 	function ArcueidSpellTFunction1 takes nothing returns boolean
 		return GetSpellAbilityId( ) == 'A02A'
 	endfunction
 
-	function ArcueidSpellTFunction2 takes nothing returns boolean
+	function Unused takes nothing returns boolean
 		local integer i = 0
 
 		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-
 			loop
 				exitwhen i == 2
 				call SaveLocationHandle( HashTable, MUIHandle( ), 104, GetUnitLoc( GetFilterUnit( ) ) )
@@ -272,16 +226,14 @@
 				call RemoveLocation( MUILocation( 104 ) )
 				set i = i + 1
 			endloop
-
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 200 + MUIPower( ) )
-			call DestroyEffect( AddSpecialEffectTarget( "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl", GetFilterUnit( ), "chest" ) )
-			call DestroyEffect( AddSpecialEffectTarget( "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl", GetFilterUnit( ), "head" ) )
 		endif
+		
+		//call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 600, Filter( function Unused ) )
 
 		return true
 	endfunction	
 
-	function ArcueidSpellTFunction3 takes nothing returns nothing
+	function ArcueidSpellTFunction2 takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -304,17 +256,14 @@
 			endif
 
 			if LocTime == 45 then
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 600, Filter( function ArcueidSpellTFunction2 ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 600, "AoE", "Physical", MUILevel( ) * 200 + MUIPower( ), false, "Stun", 1 )
+				
 			endif
 
 			if LocTime == 50 then
 				call ShowUnit( MUIUnit( 100 ), true )
 				call SetUnitAnimation( MUIUnit( 100 ), "Stand" )
-
-				if GetLocalPlayer( ) == GetOwningPlayer( MUIUnit( 100 ) ) then
-					call ClearSelection( )
-					call SelectUnit( MUIUnit( 100 ), true )
-				endif
+				call UnitSelect( MUIUnit( 100 ) )
 
 				loop
 					exitwhen i == 3
@@ -327,7 +276,7 @@
 		endif
 	endfunction
 
-	function ArcueidSpellTFunction4 takes nothing returns nothing
+	function ArcueidSpellTFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
@@ -335,7 +284,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellTFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellTFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -351,26 +300,26 @@
 		call SaveTrig( "ArcueidTrigQ" )
 		call GetUnitEvent( LoadTrig( "ArcueidTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ArcueidTrigQ" ), Condition( function ArcueidSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigQ" ), function ArcueidSpellQFunction4 )
+		call TriggerAddAction( LoadTrig( "ArcueidTrigQ" ), function ArcueidSpellQFunction3 )
 
 		call SaveTrig( "ArcueidTrigW" )
 		call GetUnitEvent( LoadTrig( "ArcueidTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ArcueidTrigW" ), Condition( function ArcueidSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigW" ), function ArcueidSpellWFunction4 )
+		call TriggerAddAction( LoadTrig( "ArcueidTrigW" ), function ArcueidSpellWFunction3 )
 
 		call SaveTrig( "ArcueidTrigE" )
 		call GetUnitEvent( LoadTrig( "ArcueidTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ArcueidTrigE" ), Condition( function ArcueidSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigE" ), function ArcueidSpellEFunction4 )
+		call TriggerAddAction( LoadTrig( "ArcueidTrigE" ), function ArcueidSpellEFunction3 )
 
 		call SaveTrig( "ArcueidTrigR" )
 		call GetUnitEvent( LoadTrig( "ArcueidTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ArcueidTrigR" ), Condition( function ArcueidSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigR" ), function ArcueidSpellRFunction4 )
+		call TriggerAddAction( LoadTrig( "ArcueidTrigR" ), function ArcueidSpellRFunction3 )
 
 		call SaveTrig( "ArcueidTrigT" )
 		call GetUnitEvent( LoadTrig( "ArcueidTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ArcueidTrigT" ), Condition( function ArcueidSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigT" ), function ArcueidSpellTFunction4 )
+		call TriggerAddAction( LoadTrig( "ArcueidTrigT" ), function ArcueidSpellTFunction3 )
 	endfunction
 

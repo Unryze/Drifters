@@ -2,16 +2,7 @@
 		return GetSpellAbilityId( ) == 'A03E'
 	endfunction
 
-	function KuchikiByakuyaSpellQFunction2 takes nothing returns boolean	
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) and IsUnitInGroup( GetFilterUnit( ), LoadGroupHandle( HashTable, MUIHandle( ), 111 ) ) == false then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-			call GroupAddUnit( LoadGroupHandle( HashTable, MUIHandle( ), 111 ), GetFilterUnit( ) )
-		endif
-
-		return true
-	endfunction
-
-	function KuchikiByakuyaSpellQFunction3 takes nothing returns nothing
+	function KuchikiByakuyaSpellQFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 		local real LocDistance	= LoadReal( HashTable, HandleID, 30 )
@@ -48,7 +39,7 @@
 					call SaveLocationHandle( HashTable, HandleID, 116, CreateLocation( MUILocation( 115 ), 20, LocFacing ) )
 					call SaveReal( HashTable, HandleID, 30, LocDistance - 25 )
 					call SetUnitPositionLoc( MUIUnit( 106 ), MUILocation( 116 ) )
-					call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 115 ), 250, Filter( function KuchikiByakuyaSpellQFunction2 ) )
+					call AoEDamage( HandleID, MUILocation( 115 ), 250, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
 
 					if LocDistance <= 25 then
 						call KillUnit( MUIUnit( 106 ) )
@@ -64,14 +55,13 @@
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellQFunction4 takes nothing returns nothing
+	function KuchikiByakuyaSpellQFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellQFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellQFunction2 )
 	endfunction
 
 	function KuchikiByakuyaSpellWFunction1 takes nothing returns boolean
@@ -129,30 +119,7 @@
 		return GetSpellAbilityId( ) == 'A03G'
 	endfunction
 
-	function KuchikiByakuyaSpellEFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call SlowUnit( GetFilterUnit( ) )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 3 + MUIPower( ) * 0.05 )
-			call DestroyEffect( AddSpecialEffectTarget( "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl", GetFilterUnit( ), "chest" ) )
-		endif
-
-		return true
-	endfunction
-
-	function KuchikiByakuyaSpellEFunctionFinalDamage1 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call StunUnit( GetFilterUnit( ), 1 )
-			call SaveLocationHandle( HashTable, MUIHandle( ), 107, GetUnitLoc( GetFilterUnit( ) ) )
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Physical", MUILevel( ) * 40 + MUIPower( ) * 0.50 )
-			call LinearDisplacement( GetFilterUnit( ), MUIAngle( 103, 107 ), 300, .5, .01, false, false, "origin", DashEff( ) )
-			call DestroyEffect( AddSpecialEffectTarget( "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl", GetFilterUnit( ), "chest" ) )
-			call RemoveLocation( MUILocation( 107 ) )
-		endif
-
-		return true
-	endfunction
-
-	function KuchikiByakuyaSpellEFunction3 takes nothing returns nothing
+	function KuchikiByakuyaSpellEFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -172,7 +139,7 @@
 			endif
 
 			if LocTime == 20 or LocTime == 40 or LocTime == 60 or LocTime == 80 or LocTime == 100 or LocTime == 120 or LocTime == 140 or LocTime == 160 or LocTime == 180 or LocTime == 200 then
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 450, Filter( function KuchikiByakuyaSpellEFunction2 ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 450, "AoE", "Physical", MUILevel( ) * 3 + MUIPower( ) * 0.05, true, "Slow", .25 )	
 			endif
 
 			if LocTime == 200 then
@@ -181,19 +148,20 @@
 				call AddEffect( "Effects\\Byakuya\\SakuraExplosion.mdl", 1.5, MUILocation( 103 ), 0, 0 )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\Spark_Pink.mdl", MUILocation( 103 ) ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 103 ) ) )
-				call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 103 ), 450, Filter( function KuchikiByakuyaSpellEFunctionFinalDamage1 ) )
+				call AoEDisplace( HandleID, 103, 300, .5, .01, 0, DashEff( ) )
+				call AoEDamage( HandleID, MUILocation( 103 ), 450, "AoE", "Physical", MUILevel( ) * 40 + MUIPower( ) * 0.50, true, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellEFunction4 takes nothing returns nothing
+	function KuchikiByakuyaSpellEFunction3 takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
 		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellEFunction3 )
+		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellEFunction2 )
 	endfunction
 
 	function KuchikiByakuyaSpellRFunction1 takes nothing returns boolean
@@ -398,12 +366,12 @@
 		call SaveTrig( "ByakuyaTrigW" )
 		call GetUnitEvent( LoadTrig( "ByakuyaTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ByakuyaTrigW" ), Condition( function KuchikiByakuyaSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ByakuyaTrigW" ), function KuchikiByakuyaSpellQFunction4 )
+		call TriggerAddAction( LoadTrig( "ByakuyaTrigW" ), function KuchikiByakuyaSpellQFunction3 )
 
 		call SaveTrig( "ByakuyaTrigE" )
 		call GetUnitEvent( LoadTrig( "ByakuyaTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "ByakuyaTrigE" ), Condition( function KuchikiByakuyaSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ByakuyaTrigE" ), function KuchikiByakuyaSpellEFunction4 )
+		call TriggerAddAction( LoadTrig( "ByakuyaTrigE" ), function KuchikiByakuyaSpellEFunction3 )
 
 		call SaveTrig( "ByakuyaTrigR" )
 		call GetUnitEvent( LoadTrig( "ByakuyaTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
