@@ -54,7 +54,7 @@
 				call AddEffect( "GeneralEffects\\t_huobao.mdl", 1.5, MUILocation( 103 ), MUIAngle( 102, 103 ), 90 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 100, 99999 )
 				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call StunUnit( MUIUnit( 101 ), 2 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 175 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
 				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 300, .4, .01, false, false, "origin", DashEff( ) )
 				call AoEDamage( HandleID, MUILocation( 103 ), 300, "AoE", "Physical", 175 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "", 0 )
@@ -361,6 +361,6 @@
 		call SaveTrig( "AkainuTrigT" )
 		call GetUnitEvent( LoadTrig( "AkainuTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
 		call TriggerAddCondition( LoadTrig( "AkainuTrigT" ), Condition( function AkainuSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigT" ), function AkainuSpellRFunction3 )
+		call TriggerAddAction( LoadTrig( "AkainuTrigT" ), function AkainuSpellTFunction3 )
 	endfunction	
 

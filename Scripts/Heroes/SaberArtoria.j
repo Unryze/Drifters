@@ -106,7 +106,7 @@
 			endif
 
 			if LocTime == 15 then
-				call SilenceUnit( MUIUnit( 100 ) )
+				call CCUnit( MUIUnit( 101 ), 1, "Silence" )
 				call PlaySoundWithVolume( LoadSound( "SaberArtoriaW2" ), 100, 0 )
 				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl" )
 
@@ -116,7 +116,7 @@
 				else
 					call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), -( MUIDistance( 102, 103 ) - 200 ), .25, .01, false, true, "origin", DashEff( ) )
 					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 150 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
-					call AoEDamage( HandleID, MUILocation( 103 ), 300, "AoE", "Physical", 150 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "", 0 )
+					call AoEDamage( HandleID, MUILocation( 103 ), 300, "AoE", "Physical", 150 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "Silence", 1 )
 				endif
 			endif
 
@@ -252,7 +252,7 @@
 				call ResetAbilityCooldown( MUIUnit( 100 ), 'A04R' )
 
 				if LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ) > 0 then
-					call StunUnit( MUIUnit( 101 ), 1 )
+					call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 					call AddEffect( "Effects\\SaberArtoria\\ExcaliburLinear.mdl", 1, MUILocation( 102 ), MUIAngle( 102, 103 ), 0 )
 					call ScaleUnit( LoadUnit( "DummyUnit" ), .5 )
 					call AoEDamage( HandleID, MUILocation( 103 ), 400, "AoE", "Physical", LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "Stun", 1 )
@@ -330,7 +330,6 @@
 				endif
 
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 107 ) ) )
-				// Add call SlowUnit( GetFilterUnit( ) )
 				call AoEDamage( HandleID, MUILocation( 107 ), 500, "AoE", "Physical", MUILevel( ) * 300 + MUIPower( ) + LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "Slow", 1 )
 				call RemoveLocation( MUILocation( 107 ) )
 

@@ -109,7 +109,7 @@
 				call PlaySoundWithVolume( LoadSound( "SaberNeroE1" ), 100, 0 )
 				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call StunUnit( MUIUnit( 101 ), 2 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), ( MUIDistance( 102, 103 ) - 150 ), .1, .015, false, true, "origin", DashEff( ) )
 				call PauseUnit( MUIUnit( 100 ), true )
 				call SetUnitTimeScale( MUIUnit( 100 ), 1.5 )
@@ -336,7 +336,7 @@
 					set i = i + 1.
 				endloop
 
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 180 + MUIPower( ) )
 				call ClearAllData( HandleID )
 			endif

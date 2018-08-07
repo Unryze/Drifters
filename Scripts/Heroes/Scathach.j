@@ -45,7 +45,7 @@
 				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
 				call PauseUnit( MUIUnit( 100 ), false )
 				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call AddEffect( "GeneralEffects\\OrbOfFire.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ), 0 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 150, 99999 )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 100 + MUILevel( ) * 50 + MUIPower( ) * 0.5 )
@@ -406,7 +406,7 @@
 			endif
 			
 			if LocTime == 25 then
-				call StunUnit( MUIUnit( 101 ), 2 )
+				call CCUnit( MUIUnit( 101 ), 2, "Stun" )
 				call MakeUnitAirborne( MUIUnit( 101 ), 500, 2000 )
 			endif
 			

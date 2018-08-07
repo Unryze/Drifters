@@ -200,7 +200,7 @@
 			if StopSpell( HandleID, 0 ) == false then
 				if LocTime == 50 then
 					call SetUnitAnimation( MUIUnit( 100 ), "spell throw six" )
-					call StunUnit( MUIUnit( 101 ), 2 )
+					call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) )
 					call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
@@ -319,7 +319,7 @@
 					set i = i + 1
 				endloop
 
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 4000 + MUILevel( ) * 300 + MUIPower( ) )
 				call RemoveLocation( MUILocation( 102 ) )
 				call RemoveLocation( MUILocation( 103 ) )
@@ -432,7 +432,7 @@
 			endif
 			
 			if LocTime == 160 then
-				call StunUnit( MUIUnit( 101 ), 2 )
+				call CCUnit( MUIUnit( 101 ), 2, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 6000 + MUILevel( ) * 400 + MUIPower( ) )
 			endif
 			

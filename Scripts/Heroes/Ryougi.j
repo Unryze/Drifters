@@ -90,7 +90,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellWFunction3 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellWFunction2 )
 		else
 			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 		endif
@@ -181,7 +181,7 @@
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 50, 0 )
 				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) * .50 )
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call AddMultipleEffects( 3, "Effects\\Nanaya\\ArcDrive1.mdl", 4, MUILocation( 103 ), 270, 0, 255, 255, 255, 255 )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
 				call ClearAllData( HandleID )
@@ -237,7 +237,7 @@
 					call FaceLocation( MUIUnit( 100 ), MUILocation( 109 ), 0 )
 					call AddMultipleEffects( 3, "Effects\\Toono\\LinearSlashBlue1.mdl", 1, MUILocation( 103 ), MUIAngle( 102, 103 ), 0, 255, 255, 255, 255 )
 					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1500 + MUILevel( ) * 150 + MUIPower( ) * 0.50 )
-					call StunUnit( MUIUnit( 101 ), .5 )
+					call CCUnit( MUIUnit( 101 ), .5, "Stun" )
 					call RemoveLocation( MUILocation( 109 ) )
 					call SaveBoolean( HashTable, HandleID, 10, true )
 				endif
@@ -275,7 +275,7 @@
 					call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 70, 0 )
 					call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-					call StunUnit( MUIUnit( 101 ), 1 )
+					call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1500 + MUILevel( ) * 150 + MUIPower( ) * 0.50 )
 					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
 					call AddEffect( "Effects\\Toono\\LinearSlashBlue1.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ) + 45, 0 )

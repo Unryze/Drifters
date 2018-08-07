@@ -94,7 +94,7 @@
 			endif
 
 			if LocTime == 50 then
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 245 + MUILevel( ) * 65 + MUIPower( ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\Spark_Pink.mdl", MUILocation( 102 ) ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\Deadspirit Asuna.mdl", MUILocation( 102 ) ) )
@@ -138,17 +138,18 @@
 				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
 			endif
 
-			if LocTime == 20 or LocTime == 40 or LocTime == 60 or LocTime == 80 or LocTime == 100 or LocTime == 120 or LocTime == 140 or LocTime == 160 or LocTime == 180 or LocTime == 200 then
-				call AoEDamage( HandleID, MUILocation( 103 ), 450, "AoE", "Physical", MUILevel( ) * 3 + MUIPower( ) * 0.05, true, "Slow", .25 )	
+			if LocTime == 5 or LocTime == 10 or LocTime == 15 or LocTime == 20 or LocTime == 25 or LocTime == 30 or LocTime == 35 or LocTime == 40 or LocTime == 45 or LocTime == 50 then
+				call AoEDamage( HandleID, MUILocation( 103 ), 450, "AoE", "Physical", MUILevel( ) * 3 + MUIPower( ) * 0.05, true, "Slow", .25 )
 			endif
 
-			if LocTime == 200 then
+			if LocTime == 100 then
 				call DestroyEffect( MUIEffect( 104 ) )
 				call KillUnit( MUIUnit( 101 ) )
 				call AddEffect( "Effects\\Byakuya\\SakuraExplosion.mdl", 1.5, MUILocation( 103 ), 0, 0 )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\Spark_Pink.mdl", MUILocation( 103 ) ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 103 ) ) )
 				call AoEDisplace( HandleID, 103, 300, .5, .01, 0, DashEff( ) )
+				call SaveBoolean( HashTable, HandleID, StringHash( "IsUpdated" ), false )
 				call AoEDamage( HandleID, MUILocation( 103 ), 450, "AoE", "Physical", MUILevel( ) * 40 + MUIPower( ) * 0.50, true, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
@@ -280,7 +281,7 @@
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
 				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 2., MUILocation( 103 ), MUIAngle( 102, 103 ), 45 )
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
-				call StunUnit( MUIUnit( 101 ), 2 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 400, .4, .01, false, false, "origin", DashEff( ) )
 				call RemoveLocation( MUILocation( 102 ) )
 				call RemoveLocation( MUILocation( 103 ) )
@@ -331,7 +332,7 @@
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
 				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2., MUILocation( 103 ), 0, 0 )
 				call UnitApplyTimedLife( LoadUnit( "DummyUnit" ), 'BTLF', .5 )
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 3000 + MUILevel( ) * 300 + MUIPower( ) )
 				call ClearAllData( HandleID )
 			endif

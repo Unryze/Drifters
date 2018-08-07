@@ -133,7 +133,7 @@
 				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
 				call LinearDisplacement( MUIUnit( 100 ), GetUnitFacing( MUIUnit( 100 ) ) - 180, 300, .25, .01, false, false, "origin", DashEff( ) )
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500 + MUILevel( ) * 75 + MUIPower( ) )
 				call AddEffect( "Effects\\Toono\\LinearSlashBlue1.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ) + 45, 0 )
 				call AddEffect( "Effects\\Toono\\LinearSlashBlue1.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ) - 45, 0 )
@@ -195,7 +195,7 @@
 				call AddMultipleEffects( 5, "GeneralEffects\\ValkDust.mdl", 2, MUILocation( 103 ), 0, 0, 255, 255, 255, 255 )
 				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 150, .2, .01, false, false, "origin", DashEff( ) )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 325 + MUILevel( ) * 32.5 + MUIPower( ) * 0.20 )
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call RemoveLocation( MUILocation( 102 ) )
 				call RemoveLocation( MUILocation( 103 ) )
 			endif
@@ -324,7 +324,7 @@
 					set i = i + 1
 				endloop
 
-				call StunUnit( MUIUnit( 101 ), 2 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 3000 + MUILevel( ) * 300 + MUIPower( ) )
 				call RemoveLocation( MUILocation( 102 ) )
 				call RemoveLocation( MUILocation( 103 ) )

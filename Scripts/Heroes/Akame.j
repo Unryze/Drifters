@@ -125,7 +125,7 @@
 				call AddEffect( "GeneralEffects\\FireSlashSlow\\FireSlashSlow.mdl", 4, MUILocation( 102 ), MUIAngle( 102, 103 ), 0 )
 				call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 153, 0, 0, 255 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 150, 99999 )
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 200 + MUILevel( ) * 100 + MUIPower( ) )
 				call SetUnitAnimation( MUIUnit( 100 ), "attack" )
 				call ClearAllData( HandleID )
@@ -300,7 +300,7 @@
 			endif
 			
 			if LocTime == 260 then
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 60, 0 )
 				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
@@ -337,7 +337,7 @@
 				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 150, .6, .01, false, false, "origin", DashEff( ) )
 				call PauseUnit( MUIUnit( 100 ), true )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell three" )
-				call StunUnit( MUIUnit( 101 ), 2 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call SaveEffectHandle( HashTable, HandleID, 108, AddSpecialEffectTarget( "Abilities\\Weapons\\PhoenixMissile\\Phoenix_Missile.mdl", MUIUnit( 100 ), "weapon" ) )
 				call RemoveLocation( MUILocation( 102 ) )
 				call RemoveLocation( MUILocation( 103 ) )
@@ -379,7 +379,7 @@
 			if LocTime == 205 then
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 60, 0 )
 				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodExplosion.mdl", MUILocation( 103 ) ) )
 				call ClearAllData( HandleID )

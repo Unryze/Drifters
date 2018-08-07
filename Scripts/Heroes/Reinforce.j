@@ -87,7 +87,7 @@
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodCircle.mdl", MUILocation( 102 ) ) )
 				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 102 ) ) )
 				call ForGroup( LoadGroupHandle( HashTable, HandleID, 111 ), function ReinforceSpellWDummyMovement )
-				call StunUnit( MUIUnit( 101 ), 1 )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
 				call ClearAllData( HandleID )
 			endif
