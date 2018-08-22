@@ -1,8 +1,4 @@
-	function SaberAlterSpellDFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03S'
-	endfunction
-
-	function SaberAlterSpellDFunction2 takes nothing returns nothing
+	function SaberAtlerSpellD takes nothing returns nothing
 		local real i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -34,19 +30,7 @@
 		endif
 	endfunction
 
-	function SaberAlterSpellDFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellDFunction2 )
-	endfunction
-
-	function SaberAlterSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03T'
-	endfunction
-
-	function SaberAlterSpellQFunction2 takes nothing returns nothing
+	function SaberAtlerSpellQ takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -78,25 +62,7 @@
 		endif
 	endfunction
 
-	function SaberAlterSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellQFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction
-
-	function SaberAlterSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03U'
-	endfunction
-
-	function SaberAlterSpellWFunction2 takes nothing returns nothing
+	function SaberAtlerSpellW takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -126,25 +92,7 @@
 		endif
 	endfunction
 
-	function SaberAlterSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellWFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction
-
-	function SaberAlterSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03V'
-	endfunction
-
-	function SaberAlterSpellEFunction2 takes nothing returns nothing
+	function SaberAtlerSpellE takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -185,20 +133,7 @@
 		endif
 	endfunction
 
-	function SaberAlterSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellEFunction2 )
-	endfunction
-
-	function SaberAlterSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03W'
-	endfunction
-
-	function SaberAlterSpellRFunction2 takes nothing returns nothing
+	function SaberAtlerSpellR takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -262,19 +197,7 @@
 		endif
 	endfunction
 
-	function SaberAlterSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellRFunction2 )
-	endfunction
-
-	function SaberAlterSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03X'
-	endfunction
-
-	function SaberAlterSpellTFunction2 takes nothing returns nothing
+	function SaberAtlerSpellT takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -323,15 +246,61 @@
 			endif
 		endif
 	endfunction
-
-	function SaberAlterSpellTFunction3 takes nothing returns nothing
+	
+	function SaberAtlerSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
 
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellTFunction2 )
-	endfunction
+		if GetSpellAbilityId( ) == 'A03S' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAtlerSpellD )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A03T' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAtlerSpellQ )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A03U' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAtlerSpellW )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+		
+		if GetSpellAbilityId( ) == 'A03V' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAtlerSpellE )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A03W' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAtlerSpellR )
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A03X' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAtlerSpellT )
+		endif		
+
+		return false
+	endfunction	
 
 	function HeroInit4 takes nothing returns nothing
 		call SaveSound( "SaberAlterD1", "SaberAlter\\SpellD1.mp3" )
@@ -348,34 +317,8 @@
 		call SaveSound( "SaberAlterT2", "SaberAlter\\SpellT2.mp3" )
 		call SaveSound( "SaberAlterT3", "SaberAlter\\SpellT3.mp3" )
 
-		call SaveTrig( "SaberAlterTrigD" )
-		call GetUnitEvent( LoadTrig( "SaberAlterTrigD" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberAlterTrigD" ), Condition( function SaberAlterSpellDFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberAlterTrigD" ), function SaberAlterSpellDFunction3 )
-
-		call SaveTrig( "SaberAlterTrigQ" )
-		call GetUnitEvent( LoadTrig( "SaberAlterTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberAlterTrigQ" ), Condition( function SaberAlterSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberAlterTrigQ" ), function SaberAlterSpellQFunction3 )
-
-		call SaveTrig( "SaberAlterTrigW" )
-		call GetUnitEvent( LoadTrig( "SaberAlterTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberAlterTrigW" ), Condition( function SaberAlterSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberAlterTrigW" ), function SaberAlterSpellWFunction3 )
-
-		call SaveTrig( "SaberAlterTrigE" )
-		call GetUnitEvent( LoadTrig( "SaberAlterTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberAlterTrigE" ), Condition( function SaberAlterSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberAlterTrigE" ), function SaberAlterSpellEFunction3 )
-
-		call SaveTrig( "SaberAlterTrigR" )
-		call GetUnitEvent( LoadTrig( "SaberAlterTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberAlterTrigR" ), Condition( function SaberAlterSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberAlterTrigR" ), function SaberAlterSpellRFunction3 )
-
-		call SaveTrig( "SaberAlterTrigT" )
-		call GetUnitEvent( LoadTrig( "SaberAlterTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberAlterTrigT" ), Condition( function SaberAlterSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberAlterTrigT" ), function SaberAlterSpellTFunction3 )
+		call SaveTrig( "SaberAtlerSpells" )
+		call GetUnitEvent( LoadTrig( "SaberAtlerSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "SaberAtlerSpells" ), Condition( function SaberAtlerSpells ) )
 	endfunction	
 

@@ -1,16 +1,4 @@
-	function ToonoShikiSpellDFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02X'
-	endfunction
-
-	function ToonoShikiSpellDFunction6 takes nothing returns nothing
-		call PlaySoundWithVolume( LoadSound( "ToonoD1" ), 100, 0 )
-	endfunction
-
-	function ToonoShikiSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02U'
-	endfunction
-
-	function ToonoShikiSpellQFunction2 takes nothing returns nothing
+	function ToonoShikiSpellQ takes nothing returns nothing
 		local integer LocTime = MUIInteger( 0 )
 
 		if StopSpell( MUIHandle( ), 0 ) == false then
@@ -36,25 +24,7 @@
 		endif
 	endfunction
 
-	function ToonoShikiSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellQFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction 
-
-	function ToonoShikiSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02V'
-	endfunction
-
-	function ToonoShikiSpellWFunction2 takes nothing returns nothing
+	function ToonoShikiSpellW takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 
 		if StopSpell( HandleID, 0 ) == false then
@@ -82,24 +52,7 @@
 		endif
 	endfunction
 
-	function ToonoShikiSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .025, true, function ToonoShikiSpellWFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction 
-
-	function ToonoShikiSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02W'
-	endfunction
-
-	function ToonoShikiSpellEFunction2 takes nothing returns nothing
+	function ToonoShikiSpellE takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -147,20 +100,7 @@
 		endif
 	endfunction
 
-	function ToonoShikiSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellEFunction2 )
-	endfunction
-
-	function ToonoShikiSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02Y'
-	endfunction	
-
-	function ToonoShikiSpellRFunction2 takes nothing returns nothing
+	function ToonoShikiSpellR takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -269,20 +209,7 @@
 		endif
 	endfunction
 
-	function ToonoShikiSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellRFunction2 )
-	endfunction 
-
-	function ToonoShikiSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02Z'
-	endfunction
-
-	function ToonoShikiSpellTFunction2 takes nothing returns nothing
+	function ToonoShikiSpellT takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -338,14 +265,58 @@
 		endif
 	endfunction
 
-	function ToonoShikiSpellTFunction3 takes nothing returns nothing
+	function ToonoShikiSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
+		
+		if GetSpellAbilityId( ) == 'A02X' then
+			call PlaySoundWithVolume( LoadSound( "ToonoD1" ), 100, 0 )
+		endif
 
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellTFunction2 )
-	endfunction
+		if GetSpellAbilityId( ) == 'A02U' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellQ )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+		
+		if GetSpellAbilityId( ) == 'A02V' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .025, true, function ToonoShikiSpellW )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+
+		if GetSpellAbilityId( ) == 'A02W' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellE )
+		endif
+
+		if GetSpellAbilityId( ) == 'A02Y' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellR )
+		endif
+
+		if GetSpellAbilityId( ) == 'A02Z' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellT )
+		endif
+
+		return false
+	endfunction	
 
 	function HeroInit2 takes nothing returns nothing
 		call SaveSound( "ToonoD1", "Toono\\SpellD1.mp3" )
@@ -358,34 +329,8 @@
 		call SaveSound( "ToonoT1", "Toono\\SpellT1.mp3" )
 		call SaveSound( "ToonoT2", "Toono\\SpellT2.mp3" )
 		
-		call SaveTrig( "ToonoTrigD" )
-		call GetUnitEvent( LoadTrig( "ToonoTrigD" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ToonoTrigD" ), Condition( function ToonoShikiSpellDFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigD" ), function ToonoShikiSpellDFunction6 )
-		
-		call SaveTrig( "ToonoTrigQ" )
-		call GetUnitEvent( LoadTrig( "ToonoTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ToonoTrigQ" ), Condition( function ToonoShikiSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigQ" ), function ToonoShikiSpellQFunction3 )
-		
-		call SaveTrig( "ToonoTrigW" )
-		call GetUnitEvent( LoadTrig( "ToonoTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ToonoTrigW" ), Condition( function ToonoShikiSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigW" ), function ToonoShikiSpellWFunction3 )
-
-		call SaveTrig( "ToonoTrigE" )	
-		call GetUnitEvent( LoadTrig( "ToonoTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ToonoTrigE" ), Condition( function ToonoShikiSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigE" ), function ToonoShikiSpellEFunction3 )
-
-		call SaveTrig( "ToonoTrigR" )
-		call GetUnitEvent( LoadTrig( "ToonoTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ToonoTrigR" ), Condition( function ToonoShikiSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigR" ), function ToonoShikiSpellRFunction3 )
-
-		call SaveTrig( "ToonoTrigT" )	
-		call GetUnitEvent( LoadTrig( "ToonoTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ToonoTrigT" ), Condition( function ToonoShikiSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ToonoTrigT" ), function ToonoShikiSpellTFunction3 )
+		call SaveTrig( "ToonoShikiSpells" )
+		call GetUnitEvent( LoadTrig( "ToonoShikiSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "ToonoShikiSpells" ), Condition( function ToonoShikiSpells ) )
 	endfunction	
 

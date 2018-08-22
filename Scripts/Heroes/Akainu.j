@@ -1,8 +1,4 @@
-	function AkainuSpellDFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A049'
-	endfunction
-
-	function AkainuSpellDFunction2 takes nothing returns nothing
+	function AkainuSpellD takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 
 		if GetUnitAbilityLevel( MUIUnit( 100 ), 'B04H' ) > 0 then
@@ -14,21 +10,7 @@
 		endif
 	endfunction
 
-	function AkainuSpellDFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call PlaySoundWithVolume( LoadSound( "AkainuD1" ), 100, 0 )
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveEffectHandle( HashTable, HandleID, 108, AddSpecialEffectTarget( "GeneralEffects\\lavaspray.mdl", GetTriggerUnit( ), "head" ) )
-		call TimerStart( LoadMUITimer( LocPID ), .5, true, function AkainuSpellDFunction2 )
-	endfunction
-
-	function AkainuSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04A'
-	endfunction
-
-	function AkainuSpellQFunction2 takes nothing returns nothing
+	function AkainuSpellQ takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -67,20 +49,7 @@
 		endif
 	endfunction
 
-	function AkainuSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellQFunction2 )
-	endfunction
-
-	function AkainuSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04C'
-	endfunction
-
-	function AkainuSpellWFunction2 takes nothing returns nothing
+	function AkainuSpellW takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -108,25 +77,7 @@
 		endif
 	endfunction
 
-	function AkainuSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellWFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction
-
-	function AkainuSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04B'
-	endfunction
-
-	function AkainuSpellEFunction2 takes nothing returns nothing
+	function AkainuSpellE takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -191,20 +142,7 @@
 		endif
 	endfunction
 
-	function AkainuSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellEFunction2 )
-	endfunction
-
-	function AkainuSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04D'
-	endfunction
-
-	function AkainuSpellRFunction2 takes nothing returns nothing
+	function AkainuSpellR takes nothing returns nothing
 		local integer i	= 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -253,20 +191,7 @@
 		endif
 	endfunction
 
-	function AkainuSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellRFunction2 )
-	endfunction
-
-	function AkainuSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04E'
-	endfunction
-
-	function AkainuSpellTFunction2 takes nothing returns nothing
+	function AkainuSpellT takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )	
 		local integer LocTime   = MUIInteger( 0 )
 		local integer LocCount  = LoadInteger( HashTable, HandleID, 1 )
@@ -314,15 +239,60 @@
 			endif
 		endif
 	endfunction
-
-	function AkainuSpellTFunction3 takes nothing returns nothing
+	
+	function AkainuSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
 
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .05, true, function AkainuSpellTFunction2 )
-	endfunction
+		if GetSpellAbilityId( ) == 'A049' then
+			set HandleID = NewMUITimer( LocPID )
+			call PlaySoundWithVolume( LoadSound( "AkainuD1" ), 100, 0 )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveEffectHandle( HashTable, HandleID, 108, AddSpecialEffectTarget( "GeneralEffects\\lavaspray.mdl", GetTriggerUnit( ), "head" ) )
+			call TimerStart( LoadMUITimer( LocPID ), .5, true, function AkainuSpellD )
+		endif
+
+		if GetSpellAbilityId( ) == 'A04A' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellQ )
+		endif
+
+		if GetSpellAbilityId( ) == 'A04C' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellW )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+		
+		if GetSpellAbilityId( ) == 'A04B' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellE )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A04D' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellR )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A04E' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .05, true, function AkainuSpellT )
+		endif
+
+		return false
+	endfunction	
 
 	function HeroInit9 takes nothing returns nothing
 		call SaveSound( "AkainuD1", "Akainu\\SpellD1.mp3" )
@@ -333,34 +303,8 @@
 		call SaveSound( "AkainuR2", "Akainu\\SpellR2.mp3" )
 		call SaveSound( "AkainuT1", "Akainu\\SpellT1.mp3" )
 
-		call SaveTrig( "AkainuTrigD" )
-		call GetUnitEvent( LoadTrig( "AkainuTrigD" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkainuTrigD" ), Condition( function AkainuSpellDFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigD" ), function AkainuSpellDFunction3 )
-
-		call SaveTrig( "AkainuTrigQ" )
-		call GetUnitEvent( LoadTrig( "AkainuTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkainuTrigQ" ), Condition( function AkainuSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigQ" ), function AkainuSpellQFunction3 )
-
-		call SaveTrig( "AkainuTrigW" )
-		call GetUnitEvent( LoadTrig( "AkainuTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkainuTrigW" ), Condition( function AkainuSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigW" ), function AkainuSpellWFunction3 )	
-
-		call SaveTrig( "AkainuTrigE" )
-		call GetUnitEvent( LoadTrig( "AkainuTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkainuTrigE" ), Condition( function AkainuSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigE" ), function AkainuSpellEFunction3 )
-
-		call SaveTrig( "AkainuTrigR" )
-		call GetUnitEvent( LoadTrig( "AkainuTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkainuTrigR" ), Condition( function AkainuSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigR" ), function AkainuSpellRFunction3 )
-
-		call SaveTrig( "AkainuTrigT" )
-		call GetUnitEvent( LoadTrig( "AkainuTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkainuTrigT" ), Condition( function AkainuSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkainuTrigT" ), function AkainuSpellTFunction3 )
+		call SaveTrig( "AkainuSpells" )
+		call GetUnitEvent( LoadTrig( "AkainuSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "AkainuSpells" ), Condition( function AkainuSpells ) )
 	endfunction	
 

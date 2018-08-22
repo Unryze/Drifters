@@ -1,11 +1,7 @@
-	function KuchikiByakuyaSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03E'
-	endfunction
-
-	function KuchikiByakuyaSpellQFunction2 takes nothing returns nothing
+	function KuchikiByakuyaSpellQ takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
-		local real LocDistance	= LoadReal( HashTable, HandleID, 30 )
+		local integer LocTime   = MUIInteger( 0 )
+		local real LocDistance  = LoadReal( HashTable, HandleID, 30 )
 		local real LocFacing	= LoadReal( HashTable, HandleID, 31 )
 
 		if StopSpell( HandleID, 0 ) == false then
@@ -55,20 +51,7 @@
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellQFunction2 )
-	endfunction
-
-	function KuchikiByakuyaSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03D'
-	endfunction
-
-	function KuchikiByakuyaSpellWFunction2 takes nothing returns nothing
+	function KuchikiByakuyaSpellW takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -106,20 +89,7 @@
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellWFunction2 )
-	endfunction
-
-	function KuchikiByakuyaSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03G'
-	endfunction
-
-	function KuchikiByakuyaSpellEFunction2 takes nothing returns nothing
+	function KuchikiByakuyaSpellE takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -156,20 +126,7 @@
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellEFunction2 )
-	endfunction
-
-	function KuchikiByakuyaSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03H'
-	endfunction
-
-	function KuchikiByakuyaSpellRFunction2 takes nothing returns nothing
+	function KuchikiByakuyaSpellR takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -246,20 +203,7 @@
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellRFunction2 )
-	endfunction
-
-	function KuchikiByakuyaSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03I'
-	endfunction
-
-	function KuchikiByakuyaSpellTFunction2 takes nothing returns nothing
+	function KuchikiByakuyaSpellT takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -339,14 +283,47 @@
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellTFunction3 takes nothing returns nothing
+	function ByakuyaSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
 
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellTFunction2 )
-	endfunction
+		if GetSpellAbilityId( ) == 'A03E' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellQ )
+		endif
+
+		if GetSpellAbilityId( ) == 'A03D' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellW )
+		endif
+
+		if GetSpellAbilityId( ) == 'A03G' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellE )
+		endif	
+	
+		if GetSpellAbilityId( ) == 'A03H' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellR )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A03I' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellT )
+		endif
+
+		return false
+	endfunction		
 
 	function HeroInit6 takes nothing returns nothing
 		call SaveSound( "ByakuyaQ1", "Byakuya\\SpellQ1.mp3" )
@@ -359,29 +336,8 @@
 		call SaveSound( "ByakuyaT2", "Byakuya\\SpellT2.mp3" )
 		call SaveSound( "ByakuyaT3", "Byakuya\\SpellT3.mp3" )
 
-		call SaveTrig( "ByakuyaTrigQ" )
-		call GetUnitEvent( LoadTrig( "ByakuyaTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ByakuyaTrigQ" ), Condition( function KuchikiByakuyaSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ByakuyaTrigQ" ), function KuchikiByakuyaSpellWFunction3 )
-
-		call SaveTrig( "ByakuyaTrigW" )
-		call GetUnitEvent( LoadTrig( "ByakuyaTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ByakuyaTrigW" ), Condition( function KuchikiByakuyaSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ByakuyaTrigW" ), function KuchikiByakuyaSpellQFunction3 )
-
-		call SaveTrig( "ByakuyaTrigE" )
-		call GetUnitEvent( LoadTrig( "ByakuyaTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ByakuyaTrigE" ), Condition( function KuchikiByakuyaSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ByakuyaTrigE" ), function KuchikiByakuyaSpellEFunction3 )
-
-		call SaveTrig( "ByakuyaTrigR" )
-		call GetUnitEvent( LoadTrig( "ByakuyaTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ByakuyaTrigR" ), Condition( function KuchikiByakuyaSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ByakuyaTrigR" ), function KuchikiByakuyaSpellRFunction3 )
-
-		call SaveTrig( "ByakuyaTrigT" )
-		call GetUnitEvent( LoadTrig( "ByakuyaTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ByakuyaTrigT" ), Condition( function KuchikiByakuyaSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ByakuyaTrigT" ), function KuchikiByakuyaSpellTFunction3 )
+		call SaveTrig( "ByakuyaSpells" )
+		call GetUnitEvent( LoadTrig( "ByakuyaSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "ByakuyaSpells" ), Condition( function ByakuyaSpells ) )
 	endfunction	
 

@@ -1,16 +1,4 @@
-	function RyougiShikiSpellDFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A035'
-	endfunction
-
-	function RyougiShikiSpellDFunction2 takes nothing returns nothing
-		call PlaySoundWithVolume( LoadSound( "RyougiD1" ), 60, 0 )
-	endfunction
-
-	function RyougiShikiSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A033'
-	endfunction
-
-	function RyougiShikiSpellQFunction2 takes nothing returns nothing
+	function RyougiSpellQ takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -38,19 +26,7 @@
 		endif
 	endfunction
 
-	function RyougiShikiSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellQFunction2 )
-	endfunction
-
-	function RyougiShikiSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A032'
-	endfunction
-
-	function RyougiShikiSpellWFunction2 takes nothing returns nothing
+	function RyougiSpellW takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -82,25 +58,7 @@
 		endif
 	endfunction
 
-	function RyougiShikiSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellWFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction
-
-	function RyougiShikiSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A034'
-	endfunction
-
-	function RyougiShikiSpellEFunction2 takes nothing returns nothing
+	function RyougiSpellE takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -127,25 +85,7 @@
 		endif
 	endfunction
 
-	function RyougiShikiSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellEFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction
-
-	function RyougiShikiSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A036'
-	endfunction
-
-	function RyougiShikiSpellRFunction2 takes nothing returns nothing
+	function RyougiSpellR takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -189,20 +129,7 @@
 		endif
 	endfunction	
 
-	function RyougiShikiSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellRFunction2 )
-	endfunction	
-
-	function RyougiShikiSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A037'
-	endfunction
-
-	function RyougiShikiSpellTFunction2 takes nothing returns nothing
+	function RyougiSpellT takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 		local integer LocCount  = LoadInteger( HashTable, HandleID, 1 )
@@ -291,14 +218,58 @@
 		endif
 	endfunction
 
-	function RyougiShikiSpellTFunction3 takes nothing returns nothing
+	function RyougiSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
+		
+		if GetSpellAbilityId( ) == 'A035' then
+			call PlaySoundWithVolume( LoadSound( "RyougiD1" ), 60, 0 )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A033' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellQ )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A032' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellW )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
 
-		call SaveBoolean( HashTable, HandleID, 10, false )
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiShikiSpellTFunction2 )
+		if GetSpellAbilityId( ) == 'A034' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellE )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+		
+		if GetSpellAbilityId( ) == 'A036' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellR )
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A037' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveBoolean( HashTable, HandleID, 10, false )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellT )
+		endif
+
+		return false
 	endfunction	
 
 	function HeroInit3 takes nothing returns nothing
@@ -310,34 +281,8 @@
 		call SaveSound( "RyougiR2", "Ryougi\\SpellR2.mp3" )
 		call SaveSound( "RyougiT1", "Ryougi\\SpellT1.mp3" )
 
-		call SaveTrig( "RyougiTrigD" )
-		call GetUnitEvent( LoadTrig( "RyougiTrigD" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "RyougiTrigD" ), Condition( function RyougiShikiSpellDFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigD" ), function RyougiShikiSpellDFunction2 )
-
-		call SaveTrig( "RyougiTrigQ" )
-		call GetUnitEvent( LoadTrig( "RyougiTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "RyougiTrigQ" ), Condition( function RyougiShikiSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigQ" ), function RyougiShikiSpellQFunction3 )
-
-		call SaveTrig( "RyougiTrigW" )
-		call GetUnitEvent( LoadTrig( "RyougiTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "RyougiTrigW" ), Condition( function RyougiShikiSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigW" ), function RyougiShikiSpellWFunction3 )
-
-		call SaveTrig( "RyougiTrigE" )
-		call GetUnitEvent( LoadTrig( "RyougiTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "RyougiTrigE" ), Condition( function RyougiShikiSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigE" ), function RyougiShikiSpellEFunction3 )
-
-		call SaveTrig( "RyougiTrigR" )
-		call GetUnitEvent( LoadTrig( "RyougiTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "RyougiTrigR" ), Condition( function RyougiShikiSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigR" ), function RyougiShikiSpellRFunction3 )
-
-		call SaveTrig( "RyougiTrigT" )
-		call GetUnitEvent( LoadTrig( "RyougiTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "RyougiTrigT" ), Condition( function RyougiShikiSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "RyougiTrigT" ), function RyougiShikiSpellTFunction3 )
+		call SaveTrig( "RyougiSpells" )
+		call GetUnitEvent( LoadTrig( "RyougiSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "RyougiSpells" ), Condition( function RyougiSpells ) )
 	endfunction	
 

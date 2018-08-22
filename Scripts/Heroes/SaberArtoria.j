@@ -1,8 +1,4 @@
-	function SaberArtoriaSpellDFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04R'
-	endfunction	
-
-	function SaberArtoriaSpellDFunction2 takes nothing returns nothing
+	function SaberArtoriaSpellD takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -32,19 +28,7 @@
 		endif
 	endfunction
 
-	function SaberArtoriaSpellDFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellDFunction2 )
-	endfunction
-
-	function SaberArtoriaSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02D'
-	endfunction	
-
-	function SaberArtoriaSpellQFunction2 takes nothing returns nothing
+	function SaberArtoriaSpellQ takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -78,19 +62,7 @@
 		endif
 	endfunction
 
-	function SaberArtoriaSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellQFunction2 )
-	endfunction	
-
-	function SaberArtoriaSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02E'
-	endfunction	
-
-	function SaberArtoriaSpellWFunction2 takes nothing returns nothing
+	function SaberArtoriaSpellW takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -127,20 +99,7 @@
 		endif
 	endfunction
 
-	function SaberArtoriaSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellWFunction2 )
-	endfunction	
-
-	function SaberArtoriaSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02G'
-	endfunction
-
-	function SaberArtoriaSpellEFunction2 takes nothing returns nothing
+	function SaberArtoriaSpellE takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -197,20 +156,7 @@
 		endif
 	endfunction
 
-	function SaberArtoriaSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellEFunction2 )
-	endfunction	
-
-	function SaberArtoriaSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02K'
-	endfunction
-
-	function SaberArtoriaSpellRFunction2 takes nothing returns nothing
+	function SaberArtoriaSpellR takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -270,20 +216,7 @@
 		endif
 	endfunction
 
-	function SaberArtoriaSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellRFunction2 )
-	endfunction	
-
-	function SaberArtoriaSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02L'
-	endfunction
-
-	function SaberArtoriaSpellTFunction2 takes nothing returns nothing
+	function SaberArtoriaSpellT takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -340,15 +273,53 @@
 			endif
 		endif
 	endfunction	
-
-	function SaberArtoriaSpellTFunction3 takes nothing returns nothing
+	
+	function SaberArtoriaSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
+		
+		if GetSpellAbilityId( ) == 'A04R' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellD )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A02D' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellQ )
+		endif
 
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellTFunction2 )
-	endfunction	
+		if GetSpellAbilityId( ) == 'A02E' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellW )
+		endif
+
+		if GetSpellAbilityId( ) == 'A02G' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellE )
+		endif
+
+		if GetSpellAbilityId( ) == 'A02K' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellR )
+		endif
+
+		if GetSpellAbilityId( ) == 'A02L' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellT )
+		endif
+
+		return false
+	endfunction		
 
 	function HeroInit12 takes nothing returns nothing
 		call SaveSound( "SaberArtoriaD1", "SaberArtoria\\SpellD1.mp3" )
@@ -364,34 +335,8 @@
 		call SaveSound( "SaberArtoriaT1", "SaberArtoria\\SpellT1.mp3" )
 		call SaveSound( "SaberArtoriaT2", "SaberArtoria\\SpellT2.mp3" )
 
-		call SaveTrig( "SaberArtoriaTrigD" )
-		call GetUnitEvent( LoadTrig( "SaberArtoriaTrigD" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberArtoriaTrigD" ), Condition( function SaberArtoriaSpellDFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberArtoriaTrigD" ), function SaberArtoriaSpellDFunction3 )
-
-		call SaveTrig( "SaberArtoriaTrigQ" )
-		call GetUnitEvent( LoadTrig( "SaberArtoriaTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberArtoriaTrigQ" ), Condition( function SaberArtoriaSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberArtoriaTrigQ" ), function SaberArtoriaSpellQFunction3 )
-
-		call SaveTrig( "SaberArtoriaTrigW" )
-		call GetUnitEvent( LoadTrig( "SaberArtoriaTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberArtoriaTrigW" ), Condition( function SaberArtoriaSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberArtoriaTrigW" ), function SaberArtoriaSpellWFunction3 )
-
-		call SaveTrig( "SaberArtoriaTrigE" )
-		call GetUnitEvent( LoadTrig( "SaberArtoriaTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberArtoriaTrigE" ), Condition( function SaberArtoriaSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberArtoriaTrigE" ), function SaberArtoriaSpellEFunction3 )
-
-		call SaveTrig( "SaberArtoriaTrigR" )
-		call GetUnitEvent( LoadTrig( "SaberArtoriaTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberArtoriaTrigR" ), Condition( function SaberArtoriaSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberArtoriaTrigR" ), function SaberArtoriaSpellRFunction3 )
-
-		call SaveTrig( "SaberArtoriaTrigT" )
-		call GetUnitEvent( LoadTrig( "SaberArtoriaTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberArtoriaTrigT" ), Condition( function SaberArtoriaSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberArtoriaTrigT" ), function SaberArtoriaSpellTFunction3 )
+		call SaveTrig( "SaberArtoriaSpells" )
+		call GetUnitEvent( LoadTrig( "SaberArtoriaSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "SaberArtoriaSpells" ), Condition( function SaberArtoriaSpells ) )
 	endfunction	
 

@@ -1,16 +1,6 @@
-	function NanayaShikiSpellDFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02P'
-	endfunction
 
-	function NanayaShikiSpellDFunction2 takes nothing returns nothing
-		call PlaySoundWithVolume( LoadSound( "NanayaD1" ), 90, 0 )
-	endfunction
 
-	function NanayaShikiSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02M'
-	endfunction
-
-	function NanayaShikiSpellQFunction2 takes nothing returns nothing
+	function NanayaSpellQ takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -42,25 +32,7 @@
 		endif
 	endfunction
 
-	function NanayaShikiSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-		
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaShikiSpellQFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction 
-
-	function NanayaShikiSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02N'
-	endfunction
-
-	function NanayaShikiSpellWFunction2 takes nothing returns nothing
+	function NanayaSpellW takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 
 		if StopSpell( HandleID, 0 ) == false then
@@ -93,25 +65,7 @@
 		endif
 	endfunction
 
-	function NanayaShikiSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .025, true, function NanayaShikiSpellWFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-			call DestroyTimer( LoadMUITimer( LocPID ) )
-		endif
-	endfunction
-
-	function NanayaShikiSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02O'
-	endfunction
-
-	function NanayaShikiSpellEFunction2 takes nothing returns nothing
+	function NanayaSpellE takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -218,20 +172,7 @@
 		endif
 	endfunction
 
-	function NanayaShikiSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaShikiSpellEFunction2 )
-	endfunction 
-
-	function NanayaShikiSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02Q'
-	endfunction
-
-	function NanayaShikiSpellRFunction2 takes nothing returns nothing
+	function NanayaSpellR takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -332,20 +273,7 @@
 		endif
 	endfunction
 
-	function NanayaShikiSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaShikiSpellRFunction2 )
-	endfunction
-
-	function NanayaShikiSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02R'
-	endfunction
-
-	function NanayaShikiSpellTFunction2 takes nothing returns nothing
+	function NanayaSpellT takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 		local boolean IsCounted = LoadBoolean( HashTable, HandleID, 10 )
@@ -441,16 +369,61 @@
 			endif
 		endif
 	endfunction
-
-	function NanayaShikiSpellTFunction3 takes nothing returns nothing
+	
+	function NanayaSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
+		
+		if GetSpellAbilityId( ) == 'A02P' then
+			call PlaySoundWithVolume( LoadSound( "NanayaD1" ), 90, 0 )
+		endif
 
-		call SaveBoolean( HashTable, HandleID, 10, true )
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaShikiSpellTFunction2 )
-	endfunction
+		if GetSpellAbilityId( ) == 'A02M' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaSpellQ )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+
+		if GetSpellAbilityId( ) == 'A02N' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .025, true, function NanayaSpellW )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+				call DestroyTimer( LoadMUITimer( LocPID ) )
+			endif
+		endif
+
+		if GetSpellAbilityId( ) == 'A02O' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaSpellE )
+		endif
+
+		if GetSpellAbilityId( ) == 'A02Q' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaSpellR )
+		endif
+
+		if GetSpellAbilityId( ) == 'A02R' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveBoolean( HashTable, HandleID, 10, true )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaSpellT )
+		endif
+
+		return false
+	endfunction	
 
 	function HeroInit1 takes nothing returns nothing
 		call SaveSound( "NanayaD1", "Nanaya\\SpellD1.mp3" )
@@ -464,34 +437,8 @@
 		call SaveSound( "NanayaT2", "Nanaya\\SpellT2.mp3" )
 		call SaveSound( "NanayaT3", "Nanaya\\SpellT3.mp3" )
 
-		call SaveTrig( "NanayaTrigD" )
-		call GetUnitEvent( LoadTrig( "NanayaTrigD" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "NanayaTrigD" ), Condition( function NanayaShikiSpellDFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigD" ), function NanayaShikiSpellDFunction2 )		
-
-		call SaveTrig( "NanayaTrigQ" )
-		call GetUnitEvent( LoadTrig( "NanayaTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "NanayaTrigQ" ), Condition( function NanayaShikiSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigQ" ), function NanayaShikiSpellQFunction3 )
-
-		call SaveTrig( "NanayaTrigW" )
-		call GetUnitEvent( LoadTrig( "NanayaTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "NanayaTrigW" ), Condition( function NanayaShikiSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigW" ), function NanayaShikiSpellWFunction3 )
-
-		call SaveTrig( "NanayaTrigE" )
-		call GetUnitEvent( LoadTrig( "NanayaTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "NanayaTrigE" ), Condition( function NanayaShikiSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigE" ), function NanayaShikiSpellEFunction3 )
-
-		call SaveTrig( "NanayaTrigR" )
-		call GetUnitEvent( LoadTrig( "NanayaTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "NanayaTrigR" ), Condition( function NanayaShikiSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigR" ), function NanayaShikiSpellRFunction3 )
-
-		call SaveTrig( "NanayaTrigT" )
-		call GetUnitEvent( LoadTrig( "NanayaTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "NanayaTrigT" ), Condition( function NanayaShikiSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "NanayaTrigT" ), function NanayaShikiSpellTFunction3 )
+		call SaveTrig( "NanayaSpells" )
+		call GetUnitEvent( LoadTrig( "NanayaSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "NanayaSpells" ), Condition( function NanayaSpells ) )
 	endfunction	
 

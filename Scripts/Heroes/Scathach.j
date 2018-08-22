@@ -4,10 +4,6 @@
 		call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A03Z', false )
 	endfunction
 
-	function ScathachSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A040'
-	endfunction
-
 	function ScathachSpellQFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime 	= MUIInteger( 0 )
@@ -60,19 +56,6 @@
 		endif
 	endfunction
 
-	function ScathachSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQFunction2 )
-	endfunction
-
-	function ScathachSpellQSecondFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03Y'
-	endfunction
-
 	function ScathachSpellQSecondFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -118,19 +101,6 @@
 		endif
 	endfunction
 
-	function ScathachSpellQSecondFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQSecondFunction2 )
-	endfunction
-
-	function ScathachSpellQThirdFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03Z'
-	endfunction
-
 	function ScathachSpellQThirdFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )	
 		local integer LocTime   = MUIInteger( 0 )
@@ -167,19 +137,6 @@
 		endif
 	endfunction
 
-	function ScathachSpellQThirdFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQThirdFunction2 )
-	endfunction
-
-	function ScathachSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A041'
-	endfunction
-
 	function ScathachSpellWFunction2 takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -209,27 +166,9 @@
 		endif
 	endfunction
 
-	function ScathachSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellWFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction
-
 	function ScathachSpellEFunctionRemoveUnits takes nothing returns nothing
 		call KillUnit( GetEnumUnit( ) )
 	endfunction	
-
-	function ScathachSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A042'
-	endfunction
 
 	function ScathachSpellEFunctionDisplaceDummy takes nothing returns nothing
 		call SaveLocationHandle( HashTable, MUIHandle( ), 123, GetUnitLoc( GetEnumUnit( ) ) )
@@ -356,21 +295,6 @@
 		endif
 	endfunction
 
-	function ScathachSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveBoolean( HashTable, HandleID, 10, false )
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellEFunction2 )
-	endfunction
-
-	function ScathachSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A043'
-	endfunction
-
 	function ScathachSpellRFunction2 takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -430,19 +354,6 @@
 				call ClearAllData( HandleID )
 			endif
 		endif
-	endfunction
-
-	function ScathachSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellRFunction2 )
-	endfunction
-
-	function ScathachSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A044'
 	endfunction
 
 	function ScathachSpellTFunction2 takes nothing returns nothing
@@ -514,13 +425,66 @@
 		endif
 	endfunction
 
-	function ScathachSpellTFunction3 takes nothing returns nothing
+	function ScathachSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
 
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellTFunction2 )
+		if GetSpellAbilityId( ) == 'A040' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQFunction2 )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A03Y' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQSecondFunction2 )
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A03Z' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQThirdFunction2 )
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A041' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellWFunction2 )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A042' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveBoolean( HashTable, HandleID, 10, false )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellEFunction2 )
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A043' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellRFunction2 )
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A044' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellTFunction2 )
+		endif		
+		
+		return false
 	endfunction
 
 	function HeroInit8 takes nothing returns nothing
@@ -533,39 +497,8 @@
 		call SaveSound( "ScathachR2", "Scathach\\SpellR2.mp3" )
 		call SaveSound( "ScathachT1", "Scathach\\SpellT1.mp3" )
 
-		call SaveTrig( "ScathachTrigQ1" )
-		call GetUnitEvent( LoadTrig( "ScathachTrigQ1" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ScathachTrigQ1" ), Condition( function ScathachSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigQ1" ), function ScathachSpellQFunction3 )
-
-		call SaveTrig( "ScathachTrigQ2" )
-		call GetUnitEvent( LoadTrig( "ScathachTrigQ2" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ScathachTrigQ2" ), Condition( function ScathachSpellQSecondFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigQ2" ), function ScathachSpellQSecondFunction3 )
-
-		call SaveTrig( "ScathachTrigQ3" )
-		call GetUnitEvent( LoadTrig( "ScathachTrigQ3" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ScathachTrigQ3" ), Condition( function ScathachSpellQThirdFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigQ3" ), function ScathachSpellQThirdFunction3 )
-
-		call SaveTrig( "ScathachTrigW" )
-		call GetUnitEvent( LoadTrig( "ScathachTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ScathachTrigW" ), Condition( function ScathachSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigW" ), function ScathachSpellWFunction3 )
-
-		call SaveTrig( "ScathachTrigE" )
-		call GetUnitEvent( LoadTrig( "ScathachTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ScathachTrigE" ), Condition( function ScathachSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigE" ), function ScathachSpellRFunction3 )
-
-		call SaveTrig( "ScathachTrigR" )
-		call GetUnitEvent( LoadTrig( "ScathachTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ScathachTrigR" ), Condition( function ScathachSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigR" ), function ScathachSpellEFunction3 )
-
-		call SaveTrig( "ScathachTrigT" )
-		call GetUnitEvent( LoadTrig( "ScathachTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ScathachTrigT" ), Condition( function ScathachSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ScathachTrigT" ), function ScathachSpellTFunction3 )
+		call SaveTrig( "ScathachSpells" )
+		call GetUnitEvent( LoadTrig( "ScathachSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "ScathachSpells" ), Condition( function ScathachSpells ) )
 	endfunction	
 

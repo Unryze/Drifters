@@ -1,8 +1,4 @@
-	function ReinforceSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04G'
-	endfunction
-
-	function ReinforceSpellQFunction2 takes nothing returns nothing
+	function ReinforceSpellQ takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -33,19 +29,6 @@
 		endif
 	endfunction	
 
-	function ReinforceSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 102, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellQFunction2 )
-	endfunction
-
-	function ReinforceSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04H'
-	endfunction
-
 	function ReinforceSpellWDummyFacing takes nothing returns nothing
 		call FaceLocation( GetEnumUnit( ), MUILocation( 102 ), 0 )
 	endfunction
@@ -56,7 +39,7 @@
 		call SetUnitFacing( GetEnumUnit( ), MUIAngle( 102, 102 ) )
 	endfunction
 
-	function ReinforceSpellWFunction2 takes nothing returns nothing
+	function ReinforceSpellW takes nothing returns nothing
 		local real 	  i 		= 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -94,21 +77,7 @@
 		endif
 	endfunction
 
-	function ReinforceSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellWFunction2 )
-	endfunction
-
-	function ReinforceSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04I'
-	endfunction
-
-	function ReinforceSpellEFunction2 takes nothing returns nothing
+	function ReinforceSpellE takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -132,93 +101,46 @@
 		endif
 	endfunction
 
-	function ReinforceSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 102, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellEFunction2 )
-	endfunction
-
-	function ReinforceSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04J'
-	endfunction
-
-	function ReinforceSpellRFunction2 takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) and GetUnitState( GetFilterUnit( ), UNIT_STATE_LIFE ) > 0 then
-			call AoEDamage( MUIHandle( ), MUILocation( 107 ), 300, "AoE", "Magical", MUILevel( ) * 75 + MUIPower( ), false, "", 0 )
-			call SaveReal( HashTable, MUIHandle( ), 110, 1200 )
-		endif
-
-		return true
-	endfunction
-
-	function ReinforceSpellRFunction3 takes nothing returns nothing	
+	function ReinforceSpellR takes nothing returns nothing	
 		local integer HandleID = GetHandleId( GetExpiredTimer( ) )
 		local integer LocTime  = LoadInteger( HashTable, HandleID, 0 )
 
 		call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-		
+
 		if LocTime == 1 then
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-			call SaveLocationHandle( HashTable, HandleID, 108, CreateLocation( MUILocation( 102 ), 200, GetUnitFacing( MUIUnit( 100 ) ) ) )
 			call PauseUnit( MUIUnit( 100 ), true )
 			call SetUnitTimeScale( MUIUnit( 100 ), 2 )
 			call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw" )
+			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 		endif
 
 		if LocTime == 10 then
-			call MUIDummy( 101, 'u001', 108, MUIAngle( 102, 103 ) )
-			call SetUnitVertexColor( MUIUnit( 101 ), 75, 0, 130, 255 )
-			call ScaleUnit( MUIUnit( 101 ), 3 )
-			call SetUnitPathing( MUIUnit( 101 ), false )
-			call MUISaveEffect( 104, "Effects\\Reinforce\\WormHole.mdl", 101 )
+			call InitProjectile( 100, HandleID, 102, 103, 200, 10, 1200, 3, 200, "Effects\\Reinforce\\WormHole.mdl", true )
 		endif
-		
+
 		if LocTime == 20 then
 			call PauseUnit( MUIUnit( 100 ), false )
 		endif
-		
-		if LocTime > 10 then
-			call SaveReal( HashTable, HandleID, 110, LoadReal( HashTable, HandleID, 110 ) + 10 )
-			call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 108 ), LoadReal( HashTable, HandleID, 110 ), MUIAngle( 102, 103 ) ) )
-			call SetUnitPositionLoc( MUIUnit( 101 ), MUILocation( 107 ) )
-			call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), MUILocation( 107 ), 200, Filter( function ReinforceSpellRFunction2 ) )
-			call RemoveLocation( MUILocation( 107 ) )
 
-			if LoadReal( HashTable, HandleID, 110 ) >= 1200 then
+		if LocTime > 10 then
+			if UnitLife( MUIUnit( StringHash( "GetProjectile" ) ) ) > 0 then
+				call ProjectileMovement( HandleID )
+			else
 				call SaveInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0, LoadInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0 ) + 1 )
-				call RemoveLocation( MUILocation( 108 ) )
-				call KillUnit( MUIUnit( 101 ) )
-				call DestroyEffect( MUIEffect( 104 ) )
+				call AoEDamage( MUIHandle( ), GetLoc( "ProjectileLoc" ), 300, "AoE", "Magical", MUILevel( ) * 75 + MUIPower( ), true, "", 0 )
+				call RemoveLocation( GetLoc( "ProjectileLoc" ) )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction	
 
-	function ReinforceSpellRFunction4 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellRFunction3 )
-	endfunction
-
-	function ReinforceSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A04K'
-	endfunction
-
-	function ReinforceSpellTFunction2 takes nothing returns nothing
+	function ReinforceSpellT takes nothing returns nothing
 		local real  i			= 1 
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 		local boolean IsCounted = LoadBoolean( HashTable, HandleID, 10 )
 
-		if UnitLife( MUIUnit( 100 ) ) > 0 then
-			call PauseUnit( MUIUnit( 100 ), true )
-
+		if StopSpell( HandleID, 0 ) == false then
 			if IsCounted == true then
 				call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 			else
@@ -226,7 +148,7 @@
 					call SaveInteger( HashTable, HandleID, 0, 1 )
 					call InitSpiral( HandleID, 103, 450, 16, 800, "Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayTarget.mdl" )
 					call PlaySoundWithVolume( LoadSound( "ReinforceT1" ), 80, 0 )
-					call PauseUnit( MUIUnit( 100 ), true )
+					call CCUnit( MUIUnit( 100 ), 2.5, "Stun" )
 					call SetUnitAnimation( MUIUnit( 100 ), "spell channel" )
 					call SaveEffectHandle( HashTable, HandleID, 150, AddSpecialEffectTarget( "Effects\\Reinforce\\Aura.mdl", MUIUnit( 100 ), "origin" ) )
 
@@ -280,17 +202,51 @@
 			endif
 		endif
 	endfunction
-
-	function ReinforceSpellTFunction3 takes nothing returns nothing
+	
+	function ReinforceSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
+		
+		if GetSpellAbilityId( ) == 'A04G' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 102, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellQ )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A04H' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellW )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A04I' then
+			set	HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 102, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellE )
+		endif		
+		
+		if GetSpellAbilityId( ) == 'A04J' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellR )
+		endif
 
-		call SaveBoolean( HashTable, HandleID, 10, false )
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( GetTriggerUnit( ) ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellTFunction2 )
-	endfunction
+		if GetSpellAbilityId( ) == 'A04K' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveBoolean( HashTable, HandleID, 10, false )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( GetTriggerUnit( ) ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellT )
+		endif
+
+		return true
+	endfunction	
 
 	function HeroInit10 takes nothing returns nothing
 		call SaveSound( "ReinforceD1", "Reinforce\\SpellD1.mp3" )
@@ -300,29 +256,8 @@
 		call SaveSound( "ReinforceR1", "Reinforce\\SpellR1.mp3" )
 		call SaveSound( "ReinforceT1", "Reinforce\\SpellT1.mp3" )
 
-		call SaveTrig( "ReinforceTrigQ" )
-		call GetUnitEvent( LoadTrig( "ReinforceTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ReinforceTrigQ" ), Condition( function ReinforceSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ReinforceTrigQ" ), function ReinforceSpellQFunction3 )
-
-		call SaveTrig( "ReinforceTrigW" )
-		call GetUnitEvent( LoadTrig( "ReinforceTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ReinforceTrigW" ), Condition( function ReinforceSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ReinforceTrigW" ), function ReinforceSpellWFunction3 )
-
-		call SaveTrig( "ReinforceTrigE" )
-		call GetUnitEvent( LoadTrig( "ReinforceTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ReinforceTrigE" ), Condition( function ReinforceSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ReinforceTrigE" ), function ReinforceSpellEFunction3 )
-
-		call SaveTrig( "ReinforceTrigR" )
-		call GetUnitEvent( LoadTrig( "ReinforceTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ReinforceTrigR" ), Condition( function ReinforceSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ReinforceTrigR" ), function ReinforceSpellRFunction4 )
-
-		call SaveTrig( "ReinforceTrigT" )
-		call GetUnitEvent( LoadTrig( "ReinforceTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ReinforceTrigT" ), Condition( function ReinforceSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ReinforceTrigT" ), function ReinforceSpellTFunction3 )
+		call SaveTrig( "ReinforceSpells" )
+		call GetUnitEvent( LoadTrig( "ReinforceSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "ReinforceSpells" ), Condition( function ReinforceSpells ) )
 	endfunction	
 

@@ -1,8 +1,4 @@
-	function SaberNeroSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A038'
-	endfunction
-
-	function SaberNeroSpellQFunction2 takes nothing returns nothing
+	function SaberNeroSpellQ takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -35,25 +31,7 @@
 		endif
 	endfunction
 
-	function SaberNeroSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellQFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction
-
-	function SaberNeroSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A039'
-	endfunction
-
-	function SaberNeroSpellWFunction2 takes nothing returns nothing
+	function SaberNeroSpellW takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -85,19 +63,7 @@
 		endif
 	endfunction
 
-	function SaberNeroSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellWFunction2 )
-	endfunction
-
-	function SaberNeroSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03A'
-	endfunction
-
-	function SaberNeroSpellEFunction2 takes nothing returns nothing
+	function SaberNeroSpellE takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -152,20 +118,7 @@
 		endif
 	endfunction
 
-	function SaberNeroSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellEFunction2 )
-	endfunction
-
-	function SaberNeroSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03B'
-	endfunction
-
-	function SaberNeroSpellRFunction2 takes nothing returns nothing
+	function SaberNeroSpellR takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -243,20 +196,7 @@
 		endif
 	endfunction
 
-	function SaberNeroSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellRFunction2 )
-	endfunction
-
-	function SaberNeroSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03C'
-	endfunction
-
-	function SaberNeroSpellTFunction2 takes nothing returns nothing
+	function SaberNeroSpellT takes nothing returns nothing
 		local real 			i 	= 1.
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime 	= MUIInteger( 0 )
@@ -342,15 +282,51 @@
 			endif
 		endif
 	endfunction
-
-	function SaberNeroSpellTFunction3 takes nothing returns nothing
+	
+	function SaberNeroSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
+		
+		if GetSpellAbilityId( ) == 'A038' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellQ )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
 
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellTFunction2 )
-	endfunction
+		if GetSpellAbilityId( ) == 'A039' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellW )
+		endif
+
+		if GetSpellAbilityId( ) == 'A03A' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellE )
+		endif
+
+		if GetSpellAbilityId( ) == 'A03B' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellR )
+		endif
+
+		if GetSpellAbilityId( ) == 'A03C' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellT )
+		endif
+		
+		return false
+	endfunction	
 
 	function HeroInit5 takes nothing returns nothing
 		call SaveSound( "SaberNeroQ1", "SaberNero\\SpellQ1.mp3" )
@@ -359,29 +335,8 @@
 		call SaveSound( "SaberNeroR1", "SaberNero\\SpellR1.mp3" )
 		call SaveSound( "SaberNeroT1", "SaberNero\\SpellT1.mp3" )
 
-		call SaveTrig( "SaberNeroTrigQ" )
-		call GetUnitEvent( LoadTrig( "SaberNeroTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberNeroTrigQ" ), Condition( function SaberNeroSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigQ" ), function SaberNeroSpellQFunction3 )
-
-		call SaveTrig( "SaberNeroTrigW" )
-		call GetUnitEvent( LoadTrig( "SaberNeroTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberNeroTrigW" ), Condition( function SaberNeroSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigW" ), function SaberNeroSpellWFunction3 )
-
-		call SaveTrig( "SaberNeroTrigE" )
-		call GetUnitEvent( LoadTrig( "SaberNeroTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberNeroTrigE" ), Condition( function SaberNeroSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigE" ), function SaberNeroSpellEFunction3 )
-
-		call SaveTrig( "SaberNeroTrigR" )
-		call GetUnitEvent( LoadTrig( "SaberNeroTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberNeroTrigR" ), Condition( function SaberNeroSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigR" ), function SaberNeroSpellRFunction3 )
-
-		call SaveTrig( "SaberNeroTrigT" )
-		call GetUnitEvent( LoadTrig( "SaberNeroTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberNeroTrigT" ), Condition( function SaberNeroSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "SaberNeroTrigT" ), function SaberNeroSpellTFunction3 )
+		call SaveTrig( "SaberNeroSpells" )
+		call GetUnitEvent( LoadTrig( "SaberNeroSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "SaberNeroSpells" ), Condition( function SaberNeroSpells ) )
 	endfunction	
 

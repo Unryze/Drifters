@@ -1,8 +1,4 @@
-	function ArcueidSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A01N'
-	endfunction
-
-	function ArcueidSpellQFunction2 takes nothing returns nothing
+	function ArcueidSpellQ takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -28,19 +24,7 @@
 		endif
 	endfunction
 
-	function ArcueidSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellQFunction2 )
-	endfunction 
-
-	function ArcueidSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A01Y'
-	endfunction
-
-	function ArcueidSpellWFunction2 takes nothing returns nothing
+	function ArcueidSpellW takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 		local integer i = 1
@@ -75,19 +59,7 @@
 		endif
 	endfunction
 
-	function ArcueidSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellWFunction2 )
-	endfunction 
-
-	function ArcueidSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A026'
-	endfunction
-
-	function ArcueidSpellEFunction2 takes nothing returns nothing
+	function ArcueidSpellE takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -127,25 +99,7 @@
 		endif
 	endfunction
 
-	function ArcueidSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellEFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction 
-
-	function ArcueidSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A027'
-	endfunction
-
-	function ArcueidSpellRFunction2 takes nothing returns nothing
+	function ArcueidSpellR takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -201,19 +155,6 @@
 		endif
 	endfunction
 
-	function ArcueidSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellRFunction2 )
-	endfunction
-
-	function ArcueidSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A02A'
-	endfunction
-
 	function Unused takes nothing returns boolean
 		local integer i = 0
 
@@ -233,7 +174,7 @@
 		return true
 	endfunction	
 
-	function ArcueidSpellTFunction2 takes nothing returns nothing
+	function ArcueidSpellT takes nothing returns nothing
 		local integer i = 1
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -275,20 +216,54 @@
 			endif
 		endif
 	endfunction
-
-	function ArcueidSpellTFunction3 takes nothing returns nothing
+	
+	function ArcueidSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+		if GetSpellAbilityId( ) == 'A01N' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellTFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellQ )
 		endif
-	endfunction 	
+		
+		if GetSpellAbilityId( ) == 'A01Y' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellW )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A026' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellE )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+		
+		if GetSpellAbilityId( ) == 'A027' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellR )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A02A' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellT )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+		
+		return false
+	endfunction	
 
 	function HeroInit11 takes nothing returns nothing
 		call SaveSound( "ArcueidQ1", "Arcueid\\SpellQ1.mp3" )
@@ -297,29 +272,8 @@
 		call SaveSound( "ArcueidR1", "Arcueid\\SpellR1.mp3" )
 		call SaveSound( "ArcueidT1", "Arcueid\\SpellT1.mp3" )
 
-		call SaveTrig( "ArcueidTrigQ" )
-		call GetUnitEvent( LoadTrig( "ArcueidTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ArcueidTrigQ" ), Condition( function ArcueidSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigQ" ), function ArcueidSpellQFunction3 )
-
-		call SaveTrig( "ArcueidTrigW" )
-		call GetUnitEvent( LoadTrig( "ArcueidTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ArcueidTrigW" ), Condition( function ArcueidSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigW" ), function ArcueidSpellWFunction3 )
-
-		call SaveTrig( "ArcueidTrigE" )
-		call GetUnitEvent( LoadTrig( "ArcueidTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ArcueidTrigE" ), Condition( function ArcueidSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigE" ), function ArcueidSpellEFunction3 )
-
-		call SaveTrig( "ArcueidTrigR" )
-		call GetUnitEvent( LoadTrig( "ArcueidTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ArcueidTrigR" ), Condition( function ArcueidSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigR" ), function ArcueidSpellRFunction3 )
-
-		call SaveTrig( "ArcueidTrigT" )
-		call GetUnitEvent( LoadTrig( "ArcueidTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ArcueidTrigT" ), Condition( function ArcueidSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "ArcueidTrigT" ), function ArcueidSpellTFunction3 )
+		call SaveTrig( "ArcueidSpells" )
+		call GetUnitEvent( LoadTrig( "ArcueidSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "ArcueidSpells" ), Condition( function ArcueidSpells ) )
 	endfunction
 

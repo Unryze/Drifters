@@ -1,8 +1,4 @@
-	function AkameSpellDFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03K' or GetSpellAbilityId( ) == 'A052'
-	endfunction
-
-	function AkameSpellDFunction2 takes nothing returns nothing
+	function AkameSpellD takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -28,30 +24,7 @@
 		endif
 	endfunction
 
-	function AkameSpellDFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( GetTriggerUnit( ) ) )
-		call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-
-		if GetSpellAbilityId( ) == 'A052' then
-			call SaveReal( HashTable, HandleID, 0, -350 )
-			call SetPlayerAbilityAvailable( Player( LocPID ), 'A03L', true )
-			call SetPlayerAbilityAvailable( Player( LocPID ), 'A052', false )
-		else
-			call SaveReal( HashTable, HandleID, 0, -400 )
-		endif
-
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellDFunction2 )
-	endfunction
-
-	function AkameSpellQFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03L'
-	endfunction
-
-	function AkameSpellQFunction2 takes nothing returns nothing
+	function AkameSpellQ takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -71,6 +44,7 @@
 				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 				call SaveLocationHandle( HashTable, HandleID, 103, CreateLocation( MUILocation( 102 ), 200, GetUnitFacing( MUIUnit( 100 ) ) ) )
 				call AddEffect( "GeneralEffects\\AkihaClaw.mdl", 1.5, MUILocation( 103 ), MUIAngle( 102, 103 ) + 30, 0 )
+				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
 				call AoEDamage( HandleID, MUILocation( 103 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
 				call RemoveLocation( MUILocation( 102 ) )
 				call RemoveLocation( MUILocation( 103 ) )
@@ -84,23 +58,10 @@
 		endif
 	endfunction
 
-	function AkameSpellQFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellQFunction2 )
-	endfunction
-
-	function AkameSpellWFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03M'
-	endfunction
-
-	function AkameSpellWFunction2 takes nothing returns nothing
+	function AkameSpellW takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		
 		if StopSpell( HandleID, 1 ) == false then
-
 			if MUIInteger( 0 ) < 1 then
 				call SaveInteger( HashTable, HandleID, 0, MUIInteger( 0 ) + 1 )
 				call PauseUnit( MUIUnit( 100 ), true )
@@ -137,20 +98,7 @@
 		endif
 	endfunction
 
-	function AkameSpellWFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellWFunction2 )
-	endfunction
-
-	function AkameSpellEFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03N'
-	endfunction
-
-	function AkameSpellEFunction2 takes nothing returns nothing
+	function AkameSpellE takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -176,25 +124,7 @@
 		endif
 	endfunction
 
-	function AkameSpellEFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID
-
-		if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellEFunction2 )
-		else
-			call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-		endif
-	endfunction
-
-	function AkameSpellRFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03O'
-	endfunction
-
-	function AkameSpellRFunction2 takes nothing returns nothing
+	function AkameSpellR takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 		local integer LocCount  = LoadInteger( HashTable, HandleID, 1 )
@@ -310,21 +240,7 @@
 		endif
 	endfunction
 
-	function AkameSpellRFunction3 takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
-
-		call SaveBoolean( HashTable, HandleID, 10, true )
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellRFunction2 )
-	endfunction
-
-	function AkameSpellTFunction1 takes nothing returns boolean
-		return GetSpellAbilityId( ) == 'A03P'
-	endfunction
-
-	function AkameSpellTFunction2 takes nothing returns nothing
+	function AkameSpellT takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -386,15 +302,69 @@
 			endif
 		endif
 	endfunction
-
-	function AkameSpellTFunction3 takes nothing returns nothing
+	
+	function AkameSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
-		local integer HandleID = NewMUITimer( LocPID )
+		local integer HandleID
 
-		call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-		call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-		call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellTFunction2 )
-	endfunction
+		if GetSpellAbilityId( ) == 'A03K' or GetSpellAbilityId( ) == 'A052' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( GetTriggerUnit( ) ) )
+			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+
+			if GetSpellAbilityId( ) == 'A052' then
+				call SaveReal( HashTable, HandleID, 0, -350 )
+				call SetPlayerAbilityAvailable( Player( LocPID ), 'A03L', true )
+				call SetPlayerAbilityAvailable( Player( LocPID ), 'A052', false )
+			else
+				call SaveReal( HashTable, HandleID, 0, -400 )
+			endif
+
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellD )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A03L' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellQ )
+		endif
+
+		if GetSpellAbilityId( ) == 'A03M' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellW )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A03N' then
+			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
+				set HandleID = NewMUITimer( LocPID )
+				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellE )
+			else
+				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
+			endif
+		endif
+
+		if GetSpellAbilityId( ) == 'A03O' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveBoolean( HashTable, HandleID, 10, true )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellR )
+		endif
+		
+		if GetSpellAbilityId( ) == 'A03P' then
+			set HandleID = NewMUITimer( LocPID )
+			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellT )
+		endif
+
+		return false
+	endfunction	
 
 	function HeroInit7 takes nothing returns nothing
 		call SaveSound( "AkameD1", "Akame\\SpellD1.mp3" )
@@ -405,34 +375,8 @@
 		call SaveSound( "AkameR2", "Akame\\SpellR2.mp3" )
 		call SaveSound( "AkameT1", "Akame\\SpellT1.mp3" )
 
-		call SaveTrig( "AkameTrigD" )
-		call GetUnitEvent( LoadTrig( "AkameTrigD" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkameTrigD" ), Condition( function AkameSpellDFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkameTrigD" ), function AkameSpellDFunction3 )
-
-		call SaveTrig( "AkameTrigQ" )
-		call GetUnitEvent( LoadTrig( "AkameTrigQ" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkameTrigQ" ), Condition( function AkameSpellQFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkameTrigQ" ), function AkameSpellQFunction3 )
-
-		call SaveTrig( "AkameTrigW" )
-		call GetUnitEvent( LoadTrig( "AkameTrigW" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkameTrigW" ), Condition( function AkameSpellWFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkameTrigW" ), function AkameSpellWFunction3 )
-
-		call SaveTrig( "AkameTrigE" )
-		call GetUnitEvent( LoadTrig( "AkameTrigE" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkameTrigE" ), Condition( function AkameSpellEFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkameTrigE" ), function AkameSpellEFunction3 )
-
-		call SaveTrig( "AkameTrigR" )
-		call GetUnitEvent( LoadTrig( "AkameTrigR" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkameTrigR" ), Condition( function AkameSpellRFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkameTrigR" ), function AkameSpellRFunction3 )
-
-		call SaveTrig( "AkameTrigT" )
-		call GetUnitEvent( LoadTrig( "AkameTrigT" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkameTrigT" ), Condition( function AkameSpellTFunction1 ) )
-		call TriggerAddAction( LoadTrig( "AkameTrigT" ), function AkameSpellTFunction3 )
+		call SaveTrig( "AkameSpells" )
+		call GetUnitEvent( LoadTrig( "AkameSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "AkameSpells" ), Condition( function AkameSpells ) )
 	endfunction	
 
