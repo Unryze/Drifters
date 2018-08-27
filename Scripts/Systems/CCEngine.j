@@ -44,13 +44,13 @@
 				if GetUnitAbilityLevel( LocUnit, 'B009' ) == 0 then
 					set HandleID = NewMUITimer( LocPID )
 					call UnitShareVision( LocUnit, Player( PLAYER_NEUTRAL_PASSIVE ), true )
-					call IssueTargetOrder( CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u004', GetUnitX( LocUnit ), GetUnitY( LocUnit ), 0 ), "silence", LocUnit )
+					call IssueTargetOrder( CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u004', GetUnitX( LocUnit ), GetUnitY( LocUnit ), 0 ), "soulburn", LocUnit )
 					call SaveStr( HashTable, HandleID, StringHash( "CCType" ), CCType )
 					call SaveUnitHandle( HashTable, HandleID, 0, LocUnit )
 					call TimerStart( LoadMUITimer( LocPID ), .01, true, function CheckForCC )
 				endif
 			endif
-			
+
 			if CCType == "Slow" then
 				if GetUnitAbilityLevel( LocUnit, 'Bslo' ) == 0 then
 					set HandleID = NewMUITimer( LocPID )

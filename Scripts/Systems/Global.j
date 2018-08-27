@@ -98,8 +98,8 @@
 	
 	function NewMUITimer takes integer PID returns integer
 		local integer GetIterator = LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) )
-		
-		if LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) ) <= 8000 then
+
+		if LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) ) <= 4000 then
 			call SaveInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ), GetIterator + 1 )
 			set GetIterator = LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) ) - 1
 		else
@@ -110,7 +110,7 @@
 		if LoadTimerHandle( HashTable, GetHandleId( Player( PID ) ), GetIterator ) == null then
 			call SaveTimerHandle( HashTable, GetHandleId( Player( PID ) ), GetIterator, CreateTimer( ) )
 		endif
-		
+
 		return GetHandleId( LoadTimerHandle( HashTable, GetHandleId( Player( PID ) ), GetIterator ) )
 	endfunction
 
@@ -156,10 +156,6 @@
 		endloop
 	endfunction
 
-	function GetAngleBetweenPoints takes location locA, location locB returns real
-		return 180.0 / 3.14159 * Atan2( GetLocationY( locB ) - GetLocationY( locA ), GetLocationX( locB ) - GetLocationX( locA ) )
-	endfunction
-
 	function AngleBetweenUnits takes unit CasterUnit, unit TargetUnit returns real
 		return 180.0 / 3.14159 * Atan2( GetUnitY( TargetUnit ) - GetUnitY( CasterUnit ), GetUnitX( TargetUnit ) - GetUnitX( CasterUnit ) )
 	endfunction
@@ -172,28 +168,67 @@
 		return MUIAngleCoord( GetUnitX( CasterUnit ), GetUnitY( CasterUnit ), GetUnitX( TargetUnit ), GetUnitY( TargetUnit ) )
 	endfunction	
 
-	function DistanceBetweenPointsRW takes location locA, location locB returns real
-		local real dx = GetLocationX( locB ) - GetLocationX( locA )
-		local real dy = GetLocationY( locB ) - GetLocationY( locA )
-		
-		return SquareRoot( dx * dx + dy * dy )
+	function MUIAngleData takes real CasterX, real CasterY, real TargetX, real TargetY returns real
+		return 180.0 / 3.14159 * Atan2( TargetY - CasterY, TargetX - CasterX )
+	endfunction	
+
+	function DistanceBetweenUnits takes unit UnitA, unit UnitB returns real
+		return SquareRoot( Pow( GetUnitX( UnitB ) - GetUnitX( UnitA ), 2 ) + Pow( GetUnitY( UnitB ) - GetUnitY( UnitA ), 2 ) )
+	endfunction
+
+	function DistanceBetweenAxis takes real LocX1, real LocY1, real LocX2, real LocY2 returns real
+		return SquareRoot( Pow( LocX2 - LocX1, 2 ) + Pow( LocY2 - LocY1, 2 ) )
+	endfunction
+
+	function SetUnitXAndY takes unit LocUnit, real InitX, real InitY, real LocDistance, real LocAngle returns nothing
+		call SetUnitPosition( LocUnit, InitX + LocDistance * Cos( LocAngle * bj_DEGTORAD ), InitY + LocDistance * Sin( LocAngle * bj_DEGTORAD ) )
+		call SetUnitFacing( LocUnit, LocAngle )
 	endfunction
 
 	function MUIHandle takes nothing returns integer
 		return GetHandleId( GetExpiredTimer( ) )
 	endfunction
 
-	function MUILocation takes integer ID returns location
-		return LoadLocationHandle( HashTable, MUIHandle( ), ID )
+	function GetStr takes string HashName returns string
+		return LoadStr( HashTable, MUIHandle( ), StringHash( HashName ) )
 	endfunction
+	
+	function GetInt takes string HashName returns integer
+		return LoadInteger( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
 
-	function MUIAngle takes integer LocID1, integer LocID2 returns real
-		return GetAngleBetweenPoints( MUILocation( LocID1 ), MUILocation( LocID2 ) )
-	endfunction 
+	function GetReal takes string HashName returns real
+		return LoadReal( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction
+	
+	function GetBool takes string HashName returns boolean 
+		return LoadBoolean( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
 
-	function MUIDistance takes integer LocID1, integer LocID2 returns real
-		return DistanceBetweenPointsRW( MUILocation( LocID1 ), MUILocation( LocID2 ) )
-	endfunction 
+	function GetEffect takes string HashName returns effect 
+		return LoadEffectHandle( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
+
+	function CreateXY takes real InitX, real InitY, real LocDistance, real LocAngle, string HashName returns nothing
+		call SaveReal( HashTable, MUIHandle( ), StringHash( HashName + "X" ), InitX + LocDistance * Cos( LocAngle * bj_DEGTORAD ) )
+		call SaveReal( HashTable, MUIHandle( ), StringHash( HashName + "Y" ), InitY + LocDistance * Sin( LocAngle * bj_DEGTORAD ) )
+	endfunction	
+
+	function CreateDistanceAndAngle takes real LocX, real LocY, string HashName returns nothing
+		call SaveReal( HashTable, MUIHandle( ), StringHash( "Distance" ), DistanceBetweenAxis( LocX, LocY, GetReal( HashName + "X" ), GetReal( HashName + "Y" ) ) )
+		call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( LocX, LocY, GetReal( HashName + "X" ), GetReal( HashName + "Y" ) ) )
+	endfunction
+	
+	function CreateTargetXY takes integer HandleID, unit Caster, unit Target returns nothing
+		call SaveReal( HashTable, HandleID, StringHash( "CasterX" ), GetUnitX( Caster ) )
+		call SaveReal( HashTable, HandleID, StringHash( "CasterY" ), GetUnitY( Caster ) )
+		call SaveReal( HashTable, HandleID, StringHash( "TargetX" ), GetUnitX( Target ) )
+		call SaveReal( HashTable, HandleID, StringHash( "TargetY" ), GetUnitY( Target ) )
+	endfunction
+	
+	function GetIteration takes integer Init, integer Divider returns boolean
+		return Init / ( Init / Divider ) == Divider
+	endfunction
 
 	function MUIUnit takes integer UID returns unit
 		return LoadUnitHandle( HashTable, MUIHandle( ), UID )
@@ -215,10 +250,6 @@
 		return LoadInteger( HashTable, MUIHandle( ), ID )
 	endfunction	
 
-	function MUIReal takes integer ID returns real
-		return LoadReal( HashTable, MUIHandle( ), ID )
-	endfunction	
-
 	function MUIEffect takes integer ID returns effect
 		return LoadEffectHandle( HashTable, MUIHandle( ), ID )
 	endfunction 
@@ -227,30 +258,10 @@
 		call SaveEffectHandle( HashTable, MUIHandle( ), EffID, AddSpecialEffectTarget( EffName, MUIUnit( UID ), "origin" ) )
 	endfunction 
 
-	function MUIDummy takes integer ID, integer UID, integer LocID, real LocFacing returns nothing
-		call SaveUnitHandle( HashTable, MUIHandle( ), ID, CreateUnitAtLoc( Player( PLAYER_NEUTRAL_PASSIVE ), UID, LoadLocationHandle( HashTable, MUIHandle( ), LocID ), LocFacing ) )
-	endfunction
-
-	function GetLoc takes string HashName returns location
-		return LoadLocationHandle( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction
-
-	function GetStr takes string HashName returns string
-		return LoadStr( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction
-	
-	function GetInt takes string HashName returns integer
-		return LoadInteger( HashTable, MUIHandle( ), StringHash( HashName ) )
+	function MUIDummyXY takes integer ID, integer UID, real LocX, real LocY, real LocFacing returns nothing
+		call SaveUnitHandle( HashTable, MUIHandle( ), ID, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), UID, LocX, LocY, LocFacing ) )
 	endfunction	
 
-	function GetReal takes string HashName returns real
-		return LoadReal( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction
-	
-	function GetBool takes string HashName returns boolean 
-		return LoadBoolean( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction	
-	
 	function IsUnitIgnored takes unit LocUnit returns integer
 		return LoadInteger( HashTable, MUIHandle( ), GetHandleId( LocUnit ) )
 	endfunction
@@ -272,7 +283,7 @@
 
 	function GetMapBound takes string LocString returns real
 		return LoadReal( HashTable, GetHandleId( CameraSet ), StringHash( LocString ) )
-	endfunction		
+	endfunction
 
 	function EnumUnits takes nothing returns group
 		return LoadGroupHandle( HashTable, GetHandleId( CameraSet ), StringHash( "GlobalGroup" ) )
@@ -285,7 +296,7 @@
 			return "|c0000FFFF"
 		endif
 	endfunction	
-	
+
 	function DisableSharedUnitsAct takes nothing returns nothing
 		local integer IndexA = 0
 		local integer IndexB = 0
@@ -332,7 +343,7 @@
 
 	function SwapAmount takes integer LocInt1, boolean LocBool returns integer
 		if LocBool == true then
-			set LocInt1 = LocInt1 * -1
+			set LocInt1 = -LocInt1
 		endif
 
 		return LocInt1
@@ -418,6 +429,17 @@
 		endif
 	endfunction	
 
+	function MapItemRemovalAction takes nothing returns nothing
+		local real ItemX = GetItemX( GetManipulatedItem( ) )
+		local real ItemY = GetItemY( GetManipulatedItem( ) )
+		
+		if GetRectMinX( GetWorldBounds( ) ) <= ItemX and ItemX <= GetRectMaxX( GetWorldBounds( ) ) and GetRectMinY( GetWorldBounds( ) ) <= ItemY and ItemY <= GetRectMaxY( GetWorldBounds( ) ) then
+			if GetWidgetLife( GetManipulatedItem( ) ) <= 0 then
+				call RemoveItem( GetManipulatedItem( ) )
+			endif
+		endif
+	endfunction	
+
 	function UnitHasItemById takes unit LocaUnitId, integer LocalTargetItemId returns boolean
 		local integer index = 0
 
@@ -434,7 +456,11 @@
 
 		return false
 	endfunction
-	
+
+	function HasEmptyItemSlot takes unit u returns boolean
+		return UnitItemInSlot( u, 0 ) == null or UnitItemInSlot( u, 1 ) == null or UnitItemInSlot( u, 2 ) == null or UnitItemInSlot( u, 3 ) == null or UnitItemInSlot( u, 4 ) == null or UnitItemInSlot( u, 5 ) == null
+	endfunction		
+
 	function DialogShow takes dialog DialogName, boolean Show returns nothing
 		local integer i = 0
 
@@ -458,15 +484,4 @@
 		call StartSound( soundHandle )
 		call SetSoundPlayPosition( soundHandle, R2I( startingOffset * 1000 ) )
 	endfunction
-
-	function CreateLocation takes location InitLoc, real LocDistance, real LocAngle returns location
-		return Location( GetLocationX( InitLoc ) + LocDistance * Cos( LocAngle * bj_DEGTORAD ), GetLocationY( InitLoc ) + LocDistance * Sin( LocAngle * bj_DEGTORAD ) )
-	endfunction
-
-	function FaceLocation takes unit LocalCaster1, location LocalLocation2, real LocTime returns nothing
-		call SaveLocationHandle( HashTable, GetHandleId( LocalCaster1 ), 0, GetUnitLoc( LocalCaster1 ) )
-		call SetUnitFacingTimed( LocalCaster1, GetAngleBetweenPoints( LoadLocationHandle( HashTable, GetHandleId( LocalCaster1 ), 0 ), LocalLocation2 ), LocTime )
-		call RemoveLocation( LoadLocationHandle( HashTable, GetHandleId( LocalCaster1 ), 0 ) )
-		call RemoveSavedHandle( HashTable, GetHandleId( LocalCaster1 ), 0 )
-	endfunction	
 

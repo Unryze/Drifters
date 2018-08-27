@@ -6,7 +6,7 @@
 		call SetWidgetLife( MUIUnit( 999 ), ( MaxHP - CurrentHP ) * .04 + CurrentHP )
 	endfunction
 
-	function EnteringUnitCheckAction takes nothing returns nothing
+	function EnteringUnitCheckAction takes nothing returns boolean
 		if IsUnitInGroup( GetEnteringUnit( ), LoadGroupHandle( HashTable, GetHandleId( CameraSet ), StringHash( "DamagedGroup" ) ) ) == false and GetUnitAbilityLevel( GetEnteringUnit( ), 'Aloc' ) <= 0 then
 			call GroupAddUnit( LoadGroupHandle( HashTable, GetHandleId( CameraSet ), StringHash( "DamagedGroup" ) ), GetEnteringUnit( ) )
 			call TriggerRegisterUnitEvent( LoadTrig( "UnitDamagedTrig" ), GetEnteringUnit( ), EVENT_UNIT_DAMAGED )
@@ -19,5 +19,7 @@
 				endif
 			endif
 		endif
+
+		return false
 	endfunction
 

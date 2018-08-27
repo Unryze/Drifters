@@ -1,5 +1,5 @@
-	function SimpleMovement takes integer HandleID, integer LocationID, integer IsEnabled returns nothing
-		call SaveInteger( HashTable, HandleID, StringHash( "LocationID" ), LocationID )
+	function SimpleMovement takes integer HandleID, string AxisName, integer IsEnabled returns nothing
+		call SaveStr( HashTable, HandleID, StringHash( "AxisName" ), AxisName )
 		call SaveInteger( HashTable, HandleID, StringHash( "IsEnabled" ), IsEnabled )
 	endfunction
 

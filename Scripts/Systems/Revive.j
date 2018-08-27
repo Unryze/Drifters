@@ -18,15 +18,33 @@
 		call DestroyTimer( GetExpiredTimer( ) )
 	endfunction
 
-	function ReviveSystemAction takes nothing returns nothing
-		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
+	function ReviveSystemAction takes nothing returns boolean
+		local integer KillingID = GetPlayerId( GetOwningPlayer( GetKillingUnit( ) ) )
+		local integer DyingID 	= GetPlayerId( GetOwningPlayer( GetDyingUnit( ) ) )
 		local integer HandleID
 
-		if IsUnitType( GetDyingUnit( ), UNIT_TYPE_HERO ) and GetPlayerSlotState( GetTriggerPlayer( ) ) == PLAYER_SLOT_STATE_PLAYING and LocPID < 12 then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 0, GetTriggerUnit( ) )
+		if IsUnitType( GetDyingUnit( ), UNIT_TYPE_HERO ) and GetPlayerSlotState( Player( DyingID ) ) == PLAYER_SLOT_STATE_PLAYING and Player( DyingID ) != Player( PLAYER_NEUTRAL_AGGRESSIVE ) and Player( DyingID ) != Player( PLAYER_NEUTRAL_PASSIVE ) then 
+			set HandleID = NewMUITimer( DyingID )
+			call SaveUnitHandle( HashTable, HandleID, 0, GetDyingUnit( ) )
 			call SaveEffectHandle( HashTable, HandleID, 1, AddSpecialEffect( "GeneralEffects\\UnitEffects\\DeathIndicator.mdl", GetUnitX( GetDyingUnit( ) ), GetUnitY( GetDyingUnit( ) ) + 300 ) )	
-			call TimerStart( LoadMUITimer( LocPID ), 4, false, function ReviveSystemTriggerFunction3 )
+			call TimerStart( LoadMUITimer( DyingID ), 4, false, function ReviveSystemTriggerFunction3 )
+			
+			if IsUnitAlly( GetKillingUnit( ), Player( DyingID ) ) != true then
+				if GetOwningPlayer( GetKillingUnit( ) ) != Player( PLAYER_NEUTRAL_AGGRESSIVE ) then
+					call DisplayTimedTextToPlayer( GetLocalPlayer( ), 0, 0, 5, GetPlayerName( Player( KillingID ) ) + "|c008080c0 has killed|r " + GetPlayerName( Player( DyingID ) ) + "!" )
+					call SaveInteger( HashTable, GetHandleId( GetKillingUnit( ) ), 100, LoadInteger( HashTable, GetHandleId( GetKillingUnit( ) ), 100 ) + 1 )
+					call SaveMultiboardItemHandle( HashTable, GetHandleId( CameraSet ), StringHash( "MBItem" ), MultiboardGetItem( GetMultiboard( ), LoadInteger( HashTable, GetHandleId( Player( KillingID ) ), 0 ) + 1, 1 ) )
+					call MultiboardSetItemValue( GetMBItem( ), I2S( LoadInteger( HashTable, GetHandleId( GetKillingUnit( ) ), 100 ) ) )
+					call ReleaseMBItem( )
+				endif
+
+				call SaveInteger( HashTable, GetHandleId( GetDyingUnit( ) ), 101, LoadInteger( HashTable, GetHandleId( GetDyingUnit( ) ), 101 ) + 1 )
+				call SaveMultiboardItemHandle( HashTable, GetHandleId( CameraSet ), StringHash( "MBItem" ), MultiboardGetItem( GetMultiboard( ), LoadInteger( HashTable, GetHandleId( Player( DyingID ) ), 0 ) + 1, 2 ) )
+				call MultiboardSetItemValue( GetMBItem( ), I2S( LoadInteger( HashTable, GetHandleId( GetDyingUnit( ) ), 101 ) ) )
+				call ReleaseMBItem( )
+			endif
 		endif
+		
+		return false
 	endfunction
 

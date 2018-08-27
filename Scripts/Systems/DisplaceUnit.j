@@ -22,6 +22,7 @@
 		else
 			call SetUnitPathing( MUIUnit( 0 ), true )
 			call SaveBoolean( HashTable, GetHandleId( MUIUnit( 0 ) ), 1000, false )
+			call SetUnitFlyHeight( MUIUnit( 0 ), GetUnitDefaultFlyHeight( MUIUnit( 0 ) ), 99999 )
 			call PauseTimer( GetExpiredTimer( ) )
 			call FlushChildHashtable( HashTable, HandleID )
 			call DestroyTimer( GetExpiredTimer( ) )

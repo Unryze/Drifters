@@ -1,45 +1,40 @@
 	function AIItemFilter takes nothing returns boolean
-		if IsItemVisible( GetFilterItem( ) ) and GetWidgetLife( GetFilterItem( ) ) > 0 then
-			call SaveItemHandle( HashTable, MUIHandle( ), StringHash( "FindItem" ), GetFilterItem( ) )
+		if GetWidgetLife( GetFilterItem( ) ) > 0 and IsItemVisible( GetFilterItem( ) ) and GetFilterItem( ) != null then
+			if GetItemType( GetFilterItem( ) ) == ITEM_TYPE_POWERUP or HasEmptyItemSlot( MUIUnit( 0 ) ) then
+				call IssueTargetOrder( MUIUnit( 0 ), "smart", GetFilterItem( ) )
+				return true
+			endif
 		endif
 
-		return true
-	endfunction
-
-	function AIHasEmptyInventorySlot takes unit u returns boolean
-		return UnitItemInSlot( u, 0 ) == null or UnitItemInSlot( u, 1 ) == null or UnitItemInSlot( u, 2 ) == null or UnitItemInSlot( u, 3 ) == null or UnitItemInSlot( u, 4 ) == null or UnitItemInSlot( u, 5 ) == null
+		return false
 	endfunction
 
 	function AIFilterEnemyConditions takes nothing returns boolean
-		return UnitLife( GetFilterUnit( ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 0 ) ) )
-	endfunction
+		if UnitLife( GetFilterUnit( ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 0 ) ) ) then
+			call SaveUnitHandle( HashTable, MUIHandle( ), 101, GetFilterUnit( ) )
+		endif
 
-	function AIHeroMoveLoop takes nothing returns nothing
-		call IssuePointOrder( MUIUnit( 0 ), "attack", GetRandomReal( -1900., 1900. ), GetRandomReal( -110., 180. ) )
-	endfunction
-
-	function LoadFoundItem takes nothing returns item
-		return LoadItemHandle( HashTable, MUIHandle( ), StringHash( "FindItem" ) )
+		return false
 	endfunction
 
 	function AILoop takes nothing returns nothing
+		call SaveInteger( HashTable, MUIHandle( ), StringHash( "MoveTime" ), LoadInteger( HashTable, MUIHandle( ), StringHash( "MoveTime" ) ) + 1 )
+
+		if LoadInteger( HashTable, MUIHandle( ), StringHash( "MoveTime" ) ) == 5 then
+			call IssuePointOrder( MUIUnit( 0 ), "attack", GetRandomReal( -1900., 1900. ), GetRandomReal( -110., 180. ) )
+			call SaveInteger( HashTable, MUIHandle( ), StringHash( "MoveTime" ), 0 )
+		endif
+
 		if OrderId2String( GetUnitCurrentOrder( MUIUnit( 0 ) ) ) != null or OrderId2String( GetUnitCurrentOrder( MUIUnit( 0 ) ) ) == null then
-			call SaveGroupHandle( HashTable, MUIHandle( ), 1001, CreateGroup( ) )
-			call GroupEnumUnitsInRange( LoadGroupHandle( HashTable, MUIHandle( ), 1001 ), GetUnitX( MUIUnit( 0 ) ), GetUnitY( MUIUnit( 0 ) ), 800, Condition( function AIFilterEnemyConditions ) )
-			call SaveUnitHandle( HashTable, MUIHandle( ), 101, FirstOfGroup( LoadGroupHandle( HashTable, MUIHandle( ), 1001 ) ) )
-			call DestroyGroup( LoadGroupHandle( HashTable, MUIHandle( ), 1001 ) )
-			call RemoveSavedHandle( HashTable, MUIHandle( ), 1001 )
+			if MUIUnit( 101 ) == null then
+				call GroupEnumUnitsInRange( EnumUnits( ), GetUnitX( MUIUnit( 0 ) ), GetUnitY( MUIUnit( 0 ) ), 800, Condition( function AIFilterEnemyConditions ) )
+			endif
 
 			if MUIUnit( 101 ) == null then
 				call SaveRectHandle( HashTable, MUIHandle( ), 1000, Rect( GetUnitX( MUIUnit( 0 ) ) - 800, GetUnitY( MUIUnit( 0 ) ) - 800, GetUnitX( MUIUnit( 0 ) ) + 800, GetUnitY( MUIUnit( 0 ) ) + 800 ) )
 				call EnumItemsInRect( LoadRectHandle( HashTable, MUIHandle( ), 1000 ), Condition( function AIItemFilter ), null )
 				call RemoveRect( LoadRectHandle( HashTable, MUIHandle( ), 1000 ) )
 				call RemoveSavedHandle( HashTable, MUIHandle( ), 1000 )
-
-				if LoadFoundItem( ) != null and ( GetItemType( LoadFoundItem( ) ) == ITEM_TYPE_POWERUP or AIHasEmptyInventorySlot( MUIUnit( 0 ) ) ) then
-					call IssueTargetOrder( MUIUnit( 0 ), "smart", LoadFoundItem( ) )
-					call RemoveSavedHandle( HashTable, MUIHandle( ), StringHash( "FindItem" ) )
-				endif
 			else
 				call IssueTargetOrder( MUIUnit( 0 ), "attack", 		 MUIUnit( 101 ) )
 				call IssueTargetOrder( MUIUnit( 0 ), "purge", 		 MUIUnit( 101 ) )
@@ -61,7 +56,9 @@
 					call IssuePointOrder(  MUIUnit( 0 ), "earthquake", 	 GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) )
 				endif
 
-				call RemoveSavedHandle( HashTable, MUIHandle( ), 101 )
+				if UnitLife( LoadUnitHandle( HashTable, MUIHandle( ), 101 ) ) <= 0 or DistanceBetweenUnits( MUIUnit( 0 ), MUIUnit( 101 ) ) >= 850 then
+					call RemoveSavedHandle( HashTable, MUIHandle( ), 101 )
+				endif
 
 				if GetUnitStatePercentage( MUIUnit( 0 ), UNIT_STATE_LIFE, UNIT_STATE_MAX_LIFE ) <= 20 then
 					if GetPlayerTeam( GetOwningPlayer( MUIUnit( 0 ) ) ) == 0 then
@@ -90,10 +87,6 @@
 			call SaveTimerHandle( HashTable, GetHandleId( LocHero ), StringHash( "AITimer1" ), CreateTimer( ) )
 			call SaveUnitHandle( HashTable, GetHandleId( LoadTimerHandle( HashTable, GetHandleId( LocHero ), StringHash( "AITimer1" ) ) ), 0, LocHero )
 			call TimerStart( LoadTimerHandle( HashTable, GetHandleId( LocHero ), StringHash( "AITimer1" ) ), 1, true, function AILoop )
-
-			call SaveTimerHandle( HashTable, GetHandleId( LocHero ), StringHash( "AITimer2" ), CreateTimer( ) )
-			call SaveUnitHandle( HashTable, GetHandleId( LoadTimerHandle( HashTable, GetHandleId( LocHero ), StringHash( "AITimer2" ) ) ), 0, LocHero )
-			call TimerStart( LoadTimerHandle( HashTable, GetHandleId( LocHero ), StringHash( "AITimer2" ) ), 10,  true, function AIHeroMoveLoop )
 		endif
 	endfunction
 

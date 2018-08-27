@@ -41,10 +41,10 @@
 		local real 		LocReqHP	= 0
 
 		if SourceDmg > 1 then
+			call DisableTrigger( GetTriggeringTrigger( ) )
 			call SaveUnitHandle( HashTable, GetHandleId( LoadTrig( "UnitDamagedTrig" ) ), StringHash( "Source" ), GetEventDamageSource( ) )
 			call SaveUnitHandle( HashTable, GetHandleId( LoadTrig( "UnitDamagedTrig" ) ), StringHash( "Target" ), GetTriggerUnit( ) )
-			call DisableTrigger( GetTriggeringTrigger( ) )
-			
+
 			if GetUnitTypeId( GetSource( ) ) == 'H00A' then
 				call SetWidgetLife( GetSource( ), UnitLife( GetSource( ) ) + SourceDmg * .15 )
 			endif
@@ -86,11 +86,9 @@
 						call UnitRemoveAbility( GetSource( ), 'B000' )
 					endif
 
-					call SaveLocationHandle( HashTable, GetHandleId( GetTarget( ) ), 250, GetUnitLoc( GetTarget( ) ) )
-					call AddEffect( "Effects\\Nanaya\\ArcDrive1.mdl", 4, LoadLocationHandle( HashTable, GetHandleId( GetTarget( ) ), 250 ), 270, 0 )
+					call AddEffectXY( "Effects\\Nanaya\\ArcDrive1.mdl", 4, GetUnitX( GetTarget( ) ), GetUnitY( GetTarget( ) ), 270, 0 )
 					set DealtDmg = 100000000
 					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetUnitX( GetTarget( ) ), GetUnitY( GetTarget( ) ) ) )
-					call RemoveLocation( LoadLocationHandle( HashTable, GetHandleId( GetTarget( ) ), 250 ) )
 				endif
 
 				call TargetDamage( GetSource( ), GetTarget( ), "Target", "Physical", DealtDmg )
@@ -116,9 +114,9 @@
 			if GetUnitTypeId( GetTarget( ) ) == 'tstu' then
 				call SetWidgetLife( GetTarget( ), UnitMaxLife( GetTarget( ) ) )
 			endif
+			
+			call FlushChildHashtable( HashTable, GetHandleId( LoadTrig( "UnitDamagedTrig" ) ) )
+			call EnableTrigger( GetTriggeringTrigger( ) )
 		endif
-
-		call FlushChildHashtable( HashTable, GetHandleId( LoadTrig( "UnitDamagedTrig" ) ) )
-		call EnableTrigger( GetTriggeringTrigger( ) )
 	endfunction
 

@@ -8,12 +8,16 @@
 				call CCUnit( GetFilterUnit( ), GetReal( "CCDuration" ), GetStr( "CCType" ) )
 			endif
 
-			if GetReal( "Distance" ) != 0 then
+			if GetReal( "AoEDistance" ) != 0 then
 				call AoEDisplaceAction( GetFilterUnit( ) )
 			endif
 
-			if GetInt( "IsEnabled" ) != 0 and MUILocation( GetInt( "LocationID" ) ) != null then
-				call SetUnitPositionLoc( GetFilterUnit( ), MUILocation( GetInt( "LocationID" ) ) )
+			if GetBool( "IsSkillShot" ) == true then
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "InitDistance" ), GetReal( "MaxDistance" ) + 100 )
+			endif
+
+			if GetInt( "IsEnabled" ) != 0 and GetStr( "AxisName" ) != "" then
+				call SetUnitPosition( GetFilterUnit( ), GetReal( GetStr( "AxisName" ) + "X" ), GetReal( GetStr( "AxisName" ) + "Y" ) )
 			endif
 
 			if GetStr( "UnitEffect" ) != "" then
@@ -28,7 +32,7 @@
 		return true
 	endfunction	
 
-	function AoEDamage takes integer HandleID, location AoELoc, real GetAoE, string TargType, string DmgType, real Damage, boolean IsRepeated, string CCType, real CCDur returns nothing
+	function AoEDamageXY takes integer HandleID, real LocX, real LocY, real GetAoE, string TargType, string DmgType, real Damage, boolean IsRepeated, string CCType, real CCDur returns nothing
 		if GetBool( "IsUpdated" ) == false then
 			call SaveStr( HashTable, HandleID, StringHash( "TargType" ), TargType )
 			call SaveStr( HashTable, HandleID, StringHash( "DmgType" ), DmgType )
@@ -39,6 +43,6 @@
 		endif
 
 		call SaveReal( HashTable, HandleID, StringHash( "Damage" ), Damage )
-		call GroupEnumUnitsInRangeOfLoc( EnumUnits( ), AoELoc, GetAoE, Filter( function AoEDamageAction ) )
-	endfunction
+		call GroupEnumUnitsInRange( EnumUnits( ), LocX, LocY, GetAoE, Filter( function AoEDamageAction ) )
+	endfunction	
 

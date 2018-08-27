@@ -26,18 +26,6 @@
 			call KillUnit( MUIUnit( 106 ) )
 		endif
 
-		if MUILocation( 102 ) != null then
-			call RemoveLocation( MUILocation( 102 ) )
-		endif
-
-		if MUILocation( 103 ) != null then
-			call RemoveLocation( MUILocation( 103 ) )
-		endif
-
-		if MUILocation( 107 ) != null then
-			call RemoveLocation( MUILocation( 107 ) )
-		endif
-
 		if LoadEffectHandle( HashTable, HandleID, 108 ) != null then
 			call DestroyEffect( LoadEffectHandle( HashTable, HandleID, 108 ) )
 		endif

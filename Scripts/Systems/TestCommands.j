@@ -27,7 +27,7 @@
 	endfunction
 
 	function TeleportToLocation takes nothing returns nothing
-		call DisplayTimedTextToPlayer( GetTriggerPlayer( ), 0, 0, 10, "|cffffcc00You have been teleported to location with axis|r:
+		call DisplayTimedTextToPlayer( GetTriggerPlayer( ), 0, 0, 10, "|cffffcc00You have been teleported to axis|r:
 		|cffffcc00" + "X: " + "|r" + "|c0000ffff" + R2S( GetCameraTargetPositionX( ) ) + "|r
 		|cffffcc00" + "Y: " + "|r" + "|c0000ffff" + R2S( GetCameraTargetPositionY( ) ) + "|r" )
 		call SetUnitPosition( SelectedUnit( GetTriggerPlayer( ) ), GetCameraTargetPositionX( ), GetCameraTargetPositionY( ) )
