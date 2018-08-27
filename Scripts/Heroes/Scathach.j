@@ -4,7 +4,7 @@
 		call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A03Z', false )
 	endfunction
 
-	function ScathachSpellQFunction2 takes nothing returns nothing
+	function ScathachSpellQ takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime 	= MUIInteger( 0 )
 
@@ -13,11 +13,9 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "ScathachQ3" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .65, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "Attack" )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2, MUILocation( 102 ), 0, 45 )
-				call RemoveLocation( MUILocation( 102 ) )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 45 )
 			endif
 
 			if LocTime == 20 then
@@ -27,26 +25,19 @@
 					call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A03Z', false )
 				endif
 
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), 150, MUIAngle( 103, 102 ) ) )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 107 ), MUIDistance( 102, 107 ), .35, .01, false, true, "origin", DashEff( ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-				call RemoveLocation( MUILocation( 107 ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .35, .01, false, true, "origin", DashEff( ) )
 			endif
-			
+
 			if LocTime == 55 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call PauseUnit( MUIUnit( 100 ), false )
-				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
 				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call AddEffect( "GeneralEffects\\OrbOfFire.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ), 0 )
+				call AddEffectXY( "GeneralEffects\\OrbOfFire.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ), 0 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 150, 99999 )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 100 + MUILevel( ) * 50 + MUIPower( ) * 0.5 )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
 		endif
 
@@ -56,7 +47,7 @@
 		endif
 	endfunction
 
-	function ScathachSpellQSecondFunction2 takes nothing returns nothing
+	function ScathachSpellQSecond takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 		
@@ -64,14 +55,12 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call PlaySoundWithVolume( LoadSound( "ScathachQ2" ), 100, 0 )
-				call PauseUnit( MUIUnit( 100 ), true )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 150, .2, .01, false, true, "origin", DashEff( ) )
+				call CCUnit( MUIUnit( 100 ), .45, "Stun" )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .2, .01, false, true, "origin", DashEff( ) )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Seven" )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
 
 			if LocTime == 20 then
@@ -81,14 +70,10 @@
 					call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A03Z', true )
 				endif
 
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call AddEffect( "GeneralEffects\\t_huobao.mdl", .25, MUILocation( 103 ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\t_huobao.mdl", .25, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 0, 0 )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 50 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
-			
+
 			if LocTime == 35 then
 				call PauseUnit( MUIUnit( 100 ), false )
 				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
@@ -101,7 +86,7 @@
 		endif
 	endfunction
 
-	function ScathachSpellQThirdFunction2 takes nothing returns nothing
+	function ScathachSpellQThird takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )	
 		local integer LocTime   = MUIInteger( 0 )
 		
@@ -110,14 +95,12 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "ScathachQ1" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
+				call CCUnit( MUIUnit( 100 ), .55, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Three" )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2, MUILocation( 103 ), 0, 0 )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 150, .2, .01, false, true, "origin", DashEff( ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .2, .01, false, true, "origin", DashEff( ) )
 			endif
 
 			if LocTime == 20 then
@@ -127,17 +110,17 @@
 			endif
 			
 			if LocTime == 45 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 150, 99999 )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 200, .25, .01, false, false, "origin", DashEff( ) )
+				call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 200, .25, .01, false, false, "origin", DashEff( ) )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 100 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function ScathachSpellWFunction2 takes nothing returns nothing
+	function ScathachSpellW takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -146,156 +129,31 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "ScathachW1" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .6, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell Throw" )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1, MUILocation( 102 ), 0, 0 )
-				call DisplaceUnitWithArgs( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ), .5, .01, 600 )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 102 ) ) )
+				call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
+				call DisplaceUnitWithArgs( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ), .5, .01, 600 )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\NewDirtEx.mdl", GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ) ) )
 				call SaveEffectHandle( HashTable, HandleID, 108, AddSpecialEffectTarget( "Abilities\\Weapons\\PhoenixMissile\\Phoenix_Missile.mdl", MUIUnit( 100 ), "weapon" ) )
 			endif
 
 			if LocTime == 50 then
 				call PlaySoundWithVolume( LoadSound( "ScathachQ3" ), 100, 0 )
-				call AoEDamage( HandleID, MUILocation( 103 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\LightningStrike1.mdl", MUILocation( 103 ) ) )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\SlamEffect.mdl", MUILocation( 103 ) ) )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2., MUILocation( 103 ), 0, 0 )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\LightningStrike1.mdl", GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\SlamEffect.mdl", GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2., GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function ScathachSpellEFunctionRemoveUnits takes nothing returns nothing
-		call KillUnit( GetEnumUnit( ) )
-	endfunction	
+	function ScathachSpellE takes nothing returns nothing
 
-	function ScathachSpellEFunctionDisplaceDummy takes nothing returns nothing
-		call SaveLocationHandle( HashTable, MUIHandle( ), 123, GetUnitLoc( GetEnumUnit( ) ) )
-		call SaveLocationHandle( HashTable, MUIHandle( ), 124, CreateLocation( MUILocation( 123 ), 50, MUIAngle( 102, 103 ) ) )
-		call SetUnitPositionLoc( GetEnumUnit( ), MUILocation( 124 ) )
-		call RemoveLocation( MUILocation( 123 ) )
-		call RemoveLocation( MUILocation( 124 ) )
 	endfunction
 
-	function ScathachSpellEFunction2 takes nothing returns nothing
-		local real i			= 1
-		local integer HandleID  = MUIHandle( )
-		local boolean IsCounted = LoadBoolean( HashTable, HandleID, 10 )
-		local integer LocTime   = MUIInteger( 0 )
-
-		if UnitLife( MUIUnit( 100 ) ) > 0 then
-			if IsCounted == true then
-				call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-			else
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-
-				if LocTime < 1 then
-					call SaveInteger( HashTable, HandleID, 0, 1 )
-					call PauseUnit( MUIUnit( 100 ), true )
-					call SetUnitPathing( MUIUnit( 100 ), false )
-					call SetUnitAnimation( MUIUnit( 100 ), "spell Channel" )
-					call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 150, .1, .01, false, false, "origin", DashEff( ) )
-
-					loop
-						exitwhen i > 10
-						call SaveLocationHandle( HashTable, HandleID, 123, GetUnitLoc( MUIUnit( 100 ) ) )
-						call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-						call SaveLocationHandle( HashTable, HandleID, 124, CreateLocation( MUILocation( 123 ), 80. * i, MUIAngle( 123, 103 ) - 160 ) )
-						call AddEffect( "GeneralEffects\\OrbOfFire.mdl", 2, MUILocation( 124 ), MUIAngle( 123, 103 ), 0 )
-						call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 200, 9999 )
-						call GroupAddUnit( LoadGroupHandle( HashTable, HandleID, 111 ), LoadUnit( "DummyUnit" ) )
-						call RemoveLocation( MUILocation( 124 ) )
-						call SaveLocationHandle( HashTable, HandleID, 124, CreateLocation( MUILocation( 123 ), 80. * i, MUIAngle( 123, 103 ) + 160 ) )
-						call AddEffect( "GeneralEffects\\OrbOfFire.mdl", 2, MUILocation( 124 ), MUIAngle( 123, 103 ), 0 )
-						call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 200, 9999 )
-						call GroupAddUnit( LoadGroupHandle( HashTable, HandleID, 111 ), LoadUnit( "DummyUnit" ) )
-						call RemoveLocation( MUILocation( 124 ) )
-						call RemoveLocation( MUILocation( 123 ) )
-						call RemoveLocation( MUILocation( 103 ) )
-						set i = i + 1
-					endloop	
-
-					call PauseUnit( MUIUnit( 100 ), true )
-					call SetUnitPathing( MUIUnit( 100 ), false )
-				endif
-
-				call ForGroup( LoadGroupHandle( HashTable, HandleID, 111 ), function ScathachSpellEFunctionDisplaceDummy )
-
-				if MUIDistance( 102, 103 ) <= 150 then
-					call PlaySoundWithVolume( LoadSound( "ScathachR1" ), 100, 0 )
-					call ForGroup( LoadGroupHandle( HashTable, HandleID, 111 ), function ScathachSpellEFunctionRemoveUnits )
-					call PauseUnit( MUIUnit( 100 ), true )
-					call SetUnitAnimation( MUIUnit( 100 ), "spell Seven" )
-					call DestroyGroup( LoadGroupHandle( HashTable, HandleID, 111 ) )
-					call SaveBoolean( HashTable, HandleID, 10, true )
-				endif
-				
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-			endif
-
-			if LocTime == 45 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 500, .4, .01, false, false, "origin", DashEff( ) )
-				call AddEffect( "GeneralEffects\\t_huobao.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ), 90 )
-				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 1., MUILocation( 103 ), MUIAngle( 102, 103 ), 45 )
-				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
-				call SetUnitAnimation( MUIUnit( 100 ), "spell four" )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-			endif
-			
-			if LocTime == 85 then
-				call PlaySoundWithVolume( LoadSound( "ScathachR2" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call PauseUnit( MUIUnit( 100 ), false )
-				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
-				call SetUnitPathing( MUIUnit( 100 ), true )
-				call AddEffect( "GeneralEffects\\OrbOfFire.mdl", 2, MUILocation( 102 ), MUIAngle( 102, 103 ), 0 )
-				call SaveUnitHandle( HashTable, HandleID, 106, LoadUnit( "DummyUnit" ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-			endif
-			
-			if LocTime >= 85 then
-				call SaveLocationHandle( HashTable, HandleID, 109, GetUnitLoc( MUIUnit( 106 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 115, GetUnitLoc( MUIUnit( 101 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 116, CreateLocation( MUILocation( 109 ), 50, MUIAngle( 109, 115 ) ) )
-				call SetUnitPathing( MUIUnit( 106 ), false )
-				call SetUnitPositionLoc( MUIUnit( 106 ), MUILocation( 116 ) )
-				call FaceLocation( MUIUnit( 106 ), MUILocation( 115 ), 0 )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 109 ) ) )
-				
-				if MUIDistance( 115, 116 ) <= 100 then
-					call KillUnit( MUIUnit( 106 ) )
-					call AoEDamage( HandleID, MUILocation( 109 ), 600, "AoE", "Physical", MUILevel( ) * 75 + MUIPower( ), false, "", 0 )
-					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-					set i = 1
-
-					loop
-						exitwhen i > 10
-						call AddEffect( "GeneralEffects\\t_huobao.mdl", .5, MUILocation( 103 ), 36 * i, 0 )
-						set i = i + 1
-					endloop
-
-					call ClearAllData( HandleID )
-				else
-					call RemoveLocation( MUILocation( 109 ) )
-					call RemoveLocation( MUILocation( 115 ) )
-					call RemoveLocation( MUILocation( 116 ) )
-				endif
-			endif
-		else
-			call ForGroup( LoadGroupHandle( HashTable, HandleID, 111 ), function ScathachSpellEFunctionRemoveUnits )
-			call ClearAllData( HandleID )
-		endif
-	endfunction
-
-	function ScathachSpellRFunction2 takes nothing returns nothing
+	function ScathachSpellR takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -304,31 +162,25 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "ScathachE1" ), 80, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 25 + MUIPower( ) * 0.17 )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 150, .2, .01, false, false, "origin", DashEff( ) )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.5, MUILocation( 103 ), 0, 0 )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .2, .01, false, false, "origin", DashEff( ) )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
+				call CCUnit( MUIUnit( 100 ), 1.35, "Stun" )
 				call SetUnitTimeScale( MUIUnit( 100 ), 1.5 )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Two" )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
 			
 			if LocTime == 25 or LocTime == 100 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), 50, MUIAngle( 103, 102 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 25 + MUIPower( ) * 0.17 )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1 + .1 * GetRandomInt( 3, 5 ), MUILocation( 107 ), 0, 0 )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 107 ), MUIDistance( 102, 107 ), .2, .01, false, true, "origin", "" )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 150, .25, .01, false, false, "origin", "" )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-				call RemoveLocation( MUILocation( 107 ) )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), 150, .2, .01, false, true, "origin", "" )
+				call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 150, .25, .01, false, false, "origin", "" )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1 + .1 * GetRandomInt( 3, 5 ), GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
 			endif
-			
+
 			if LocTime == 25 then
 				call CCUnit( MUIUnit( 101 ), 2, "Stun" )
 				call MakeUnitAirborne( MUIUnit( 101 ), 500, 2000 )
@@ -337,7 +189,7 @@
 			if LocTime == 50 then
 				call SetUnitFlyHeight( MUIUnit( 101 ), 0, 750 )
 			endif
-			
+
 			if LocTime == 75 then
 				call SetUnitFlyHeight( MUIUnit( 101 ), 0, 500 )
 			endif
@@ -347,16 +199,16 @@
 			endif
 			
 			if LocTime == 125 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 25 + MUIPower( ) * 0.17 )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 50, .25, .01, false, false, "origin", "" )
+				call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 50, .25, .01, false, false, "origin", "" )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction
 
-	function ScathachSpellTFunction2 takes nothing returns nothing
+	function ScathachSpellT takes nothing returns nothing
 		local real    i			= 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -365,61 +217,56 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call AddEffect( "GeneralEffects\\ShockWaveRed.mdl", 2, MUILocation( 102 ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\ShockWaveRed.mdl", 2, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
 				call PlaySoundWithVolume( LoadSound( "ScathachQ1" ), 100, 0 )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), 1.1, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell Three" )
-				call MUIDummy( 106, 'u001', 102, MUIAngle( 102, 103 ) )
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
+				call MUIDummyXY( 106, 'u001', GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Angle" ) )
 				call MUISaveEffect( 150, "Effects\\Scathach\\Spear.mdl", 106 )
 				call ScaleUnit( MUIUnit( 106 ), 2 )
 				call SetUnitVertexColor( MUIUnit( 106 ), 128, 0, 0, 100 )
 				call SetUnitPathing( MUIUnit( 106 ), false )
-				call RemoveLocation( MUILocation( 102 ) )
+				call SetUnitFlyHeight( MUIUnit( 106 ), 150, 99999 )
 			endif
 
 			if LocTime > 1 and LocTime <= 100 then
 				call SaveReal( HashTable, HandleID, 110, LoadReal( HashTable, HandleID, 110 ) + 1 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 				call ScaleUnit( MUIUnit( 106 ), 1 + LoadReal( HashTable, HandleID, 110 ) / 50 )
-				call RemoveLocation( MUILocation( 102 ) )
 			endif
 
 			if LocTime == 100 then
 				call PlaySoundWithVolume( LoadSound( "ScathachT1" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call PauseUnit( MUIUnit( 100 ), false )
-				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell Four" )
-				call RemoveLocation( MUILocation( 102 ) )
-				call SimpleMovement( HandleID, 109, 1 )
+				call SimpleMovement( HandleID, "Effect", 1 )
+				call SaveReal( HashTable, HandleID, StringHash( "CasterX" ), GetUnitX( MUIUnit( 100 ) ) )
+				call SaveReal( HashTable, HandleID, StringHash( "CasterY" ), GetUnitY( MUIUnit( 100 ) ) )
 			endif
 
 			if LocTime >= 100 then
-				call SaveLocationHandle( HashTable, HandleID, 107, GetUnitLoc( MUIUnit( 106 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 109, CreateLocation( MUILocation( 107 ), 50, MUIAngle( 107, 103 ) ) )
-				call SetUnitPositionLoc( MUIUnit( 106 ), MUILocation( 109 ) )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 107 ) ) )
-				call AoEDamage( HandleID, MUILocation( 107 ), 400, "", "", 0, true, "", 0 )
+				call SaveReal( HashTable, HandleID, StringHash( "Distance" ), GetReal( "Distance" ) + 50 )
+				call CreateXY( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "Distance" ), GetReal( "Angle" ), "Effect" )
+				call SetUnitPosition( MUIUnit( 106 ), GetReal( "EffectX" ), GetReal( "EffectY" ) )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\NewDirtEx.mdl", GetReal( "EffectX" ), GetReal( "EffectY" ) ) )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 400, "", "", 0, true, "", 0 )
 
-				if MUIDistance( 103, 109 ) <= 100 then
+				if GetReal( "Distance" ) >= 3000 then
 					call PlaySoundWithVolume( LoadSound( "GlassShatter1" ), 80, 0 )
-					call AoEDamage( HandleID, MUILocation( 107 ), 450, "AoE", "Physical", MUILevel( ) * 300 + MUIPower( ), false, "Stun", 1 )
+					call RemoveUnit( MUIUnit( 106 ) )
+					call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 450, "AoE", "Physical", MUILevel( ) * 300 + MUIPower( ), false, "Stun", 1 )
 					set i = 1
 
 					loop
 						exitwhen i > 4
-						call AddEffect( "GeneralEffects\\t_huobao.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ), 0 )
+						call AddEffectXY( "GeneralEffects\\t_huobao.mdl", 2, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ), 0 )
 						call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 255, 255, 200 )
 						set i = i + 1
 					endloop
 
-					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodCircle.mdl", MUILocation( 103 ) ) )
-					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
-					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 103 ) ) )
+					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodCircle.mdl", GetReal( "EffectX" ), GetReal( "EffectY" ) ) )
+					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetReal( "EffectX" ), GetReal( "EffectY" ) ) )
+					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\NewDirtEx.mdl", GetReal( "EffectX" ), GetReal( "EffectY" ) ) )
 					call ClearAllData( HandleID )
-				else
-					call RemoveLocation( MUILocation( 109 ) )
 				endif
 			endif
 		endif
@@ -433,29 +280,30 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQFunction2 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQ )
 		endif
 		
 		if GetSpellAbilityId( ) == 'A03Y' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQSecondFunction2 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQSecond )
 		endif		
 		
 		if GetSpellAbilityId( ) == 'A03Z' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQThirdFunction2 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellQThird )
 		endif		
 		
 		if GetSpellAbilityId( ) == 'A041' then
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-				call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellWFunction2 )
+				call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+				call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
+				call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellW )
 			else
 				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 			endif
@@ -467,21 +315,22 @@
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellEFunction2 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellE )
 		endif		
 		
 		if GetSpellAbilityId( ) == 'A043' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellRFunction2 )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellR )
 		endif		
 		
 		if GetSpellAbilityId( ) == 'A044' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellTFunction2 )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellT )
 		endif		
 		
 		return false

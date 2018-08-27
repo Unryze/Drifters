@@ -7,40 +7,30 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "ReinforceQ1" ), 60, 0 )
-				call AddEffect( "Effects\\Reinforce\\SmallBlackHole.mdl", 1.2, MUILocation( 102 ), 270, 0 )
-				call AddEffect( "Effects\\SaberAlter\\DarkExplosion.mdl", 1.2, MUILocation( 102 ), 0, 0 )
-				call AoEDisplace( HandleID, 102, -10, .05, .01, 0, "" )
+				call AddEffectXY( "Effects\\Reinforce\\SmallBlackHole.mdl", 1.2, GetReal( "SpellX" ), GetReal( "SpellY" ), 270, 0 )
+				call AddEffectXY( "Effects\\SaberAlter\\DarkExplosion.mdl", 1.2, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AoEDisplaceXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), -10, .05, .01, 0, "" )
 			endif
 
 			if LocTime > 1 and LocTime < 100 then
-				call AoEDamage( HandleID, MUILocation( 102 ), 400, "", "", 0, true, "", 0 )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 400, "", "", 0, true, "", 0 )
 			endif
 
 			if LocTime == 100 then
 				call SaveInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0, LoadInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0 ) + 1 )
-				call AoEDisplace( HandleID, 102, 200, 1., .01, 0, "" )
-				call AoEDamage( HandleID, MUILocation( 102 ), 400, "AoE", "Magical", 250 + MUILevel( ) * 50 + MUIPower( ), true, "Stun", 1.5 )
-				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 5, MUILocation( 102 ), 270, 90 )
+				call AoEDisplaceXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 200, 1., .01, 0, "" )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 400, "AoE", "Magical", 250 + MUILevel( ) * 50 + MUIPower( ), true, "Stun", 1.5 )
+				call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 5, GetReal( "SpellX" ), GetReal( "SpellY" ), 270, 90 )
 				call UnitApplyTimedLife( LoadUnit( "DummyUnit" ), 'BTLF', .05 )
-				call AddEffect( "Effects\\Reinforce\\BlackExplosion.mdl", 4, MUILocation( 102 ), 0, 0 )
+				call AddEffectXY( "Effects\\Reinforce\\BlackExplosion.mdl", 4, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 200, 99999 )
 				call ClearAllData( HandleID )
 			endif
 		endif
 	endfunction	
 
-	function ReinforceSpellWDummyFacing takes nothing returns nothing
-		call FaceLocation( GetEnumUnit( ), MUILocation( 102 ), 0 )
-	endfunction
-
-	function ReinforceSpellWDummyMovement takes nothing returns nothing
-		call SetUnitFlyHeight( GetEnumUnit( ), 0, 99999 )
-		call SetUnitPositionLoc( GetEnumUnit( ), MUILocation( 102 ) )
-		call SetUnitFacing( GetEnumUnit( ), MUIAngle( 102, 102 ) )
-	endfunction
-
 	function ReinforceSpellW takes nothing returns nothing
-		local real 	  i 		= 1
+		local integer i 		= 1
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -49,27 +39,31 @@
 			
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "ReinforceW1" ), 60, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 101 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 
 				loop
 					exitwhen i > 20
-					call SaveLocationHandle( HashTable, HandleID, 103, CreateLocation( MUILocation( 102 ), GetRandomReal( 100, 1000 ), 36 * i ) )
-					call SaveUnit( "DummyUnit", CreateUnitAtLoc( Player( PLAYER_NEUTRAL_PASSIVE ), 'u00B', MUILocation( 103 ), MUIAngle( 103, 102 ) ) )
-					call GroupAddUnit( LoadGroupHandle( HashTable, HandleID, 111 ), LoadUnit( "DummyUnit" ) )
-					call DestroyEffect( AddSpecialEffectTarget( "Abilities\\Spells\\Orc\\FeralSpirit\\feralspirittarget.mdl", LoadUnit( "DummyUnit" ), "origin" ) )
-					call RemoveLocation( MUILocation( 103 ) )
+					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), GetRandomReal( 100, 1000 ), 36 * i, "Effect" )
+					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
+					call SaveUnit( "DummyUnit" + I2S( i ), CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u00B', GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ) ) )
+					call DestroyEffect( AddSpecialEffectTarget( "Abilities\\Spells\\Orc\\FeralSpirit\\feralspirittarget.mdl", LoadUnit( "DummyUnit" + I2S( i ) ), "origin" ) )
 					set i = i + 1
 				endloop
+
+				set i = 1
 			endif
-			
-			call ForGroup( LoadGroupHandle( HashTable, GetHandleId( GetExpiredTimer( ) ), 111 ), function ReinforceSpellWDummyFacing )
-		
+
 			if LocTime == 100 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 101 ) ) )
+				loop
+					exitwhen i > 20
+					call SetUnitFlyHeight( LoadUnit( "DummyUnit" + I2S( i ) ), 0, 0 )
+					call SetUnitPosition( LoadUnit( "DummyUnit" + I2S( i ) ), GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) )
+					set i = i + 1
+				endloop
+
 				call SaveInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0, LoadInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0 ) + 1 )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodCircle.mdl", MUILocation( 102 ) ) )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 102 ) ) )
-				call ForGroup( LoadGroupHandle( HashTable, HandleID, 111 ), function ReinforceSpellWDummyMovement )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodCircle.mdl", GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
 				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
 				call ClearAllData( HandleID )
@@ -88,14 +82,14 @@
 				call PlaySoundWithVolume( LoadSound( "ReinforceE1" ), 60, 0 )
 			endif
 
-			if LocTime == 100 then
+			if LocTime == 50 then
 				call SaveInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0, LoadInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0 ) + 1 )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 102 ) ) )
-				call DestroyEffect( AddSpecialEffectLoc( "Effects\\Reinforce\\ApocalypseStomp.mdl", MUILocation( 102 ) ) )
-				call AddEffect( "GeneralEffects\\Moonwrath.mdl", 6, MUILocation( 102 ), 0, 0 )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\NewDirtEx.mdl", GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
+				call DestroyEffect( AddSpecialEffect( "Effects\\Reinforce\\ApocalypseStomp.mdl", GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
+				call AddEffectXY( "GeneralEffects\\Moonwrath.mdl", 6, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
 				call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 120, 0, 170, 255 )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2.5, MUILocation( 102 ), 0, 0 )
-				call AoEDamage( HandleID, MUILocation( 102 ), 450, "AoE", "Magical", MUILevel( ) * 60 + MUIPower( ), false, "", 0 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2.5, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 450, "AoE", "Magical", MUILevel( ) * 60 + MUIPower( ), false, "", 0 )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -108,18 +102,13 @@
 		call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 		if LocTime == 1 then
-			call PauseUnit( MUIUnit( 100 ), true )
+			call CCUnit( MUIUnit( 100 ), .2, "Stun" )
 			call SetUnitTimeScale( MUIUnit( 100 ), 2 )
 			call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw" )
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 		endif
 
 		if LocTime == 10 then
-			call InitProjectile( 100, HandleID, 102, 103, 200, 10, 1200, 3, 200, "Effects\\Reinforce\\WormHole.mdl", true )
-		endif
-
-		if LocTime == 20 then
-			call PauseUnit( MUIUnit( 100 ), false )
+			call InitProjectileXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "SpellX" ), GetReal( "SpellY" ), 50, 10, 1200, 3, 200, "Effects\\Reinforce\\WormHole.mdl", true )
 		endif
 
 		if LocTime > 10 then
@@ -127,8 +116,7 @@
 				call ProjectileMovement( HandleID )
 			else
 				call SaveInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0, LoadInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0 ) + 1 )
-				call AoEDamage( MUIHandle( ), GetLoc( "ProjectileLoc" ), 300, "AoE", "Magical", MUILevel( ) * 75 + MUIPower( ), true, "", 0 )
-				call RemoveLocation( GetLoc( "ProjectileLoc" ) )
+				call AoEDamageXY( MUIHandle( ), GetReal( "ProjectileMoveX" ), GetReal( "ProjectileMoveY" ), 300, "AoE", "Magical", MUILevel( ) * 75 + MUIPower( ), true, "", 0 )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -146,15 +134,15 @@
 			else
 				if LocTime < 1 then
 					call SaveInteger( HashTable, HandleID, 0, 1 )
-					call InitSpiral( HandleID, 103, 450, 16, 800, "Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayTarget.mdl" )
+					call InitSpiralXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 450, 16, 800, "Abilities\\Spells\\Undead\\DeathandDecay\\DeathandDecayTarget.mdl" )
 					call PlaySoundWithVolume( LoadSound( "ReinforceT1" ), 80, 0 )
-					call CCUnit( MUIUnit( 100 ), 2.5, "Stun" )
+					call CCUnit( MUIUnit( 100 ), 2.75, "Stun" )
 					call SetUnitAnimation( MUIUnit( 100 ), "spell channel" )
 					call SaveEffectHandle( HashTable, HandleID, 150, AddSpecialEffectTarget( "Effects\\Reinforce\\Aura.mdl", MUIUnit( 100 ), "origin" ) )
 
 					loop
 						exitwhen i > 5
-						call AddEffect( "Effects\\Reinforce\\MagicCircle.mdl", i / 2, MUILocation( 102 ), 0, 0 )
+						call AddEffectXY( "Effects\\Reinforce\\MagicCircle.mdl", i / 2, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
 						call UnitApplyTimedLife( LoadUnit( "DummyUnit" ), 'BTLF', 1.75 )
 						call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 50, 255, 255 )
 						set i = i + 1
@@ -169,17 +157,11 @@
 			endif
 
 			if LocTime == 20 then
-				call MUIDummy( 106, 'u001', 103, 0 )
+				call MUIDummyXY( 106, 'u001', GetReal( "SpellX" ), GetReal( "SpellY" ), 0 )
 				call MUISaveEffect( 151, "Effects\\Reinforce\\BlackHole.mdl", 106 )
 				call ScaleUnit( MUIUnit( 106 ), 3.5 )
 			endif
 
-			if LocTime == 70 then
-				call SaveLocationHandle( HashTable, HandleID, 113, CreateLocation( MUILocation( 102 ), 130, GetUnitFacing( MUIUnit( 100 ) ) ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 113 ) )
-			endif
-			
 			if LocTime == 150 then
 				call SetUnitAnimation( MUIUnit( 100 ), "spell slam" )
 			endif
@@ -188,12 +170,12 @@
 				call RemoveUnit( MUIUnit( 106 ) )
 				call DestroyEffect( MUIEffect( 150 ) )
 				call DestroyEffect( MUIEffect( 151 ) )
-				call AddEffect( "Effects\\Reinforce\\ShadowExplosion.mdl", 5, MUILocation( 103 ), 0, 0 )
-				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 5., MUILocation( 103 ), 0, 0 )
-				call AddEffect( "GeneralEffects\\FuzzyStomp.mdl", 6, MUILocation( 103 ), 0, 0 )
-				call AddEffect( "GeneralEffects\\ValkDust50.mdl", 6, MUILocation( 103 ), 0, 0 )
-				call AoEDisplace( HandleID, 103, 300, .5, .01, 0, "" )
-				call AoEDamage( HandleID, MUILocation( 103 ), 900, "AoE", "Magical", MUILevel( ) * 400 + MUIPower( ), false, "Stun", 1 )
+				call AddEffectXY( "Effects\\Reinforce\\ShadowExplosion.mdl", 5, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 5., GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\FuzzyStomp.mdl", 6, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\ValkDust50.mdl", 6, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AoEDisplaceXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 300, .5, .01, 0, "" )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 900, "AoE", "Magical", MUILevel( ) * 400 + MUIPower( ), false, "Stun", 1 )
 			endif
 			
 			if LocTime == 250 then
@@ -210,7 +192,8 @@
 		if GetSpellAbilityId( ) == 'A04G' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 102, GetSpellTargetLoc( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellQ )
 		endif
 		
@@ -218,21 +201,22 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellW )
 		endif
 		
 		if GetSpellAbilityId( ) == 'A04I' then
 			set	HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 102, GetSpellTargetLoc( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellE )
 		endif		
 		
 		if GetSpellAbilityId( ) == 'A04J' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellR )
 		endif
 
@@ -240,8 +224,8 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveBoolean( HashTable, HandleID, 10, false )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( GetTriggerUnit( ) ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellT )
 		endif
 

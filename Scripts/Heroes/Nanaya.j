@@ -1,5 +1,3 @@
-
-
 	function NanayaSpellQ takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
@@ -8,23 +6,29 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .4, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell slam one" )
 				call PlaySoundWithVolume( LoadSound( "NanayaQ1" ), 100, 0 )
 			endif
+			
+			if LocTime == 25 then
+				call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
+				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Distance" ) / 2, GetReal( "Angle" ), "Effect" )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ), .1, .01, false, true, "origin", DashEff( ) )
+				call AddEffectXY( "Effects\\Nanaya\\LinearSlash1.mdl", 3, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ), 0 )
+				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
+				call AoEDisplaceXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), -200, .5, .01, 0, DashEff( ) )
+			endif
+
+			if LocTime >= 25 then
+				if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
+					call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", ( 250 + MUILevel( ) * 50 + MUIPower( ) ) * 1.5, false, "Stun", 1 )
+				else
+					call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
+				endif
+			endif			
 
 			if LocTime == 30 then
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), MUIDistance( 102, 103 ) * .5, MUIAngle( 102, 103 ) ) )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ), .1, .01, false, true, "origin", DashEff( ) )
-				call AddEffect( "Effects\\Nanaya\\LinearSlash1.mdl", 3, MUILocation( 107 ), MUIAngle( 102, 103 ), 0 )
-				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
-				call AoEDisplace( HandleID, 103, -200, .5, .01, 0, DashEff( ) )
-				if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
-					call AoEDamage( HandleID, MUILocation( 107 ), 400, "AoE", "Physical", ( 250 + MUILevel( ) * 50 + MUIPower( ) ) * 1.5, false, "Stun", 1 )
-				else
-					call AoEDamage( HandleID, MUILocation( 107 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
-				endif
 				call UnitRemoveAbility( MUIUnit( 100 ), 'B001' )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw six" )
 				call ClearAllData( HandleID )
@@ -38,24 +42,21 @@
 		if StopSpell( HandleID, 0 ) == false then
 			if LoadInteger( HashTable, HandleID, 110 ) < 1 then
 				call PlaySoundWithVolume( LoadSound( "NanayaW1" ), 100, 0 )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .8, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell two" )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
 			endif
 
 			call SaveInteger( HashTable, HandleID, 110, LoadInteger( HashTable, HandleID, 110 ) + 1 )
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-			call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), 350, GetUnitFacing( MUIUnit( 100 ) ) ) )
-			call AddEffect( "Effects\\Nanaya\\Sensa1.mdl", 2, MUILocation( 102 ), GetUnitFacing( MUIUnit( 100 ) ) + GetRandomReal( -45, 45 ), 0 )
+			call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 150, GetUnitFacing( MUIUnit( 100 ) ), "Effect" )
+			call AddEffectXY( "Effects\\Nanaya\\Sensa1.mdl", 2, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetUnitFacing( MUIUnit( 100 ) ) + GetRandomReal( -45, 45 ), 0 )
 			call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 100, 255, 255 )
 			call KillUnit( LoadUnit( "DummyUnit" ) )
 			if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
-				call AoEDamage( HandleID, MUILocation( 107 ), 350, "AoE", "Physical", ( MUILevel( ) * 5 + MUIPower( ) * 0.033 ) * 1.5, true, "", 0 )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 350, "AoE", "Physical", ( MUILevel( ) * 5 + MUIPower( ) * 0.033 ) * 1.5, true, "", 0 )
 			else
-				call AoEDamage( HandleID, MUILocation( 107 ), 350, "AoE", "Physical", MUILevel( ) * 5 + MUIPower( ) * 0.033, true, "", 0 )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 350, "AoE", "Physical", MUILevel( ) * 5 + MUIPower( ) * 0.033, true, "", 0 )
 			endif
-			call RemoveLocation( MUILocation( 102 ) )
-			call RemoveLocation( MUILocation( 107 ) )
 
 			if LoadInteger( HashTable, HandleID, 110 ) >= 30 then
 				call UnitRemoveAbility( MUIUnit( 100 ), 'B001' )
@@ -72,7 +73,7 @@
 		call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 		
 		if LocTime == 1 then
-			call PauseUnit( MUIUnit( 100 ), true )
+			call CCUnit( MUIUnit( 100 ), .6, "Stun" )
 			call SetUnitAnimation( MUIUnit( 100 ), "spell slam one" )
 			call PlaySoundWithVolume( LoadSound( "NanayaR2" ), 90, 0 )
 		endif
@@ -80,92 +81,81 @@
 		if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
 			if StopSpell( HandleID, 0 ) == false and LocTime < 125 then
 				if LocTime == 25 then
-					call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), 150, MUIAngle( 102, 103 ) ) )
-					call SetUnitPositionLoc( MUIUnit( 100 ), MUILocation( 107 ) )
-					call SetUnitFacing( MUIUnit( 100 ), MUIAngle( 103, 102 ) )
+					call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
+					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), 150, GetReal( "Angle" ), "Move" )
+					call SetUnitPosition( MUIUnit( 100 ), GetReal( "MoveX" ), GetReal( "MoveY" ) )
+					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
+					call SetUnitFacing( MUIUnit( 100 ), GetReal( "Angle" ) )
 					call SetUnitAnimation( MUIUnit( 100 ), "spell two alternate" )
-					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BlackBlink.mdl", MUILocation( 102 ) ) )
-					call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.5, MUILocation( 102 ), 0, 0 )
-					call RemoveLocation( MUILocation( 102 ) )
-					call RemoveLocation( MUILocation( 103 ) )
-					call RemoveLocation( MUILocation( 107 ) )
+					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BlackBlink.mdl", GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
+					call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetReal( "CasterX" ), GetReal( "CasterY" ), 0, 0 )
 				endif
 
 				if LocTime == 50 then
+					call CCUnit( MUIUnit( 100 ), 1., "Stun" )
 					call PlaySoundWithVolume( LoadSound( "KickSound1" ), 60, 0 )
-					call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-					call PauseUnit( MUIUnit( 100 ), true )
+					call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
 					call SetUnitAnimation( MUIUnit( 100 ), "spell slam one" )
-					call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.5, MUILocation( 102 ), 0, 0 )
-					call AddEffect( "GeneralEffects\\SlamEffect.mdl", 1.5, MUILocation( 103 ), MUIAngle( 102, 103 ), 45 )
+					call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetReal( "CasterX" ), GetReal( "CasterY" ), 0, 0 )
+					call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 1.5, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ), 45 )
 					call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
 					call MakeUnitAirborne( MUIUnit( 101 ), 800, 4000 )
 					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) )
-					call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 300, .4, .01, false, false, "origin", "" )
-					call RemoveLocation( MUILocation( 102 ) )
-					call RemoveLocation( MUILocation( 103 ) )
+					call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 300, .4, .01, false, false, "origin", "" )
 				endif
 
 				if LocTime == 75 then
 					call PlaySoundWithVolume( LoadSound( "NanayaE1" ), 100, 0 )
 					call MakeUnitAirborne( MUIUnit( 100 ), 600, 4000 )
-					call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), 200, MUIAngle( 103, 102 ) ) )
-					call PauseUnit( MUIUnit( 100 ), true )
+					call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
+					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), 200, -GetReal( "Angle" ), "Move" )
 					call SetUnitAnimation( MUIUnit( 100 ), "spell throw three" )
-					call SetUnitPositionLoc( MUIUnit( 100 ), MUILocation( 107 ) )
-					call SetUnitFacing( MUIUnit( 100 ), MUIAngle( 102, 103 ) )
-					call RemoveLocation( MUILocation( 102 ) )
-					call RemoveLocation( MUILocation( 103 ) )
-					call RemoveLocation( MUILocation( 107 ) )
+					call SetUnitPosition( MUIUnit( 100 ), GetReal( "MoveX" ), GetReal( "MoveY" ) )
+					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
+					call SetUnitFacing( MUIUnit( 100 ), GetReal( "Angle" ) )
 				endif
 			endif
 
 			if LocTime == 125 then
 				call PlaySoundWithVolume( LoadSound( "NanayaE2" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
-				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 1.25, MUILocation( 103 ), MUIAngle( 102, 103 ) + 180, 45 )
+				call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 1.25, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) + 180, 45 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 800, 99999 )
 				call SetUnitFlyHeight( MUIUnit( 101 ), 0, 2000 )
 				call SetUnitFlyHeight( MUIUnit( 100 ), 0, 99999 )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 400, .4, .01, false, false, "origin", "" )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
+				call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 400, .4, .01, false, false, "origin", "" )
 			endif
 
 			if LocTime == 150 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call AddEffect( "GeneralEffects\\FuzzyStomp.mdl", 1.5, MUILocation( 103 ), 0, 0 )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1, MUILocation( 103 ), 0, 0 )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2, MUILocation( 103 ), 0, 0 )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call AddEffectXY( "GeneralEffects\\FuzzyStomp.mdl", 1.5, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw two" )
-				call AoEDamage( HandleID, MUILocation( 103 ), 500, "AoE", "Physical", 250 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "Stun", 1 )
+				call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 500, "AoE", "Physical", 250 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "Stun", 1 )
 				call UnitRemoveAbility( MUIUnit( 100 ), 'B001' )
 				call ClearAllData( HandleID )
 			endif
 		else
 			if StopSpell( HandleID, 0 ) == false then
 				if LocTime == 50 then
-					call SetUnitAnimation( MUIUnit( 100 ), "spell throw six" )
 					call CCUnit( MUIUnit( 101 ), 1, "Stun" )
+					call SetUnitAnimation( MUIUnit( 100 ), "spell throw six" )
+					call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
+					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), 300, GetReal( "Angle" ), "Move" )
 					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) )
-					call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), 300, MUIAngle( 102, 103 ) ) )
-					call SetUnitPositionLoc( MUIUnit( 100 ), MUILocation( 107 ) )
-					call SetUnitFacing( MUIUnit( 100 ), MUIAngle( 102, 103 ) )
-					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BlackBlink.mdl", MUILocation( 102 ) ) )
-					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
-					call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.5, MUILocation( 102 ), 0, 0 )
-					call AddEffect( "Effects\\Nanaya\\LinearSlash1.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ) + 45, 0 )
-					call AddEffect( "Effects\\Nanaya\\LinearSlash1.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ) - 45, 0 )
+					call SetUnitPosition( MUIUnit( 100 ), GetReal( "MoveX" ), GetReal( "MoveY" ) )
+					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BlackBlink.mdl", GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
+					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
+					call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetReal( "CasterX" ), GetReal( "CasterY" ), 0, 0 )
+					call AddEffectXY( "Effects\\Nanaya\\LinearSlash1.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) + 45, 0 )
+					call AddEffectXY( "Effects\\Nanaya\\LinearSlash1.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) - 45, 0 )
 					call ClearAllData( HandleID )
 				endif
 			endif
@@ -182,92 +172,67 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "NanayaT1" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
 				call ResetAbilityCooldown( MUIUnit( 100 ), 'A02P' )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 200, .25, .015, false, true, "origin", DashEff( ) )
-				call PauseUnit( MUIUnit( 100 ), true )
-				call FaceLocation( MUIUnit( 100 ), MUILocation( 103 ), 0 )
-				call SetUnitAnimation( MUIUnit( 100 ), "spell channel one" )
-				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-			endif
-
-			if LocTime == 25 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
-				call FaceLocation( MUIUnit( 100 ), MUILocation( 103 ), 0 )
-				call AddEffect( "GeneralEffects\\ValkDust150.mdl", 1.5, MUILocation( 103 ), 0, 45 )
-				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 1.5, MUILocation( 103 ), MUIAngle( 102, 103 ), 45 )
-				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.5, MUILocation( 103 ), 0, 45 )
+				call CCUnit( MUIUnit( 100 ), 2.3, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw four" )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 103, 102 ), 300, 1, .01, false, false, "origin", DashEff( ) )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 600, 1, .01, false, false, "origin", DashEff( ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
+			endif
+			
+			if LocTime == 20 then
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), -( 600 - GetReal( "Distance" ) ), ( 600 - GetReal( "Distance" ) ) / 1000, .01, false, false, "origin", "" )
 			endif
 
-			if LocTime == 125 then
+			if LocTime == 100 then
 				call PlaySoundWithVolume( LoadSound( "NanayaT2" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call AddEffect( "GeneralEffects\\ValkDust150.mdl", 1.5, MUILocation( 102 ), 0, 45 )
-				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 1.25, MUILocation( 102 ), MUIAngle( 102, 103 ), 45 )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
+				call AddEffectXY( "GeneralEffects\\ValkDust150.mdl", 1.5, GetReal( "CasterX" ), GetReal( "CasterY" ), 0, 45 )
+				call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 1.25, GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "Angle" ), 45 )
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
-				call PauseUnit( MUIUnit( 100 ), true )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw five" )
-				call DisplaceUnitWithArgs( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 200, 1, .01, 400 )
+				call DisplaceUnitWithArgs( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 200, 1, .01, 400 )
 
 				set i = 1
 
 				loop
 					exitwhen i > 15
-					call SaveUnit( "DummyUnit", CreateUnitAtLoc( Player( PLAYER_NEUTRAL_PASSIVE ), 'u007', MUILocation( 102 ), MUIAngle( 102, 103 ) ) )
-					call DisplaceUnitWithArgs( LoadUnit( "DummyUnit" ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 200, 1 + .1 * I2R( i ), .02, 400 )
+					call SaveUnit( "DummyUnit", CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u007', GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "Angle" ) ) )
+					call DisplaceUnitWithArgs( LoadUnit( "DummyUnit" ), GetReal( "Angle" ), GetReal( "Distance" ) - 200, 1 + .1 * i, .01, 400 )
 					call UnitApplyTimedLife( LoadUnit( "DummyUnit" ), 'BTLF', 1 )
 					call SetUnitAnimation( LoadUnit( "DummyUnit" ), "spell throw five" )
-					call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 255, 255, ( 255-( 15 * i ) ) )
+					call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 255, 255, ( 255 - ( 25 * i ) ) )
 					set i = i + 1
-				endloop
-
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
+				endloop		
 			endif
 
-			if LocTime == 225 then
+			if LocTime == 200 then
 				call PlaySoundWithVolume( LoadSound( "GlassShatter1" ), 80, 0 )
 				call PlaySoundWithVolume( LoadSound( "NanayaR2" ), 100, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), 150, MUIAngle( 102, 103 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
+				call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), 150, GetReal( "Angle" ), "Move" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw six" )
-				call SetUnitPositionLoc( MUIUnit( 100 ), MUILocation( 107 ) )
-				call SetUnitFacing( MUIUnit( 100 ), MUIAngle( 102, 103 ) )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), 400, .35, .01, false, false, "origin", DashEff( ) )
-				call AddMultipleEffects( 3, "Effects\\Nanaya\\ArcDrive1.mdl", 4, MUILocation( 103 ), 270, 0, 255, 255, 255, 255 )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.25, MUILocation( 107 ), 0, 0 )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.25, MUILocation( 103 ), 0, 0 )
+				call SetUnitPosition( MUIUnit( 100 ), GetReal( "MoveX" ), GetReal( "MoveY" ) )
+				call SetUnitFacing( MUIUnit( 100 ), GetReal( "Angle" ) )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), 400, .2, .01, false, false, "origin", DashEff( ) )
+				call AddMultipleEffectsXY( 3, "Effects\\Nanaya\\ArcDrive1.mdl", 4, GetReal( "TargetX" ), GetReal( "TargetY" ), 270, 0, 255, 255, 255, 255 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.25, GetReal( "MoveX" ), GetReal( "MoveY" ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.25, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
 
 				set i = 1
 
 				loop
 					exitwhen i > 4
-					call AddEffect( "Effects\\Nanaya\\LinearSlash2.mdl", 3, MUILocation( 103 ), MUIAngle( 102, 103 ) + Pow( -1, I2R( i ) ) * 30, 0 )
+					call AddEffectXY( "Effects\\Nanaya\\LinearSlash2.mdl", 3, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) + Pow( -1, I2R( i ) ) * 30, 0 )
 					set i = i + 1
 				endloop
 
 				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 4000 + MUILevel( ) * 300 + MUIPower( ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-				call RemoveLocation( MUILocation( 107 ) )
 			endif
 
-			if LocTime == 260 then
+			if LocTime == 220 then
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -284,9 +249,7 @@
 			endif
 			
 			if LocTime == 1 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), 1.9, "Stun" )
 				call ResetAbilityCooldown( MUIUnit( 100 ), 'A02P' )
 				call SetUnitAnimation( MUIUnit( 100 ), "stand" )
 			endif
@@ -299,64 +262,55 @@
 			
 			if LocTime == 90 then
 				call SetUnitTimeScale( MUIUnit( 100 ), 0 )
-				call MUIDummy( 106, 'u001', 102, MUIAngle( 102, 103 ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
+				call MUIDummyXY( 106, 'u001', GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "Angle" ) )
 				call MUISaveEffect( 104, "Effects\\Nanaya\\Knife.mdl", 106 )
 				call SetUnitPathing( MUIUnit( 106 ), false )
 				call SetUnitFlyHeight( MUIUnit( 106 ), 100, 99999 )
 				call SetUnitTimeScale( MUIUnit( 100 ), 1 )
 				call SetUnitAnimation( MUIUnit( 100 ), "attack" )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 				call SaveBoolean( HashTable, HandleID, 10, false )
 			endif
 
 			if IsCounted == false then
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 107, GetUnitLoc( MUIUnit( 106 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 109, CreateLocation( MUILocation( 107 ), MUIDistance( 103, 107 ) * .1, MUIAngle( 107, 103 ) ) )
-				call SetUnitPositionLoc( MUIUnit( 106 ), MUILocation( 109 ) )
-				call FaceLocation( MUIUnit( 106 ), MUILocation( 103 ), 0 )
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "Distance" ), DistanceBetweenAxis( GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), GetUnitX( MUIUnit( 106 ) ), GetUnitY( MUIUnit( 106 ) ) ) )
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetUnitX( MUIUnit( 106 ) ), GetUnitY( MUIUnit( 106 ) ), GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
+				call CreateXY( GetUnitX( MUIUnit( 106 ) ), GetUnitY( MUIUnit( 106 ) ), GetReal( "Distance" ) *.1, GetReal( "Angle" ), "Knife" )
+				call SetUnitPosition( MUIUnit( 106 ), GetReal( "KnifeX" ), GetReal( "KnifeY" ) )
+				call SetUnitFacing( MUIUnit( 106 ), GetReal( "Angle" ) )
 				
-				if MUIDistance( 103, 109 ) <= 75 then
-					call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-					call SaveLocationHandle( HashTable, HandleID, 114, CreateLocation( MUILocation( 103 ), 150, MUIAngle( 103, 102 ) ) )
-					call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.25, MUILocation( 102 ), 0, 0 )
+				if GetReal( "Distance" ) <= 75 then
+					call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
+					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), 150, GetReal( "Angle" ), "Effect" )
+					call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.25, GetReal( "CasterX" ), GetReal( "CasterY" ), 0, 0 )
 					call DestroyEffect( MUIEffect( 104 ) )
 					call RemoveUnit( MUIUnit( 106 ) )
 					call MakeUnitAirborne( MUIUnit( 100 ), 200, 99999 )
 					call SetUnitPathing( MUIUnit( 100 ), false )
 					call SetUnitAnimation( MUIUnit( 100 ), "spell channel three" )
-					call SetUnitPositionLoc( MUIUnit( 100 ), MUILocation( 103 ) )
-					call SaveUnitHandle( HashTable, HandleID, 20, CreateUnitAtLoc( Player( PLAYER_NEUTRAL_PASSIVE ), 'u007', MUILocation( 114 ), MUIAngle( 102, 103 ) ) )
+					call SetUnitPosition( MUIUnit( 100 ), GetReal( "TargetX" ), GetReal( "TargetY" ) )
+					call SaveUnitHandle( HashTable, HandleID, 20, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u007', GetReal( "EffectX" ), GetReal( "EffectY" ), GetUnitFacing( MUIUnit( 100 ) ) ) )
 					call SetUnitAnimation( MUIUnit( 20 ), "spell slam three" )
 					call SetUnitVertexColor( MUIUnit( 20 ), 255, 255, 255, 180 )
-					call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BlackBlink.mdl", MUILocation( 102 ) ) )
-					call RemoveLocation( MUILocation( 102 ) )
-					call RemoveLocation( MUILocation( 103 ) )
+					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BlackBlink.mdl",GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
 					call SaveBoolean( HashTable, HandleID, 10, true )
 				endif
-
-				call RemoveLocation( MUILocation( 103 ) )
-				call RemoveLocation( MUILocation( 107 ) )
-				call RemoveLocation( MUILocation( 109 ) )
 			endif
 			
 			if LocTime == 130 then
 				call RemoveUnit( MUIUnit( 20 ) )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
 				call SetUnitFlyHeight( MUIUnit( 100 ), 0, 99999 )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 114, 103 ), 300, .4, .01, false, false, "origin", DashEff( ) )
-				call AddEffect( "GeneralEffects\\BloodEffect1.mdl", 1, MUILocation( 103 ), 0, 0 )
-				call AddMultipleEffects( 3, "Effects\\Nanaya\\ArcDrive1.mdl", 4, MUILocation( 103 ), 270, 0, 255, 255, 255, 255 )
-				call AddEffect( "Effects\\Nanaya\\LinearSlash1.mdl", 3, MUILocation( 103 ), MUIAngle( 102, 103 ) + 45, 0 )
-				call AddEffect( "Effects\\Nanaya\\LinearSlash1.mdl", 3, MUILocation( 103 ), MUIAngle( 102, 103 ), 0 )
-				call AddEffect( "Effects\\Nanaya\\LinearSlash1.mdl", 3, MUILocation( 103 ), MUIAngle( 102, 103 ) - 45, 0 )
+				call LinearDisplacement( MUIUnit( 100 ), GetUnitFacing( MUIUnit( 100 ) ), 300, .4, .01, false, false, "origin", DashEff( ) )
+				call AddEffectXY( "GeneralEffects\\BloodEffect1.mdl", 1, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
+				call AddMultipleEffectsXY( 3, "Effects\\Nanaya\\ArcDrive1.mdl", 4, GetReal( "TargetX" ), GetReal( "TargetY" ), 270, 0, 255, 255, 255, 255 )
+				call AddEffectXY( "Effects\\Nanaya\\LinearSlash1.mdl", 3, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) + 45, 0 )
+				call AddEffectXY( "Effects\\Nanaya\\LinearSlash1.mdl", 3, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ), 0 )
+				call AddEffectXY( "Effects\\Nanaya\\LinearSlash1.mdl", 3, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) - 45, 0 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw six" )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-				call RemoveLocation( MUILocation( 114 ) )
 			endif
 			
 			if LocTime == 160 then
@@ -382,7 +336,8 @@
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+				call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 				call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaSpellQ )
 			else
 				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
@@ -396,7 +351,6 @@
 				call TimerStart( LoadMUITimer( LocPID ), .025, true, function NanayaSpellW )
 			else
 				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-				call DestroyTimer( LoadMUITimer( LocPID ) )
 			endif
 		endif
 

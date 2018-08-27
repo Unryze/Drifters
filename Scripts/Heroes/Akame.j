@@ -8,10 +8,13 @@
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "AkameD1" ), 80, 0 )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
-				call SetUnitFacing( MUIUnit( 100 ), GetAngleBetweenPoints( MUILocation( 102 ), MUILocation( 103 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
-				call SetUnitInvulnerable( MUIUnit( 100 ), true )
+				call SetUnitFacing( MUIUnit( 100 ), MUIAngleData( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
+				call CCUnit( MUIUnit( 100 ), .4, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell two" )
+			endif
+
+			if LocTime == 5 then
+				call SetUnitInvulnerable( MUIUnit( 100 ), true )
 			endif
 
 			if LocTime == 20 then
@@ -25,29 +28,25 @@
 	endfunction
 
 	function AkameSpellQ takes nothing returns nothing
-		local integer HandleID  = MUIHandle( )
-		local integer LocTime   = MUIInteger( 0 )
+		local integer HandleID = MUIHandle( )
+		local integer LocTime  = MUIInteger( 0 )
 
 		if StopSpell( HandleID, 0 ) == false then
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .25, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Four" )
 			endif
 
 			if LocTime == 20 then
 				call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A03L', false )
 				call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A052', true )
-				call PauseUnit( MUIUnit( 100 ), false )
 				call PlaySoundWithVolume( LoadSound( "AkameQ1" ), 60, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, CreateLocation( MUILocation( 102 ), 200, GetUnitFacing( MUIUnit( 100 ) ) ) )
-				call AddEffect( "GeneralEffects\\AkihaClaw.mdl", 1.5, MUILocation( 103 ), MUIAngle( 102, 103 ) + 30, 0 )
+				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200., GetUnitFacing( MUIUnit( 100 ) ), "Effect" )
+				call AddEffectXY( "GeneralEffects\\AkihaClaw.mdl", 1.5, GetReal( "EffectX" ), GetReal( "EffectY" ), GetUnitFacing( MUIUnit( 100 ) ) - 90, 0 )
 				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
-				call AoEDamage( HandleID, MUILocation( 103 ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
 			endif
 
 			if LocTime == 220 then
@@ -59,12 +58,12 @@
 	endfunction
 
 	function AkameSpellW takes nothing returns nothing
-		local integer HandleID  = MUIHandle( )
-		
+		local integer HandleID = MUIHandle( )
+
 		if StopSpell( HandleID, 1 ) == false then
 			if MUIInteger( 0 ) < 1 then
 				call SaveInteger( HashTable, HandleID, 0, MUIInteger( 0 ) + 1 )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), ( DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) - 150 ) / 1000, "Stun" )
 				call SetUnitPathing( MUIUnit( 100 ), false )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Channel" )
 				call SaveInteger( HashTable, HandleID, 110, 255 )
@@ -73,27 +72,19 @@
 			endif
 
 			call SaveInteger( HashTable, HandleID, 110, LoadInteger( HashTable, HandleID, 110 ) - 10 )
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-			call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), MUIDistance( 102, 103 ) / 20, MUIAngle( 102, 103 ) ) )
-			call SetUnitPositionLoc( MUIUnit( 100 ), MUILocation( 107 ) )
-			call FaceLocation( MUIUnit( 100 ), MUILocation( 103 ), 0 )
+			call SetUnitXAndY( MUIUnit( 100 ), GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) / 20, AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) )
 			call SetUnitVertexColor( MUIUnit( 100 ), 255, 255, 255, LoadInteger( HashTable, HandleID, 110 ) )
 
-			if MUIDistance( 103, 107 ) <= 150 then
+			if DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) <= 150 then
 				call PlaySoundWithVolume( LoadSound( "AkameW1" ), 90, 0 )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
-				call AddEffect( "GeneralEffects\\FireSlashSlow\\FireSlashSlow.mdl", 4, MUILocation( 102 ), MUIAngle( 102, 103 ), 0 )
+				call AddEffectXY( "GeneralEffects\\FireSlashSlow\\FireSlashSlow.mdl", 4, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), 0 )
 				call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 153, 0, 0, 255 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 150, 99999 )
 				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
+				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "origin" ) )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 200 + MUILevel( ) * 100 + MUIPower( ) )
 				call SetUnitAnimation( MUIUnit( 100 ), "attack" )
 				call ClearAllData( HandleID )
-			else
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-				call RemoveLocation( MUILocation( 107 ) )
 			endif
 		endif
 	endfunction
@@ -106,19 +97,25 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .4, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Four" )
 				call PlaySoundWithVolume( LoadSound( "AkameE1" ), 100, 0 )
 			endif
 
 			if LocTime == 30 then
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), MUIDistance( 102, 103 ) * .5, MUIAngle( 102, 103 ) ) )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ), .1, .01, false, true, "origin", DashEff( ) )
-				call AddEffect( "GeneralEffects\\AkihaClaw.mdl", 3, MUILocation( 107 ), MUIAngle( 102, 103 ), 0 )
+				call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
+				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Distance" ) / 2, GetReal( "Angle" ), "Effect" )
+				call AddEffectXY( "GeneralEffects\\AkihaClaw.mdl", 3, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ), 0 )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ), .1, .01, false, true, "origin", DashEff( ) )
 				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
-				call AoEDisplace( HandleID, 103, -200, .5, .01, 0, DashEff( ) )
-				call AoEDamage( HandleID, MUILocation( 107 ), 450, "AoE", "Physical", 300 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
+				call AoEDisplaceXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), -200, .5, .01, 0, DashEff( ) )
+			endif
+
+			if LocTime >= 30 then
+				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 250, "AoE", "Physical", 300 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
+			endif
+
+			if LocTime == 40 then
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -138,41 +135,31 @@
 			endif
 
 			if LocTime == 1 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 150, .6, .01, false, false, "origin", DashEff( ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call LinearDisplacement( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) - 150, .6, .01, false, false, "origin", DashEff( ) )
+				call CCUnit( MUIUnit( 100 ), 2.8, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell three" )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
 
 			if LocTime == 40 then
 				call PlaySoundWithVolume( LoadSound( "AkameD1" ), 80, 0 )
 				call PlaySoundWithVolume( LoadSound( "KickSound1" ), 60, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2., MUILocation( 103 ), 0, 45 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2., GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 0, 45 )
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
-				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 2., MUILocation( 103 ), MUIAngle( 102, 103 ), 45 )
+				call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 2., GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), 45 )
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 400, .5, .01, false, false, "origin", DashEff( ) )
+				call LinearDisplacement( MUIUnit( 101 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), 400, .5, .01, false, false, "origin", DashEff( ) )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUILevel( ) * 30 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell two" )
-				call DisplaceUnitWithArgs( MUIUnit( 100 ), MUIAngle( 103, 102 ), 400, 1, .01, 0 )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
+				call DisplaceUnitWithArgs( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 101 ), MUIUnit( 100 ) ), 400, 1, .01, 0 )
 			endif
-			
+
 			if LocTime == 140 then
 				call SaveBoolean( HashTable, HandleID, 10, false )
 				call PlaySoundWithVolume( LoadSound( "AkameR2" ), 80, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BlackBlink.mdl", MUILocation( 102 ) ) )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BlackBlink.mdl", GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ) ) )
 				call ShowUnit( MUIUnit( 100 ), false )
-				call RemoveLocation( MUILocation( 102 ) )
 			endif
 			
 			if IsCounted == false then
@@ -182,32 +169,23 @@
 					
 					if LoadReal( HashTable, HandleID, 110 ) < 20 then
 						call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 25 + MUILevel( ) )
-						call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
 
 						if LoadReal( HashTable, HandleID, 110 ) < 16 then
 							call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
-							call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), 150, LoadReal( HashTable, HandleID, 110 ) * 24 ) )
 						endif
 
-						call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BlackBlink.mdl", MUILocation( 107 ) ) )
-						call RemoveLocation( MUILocation( 103 ) )
-						call RemoveLocation( MUILocation( 107 ) )
+						call CreateXY( GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 150., LoadReal( HashTable, HandleID, 110 ) * 24, "Effect" )
+						call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BlackBlink.mdl", GetReal( "EffectX" ), GetReal( "EffectY" ) ) )
 					else
 						call SaveBoolean( HashTable, HandleID, 10, true )
-						call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-						call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-						call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 103 ), 500, MUIAngle( 103, 102 ) ) )
+						call CreateXY( GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 500., AngleBetweenUnits( MUIUnit( 101 ), MUIUnit( 100 ) ), "Target" )
 						call ShowUnit( MUIUnit( 100 ), true )
 						call UnitSelect( MUIUnit( 100 ) )
-						call SetUnitPositionLoc( MUIUnit( 100 ), MUILocation( 107 ) )
-						call FaceLocation( MUIUnit( 100 ), MUILocation( 103 ), 0 )
-						call PauseUnit( MUIUnit( 100 ), true )
+						call SetUnitPosition( MUIUnit( 100 ), GetReal( "TargetX" ), GetReal( "TargetY" ) )
+						call SetUnitFacing( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) )
 						call SetUnitTimeScale( MUIUnit( 100 ), .1 )
 						call SetUnitAnimation( MUIUnit( 100 ), "attack" )
-						call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BlackBlink.mdl", MUILocation( 107 ) ) )
-						call RemoveLocation( MUILocation( 102 ) )
-						call RemoveLocation( MUILocation( 103 ) )
-						call RemoveLocation( MUILocation( 107 ) )
+						call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BlackBlink.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
 						call SaveEffectHandle( HashTable, HandleID, 108, AddSpecialEffectTarget( "Abilities\\Weapons\\PhoenixMissile\\Phoenix_Missile.mdl", MUIUnit( 100 ), "weapon" ) )
 					endif
 				endif
@@ -220,20 +198,15 @@
 			
 			if LocTime == 210 then
 				call PlaySoundWithVolume( LoadSound( "AkameR1" ), 90, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, CreateLocation( MUILocation( 102 ), 500, GetUnitFacing( MUIUnit( 100 ) ) ) )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) + 200, .2, .01, false, false, "origin", DashEff( ) )
-				call AddEffect( "GeneralEffects\\AkihaClaw.mdl", 4, MUILocation( 103 ), MUIAngle( 102, 103 ), 0 )
+				call LinearDisplacement( MUIUnit( 100 ), GetUnitFacing( MUIUnit( 100 ) ), 700, .2, .01, false, false, "origin", DashEff( ) )
+				call AddEffectXY( "GeneralEffects\\AkihaClaw.mdl", 4, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetUnitFacing( MUIUnit( 100 ) ), 0 )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "origin" ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
 			
 			if LocTime == 260 then
 				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 60, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500 + MUILevel( ) * 50 + MUIPower( ) )
 				call ClearAllData( HandleID )
 			endif
@@ -248,56 +221,40 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 150, .6, .01, false, false, "origin", DashEff( ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call LinearDisplacement( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) - 150, .6, .01, false, false, "origin", DashEff( ) )
+				call CCUnit( MUIUnit( 100 ), 2.25, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell three" )
 				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call SaveEffectHandle( HashTable, HandleID, 108, AddSpecialEffectTarget( "Abilities\\Weapons\\PhoenixMissile\\Phoenix_Missile.mdl", MUIUnit( 100 ), "weapon" ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
 
 			if LocTime == 50 then
 				call PlaySoundWithVolume( LoadSound( "KickSound1" ), 60, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 2., MUILocation( 103 ), 0, 45 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2., GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 0, 45 )
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
-				call AddEffect( "GeneralEffects\\SlamEffect.mdl", 1.5, MUILocation( 103 ), MUIAngle( 102, 103 ), 45 )
+				call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 1.5, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), 45 )
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 600, 1, .01, false, false, "origin", DashEff( ) )
+				call LinearDisplacement( MUIUnit( 101 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), 600, 1, .01, false, false, "origin", DashEff( ) )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500 + MUILevel( ) * 50 )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
 			
 			if LocTime == 75 then
 				call PlaySoundWithVolume( LoadSound( "AkameT1" ), 80, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call DisplaceUnitWithArgs( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) + 600, .8, .01, 400 )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
+				call DisplaceUnitWithArgs( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) + 600, .8, .01, 400 )
 			endif
 			
 			if LocTime == 155 then
 				call SetUnitTimeScale( MUIUnit( 100 ), 1.75 )
 				call PlaySoundWithVolume( LoadSound( "AkameQ1" ), 80, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodEffect1.mdl", MUILocation( 103 ) ) )
-				call RemoveLocation( MUILocation( 103 ) )
+				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
 			endif
 			
 			if LocTime == 205 then
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 60, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
 				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\BloodExplosion.mdl", MUILocation( 103 ) ) )
+				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodExplosion.mdl", MUIUnit( 101 ), "chest" ) )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -310,8 +267,8 @@
 		if GetSpellAbilityId( ) == 'A03K' or GetSpellAbilityId( ) == 'A052' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( GetTriggerUnit( ) ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 
 			if GetSpellAbilityId( ) == 'A052' then
 				call SaveReal( HashTable, HandleID, 0, -350 )
@@ -341,7 +298,8 @@
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+				call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 				call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellE )
 			else
 				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
@@ -355,7 +313,7 @@
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellR )
 		endif
-		
+
 		if GetSpellAbilityId( ) == 'A03P' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )

@@ -2,9 +2,7 @@
 		local integer HandleID = MUIHandle( )
 
 		if GetUnitAbilityLevel( MUIUnit( 100 ), 'B04H' ) > 0 then
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-			call AoEDamage( HandleID, MUILocation( 102 ), 300, "AoE", "Physical", MUILevel( ) * 12.5 + MUIPower( ) * 0.1, true, "", 0 )
-			call RemoveLocation( MUILocation( 102 ) )
+			call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 300, "AoE", "Physical", MUILevel( ) * 12.5 + MUIPower( ) * 0.1, true, "", 0 )
 		else
 			call ClearAllData( HandleID )
 		endif
@@ -17,61 +15,54 @@
 		if StopSpell( HandleID, 0 ) == false then
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-			call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), 20, MUIAngle( 102, 103 ) ) )	
-
 			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "AkainuR2" ), 90, 0 )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .35, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell three" )
+				call PlaySoundWithVolume( LoadSound( "AkainuR2" ), 90, 0 )
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call MakeUnitAirborne( MUIUnit( 100 ), 100, 9999 )
-				call LinearDisplacement( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ) - 150, .25, .01, false, true, "origin", "Effects\\Akainu\\MagmaBlast.mdl" )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .25, .01, false, true, "origin", "Effects\\Akainu\\MagmaBlast.mdl" )
 			endif
 
 			if LocTime == 25 then
 				call PlaySoundWithVolume( LoadSound( "AkainuR1" ), 90, 0 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell two" )
-				call AddEffect( "Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile.mdl", 2, MUILocation( 103 ), MUIAngle( 102, 103 ) + 90, 0 )
-				call AddEffect( "GeneralEffects\\t_huobao.mdl", 1.5, MUILocation( 103 ), MUIAngle( 102, 103 ), 90 )
+				call AddEffectXY( "Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile.mdl", 2, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), GetReal( "Angle" ) + 90, 0 )
+				call AddEffectXY( "GeneralEffects\\t_huobao.mdl", 1.5, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), GetReal( "Angle" ), 90 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 100, 99999 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
 				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
 				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 175 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
-				call LinearDisplacement( MUIUnit( 101 ), MUIAngle( 102, 103 ), 300, .4, .01, false, false, "origin", DashEff( ) )
-				call AoEDamage( HandleID, MUILocation( 103 ), 300, "AoE", "Physical", 175 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "", 0 )
+				call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 300, .4, .01, false, false, "origin", DashEff( ) )
+				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 300, "AoE", "Physical", 175 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "", 0 )
 				call ClearAllData( HandleID )
-			else
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
-				call RemoveLocation( MUILocation( 107 ) )
 			endif
 		endif
 	endfunction
 
 	function AkainuSpellW takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
-		local integer LocTime   = MUIInteger( 0 )
+		local integer LocTime  = MUIInteger( 0 )
 
 		if StopSpell( HandleID, 0 ) == false then
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-
+			
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "AkainuE1" ), 90, 0 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .6, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell one" )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1, MUILocation( 102 ), 0, 0 )
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\NewDirtEx.mdl", MUILocation( 102 ) ) )
-				call DisplaceUnitWithArgs( MUIUnit( 100 ), MUIAngle( 102, 103 ), MUIDistance( 102, 103 ), .5, .01, 600 )
+				call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\NewDirtEx.mdl", 1, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
+				call DisplaceUnitWithArgs( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ), .4, .01, 600 )
 			endif
-
-			if LocTime == 50 then
-				call DestroyEffect( AddSpecialEffectLoc( "GeneralEffects\\LightningStrike1.mdl", MUILocation( 103 ) ) )
-				call AddEffect( "GeneralEffects\\FuzzyStomp.mdl", 1.5, MUILocation( 103 ), 0, 0 )
-				call AddEffect( "GeneralEffects\\ValkDust.mdl", 1.5, MUILocation( 103 ), 0, 0 )
-				call AddEffect( "Effects\\Akainu\\MagmaBlast.mdl", 1, MUILocation( 103 ), 0, 0 )
-				call AoEDamage( HandleID, MUILocation( 103 ), 350, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
+			
+			if LocTime == 40 then
+				call AddEffectXY( "GeneralEffects\\LightningStrike1.mdl", 1., GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\FuzzyStomp.mdl", 1.5, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AddEffectXY( "Effects\\Akainu\\MagmaBlast.mdl", 1, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 350, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -87,56 +78,43 @@
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "AkainuW1" ), 90, 0 )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .3, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "attack" )
 			endif
 
 			if LocTime == 20 then
 				call SetUnitTimeScale( MUIUnit( 100 ), 1 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call PauseUnit( MUIUnit( 100 ), false )
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
 				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
-				call AddEffect( "Effects\\Akainu\\MagmaWolf.mdl", 1., MUILocation( 102 ), MUIAngle( 102, 103 ), 0 )
+				call AddEffectXY( "Effects\\Akainu\\MagmaWolf.mdl", 1., GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Angle" ), 0 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 120, 99999 )
 				call SetUnitPathing( LoadUnit( "DummyUnit" ), false )
 				call SaveUnitHandle( HashTable, HandleID, 106, LoadUnit( "DummyUnit" ) )
 				call SetUnitPathing( MUIUnit( 106 ), false )
-				call AddEffect( "Effects\\Akainu\\MagmaBlast.mdl", .25, MUILocation( 102 ), 0, 0 )
+				call AddEffectXY( "Effects\\Akainu\\MagmaBlast.mdl", .25, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 120, 99999 )
 				call SetUnitPathing( LoadUnit( "DummyUnit" ), false )
 				call SaveUnitHandle( HashTable, HandleID, 126, LoadUnit( "DummyUnit" ) )
 				call SetUnitPathing( MUIUnit( 126 ), false )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 103 ) )
 			endif
 
 			if LocTime > 20 then
-				call SaveLocationHandle( HashTable, HandleID, 103, GetUnitLoc( MUIUnit( 101 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 107, GetUnitLoc( MUIUnit( 106 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 109, CreateLocation( MUILocation( 107 ), 40, MUIAngle( 107, 103 ) ) )
-				call FaceLocation( MUIUnit( 106 ), MUILocation( 103 ), 0 )
-				call SetUnitPositionLoc( MUIUnit( 106 ), MUILocation( 109 ) )
-				call FaceLocation( MUIUnit( 126 ), MUILocation( 103 ), 0 )
-				call SetUnitPositionLoc( MUIUnit( 126 ), MUILocation( 109 ) )
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetUnitX( MUIUnit( 106 ) ), GetUnitY( MUIUnit( 106 ) ), GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
+				call SetUnitXAndY( MUIUnit( 106 ), GetUnitX( MUIUnit( 106 ) ), GetUnitY( MUIUnit( 106 ) ), 40, GetReal( "Angle" ) )
+				call SetUnitXAndY( MUIUnit( 126 ), GetUnitX( MUIUnit( 126 ) ), GetUnitY( MUIUnit( 126 ) ), 40, GetReal( "Angle" ) )
 
 				if LocTime == 21 or LocTime == 25 or LocTime == 30 or LocTime == 35 or LocTime == 40 or LocTime == 45 or LocTime == 50 then
-					call AddEffect( "GeneralEffects\\ValkDust.mdl", 1., MUILocation( 109 ), 0, 90 )
+					call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1., GetUnitX( MUIUnit( 126 ) ), GetUnitY( MUIUnit( 126 ) ), 0, 90 )
 					call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 120, 99999 )
 				endif
 
-				if MUIDistance( 103, 109 ) <= 150 then
+				if DistanceBetweenAxis( GetUnitX( MUIUnit( 106 ) ), GetUnitY( MUIUnit( 106 ) ), GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) <= 150 then
 					call KillUnit( MUIUnit( 106 ) )
 					call KillUnit( MUIUnit( 126 ) )
 					call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
-					call AddEffect( "Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile.mdl", 2, MUILocation( 103 ), MUIAngle( 103, 107 ) + 90, 0 )
+					call AddEffectXY( "Abilities\\Weapons\\DemolisherFireMissile\\DemolisherFireMissile.mdl", 2, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), GetReal( "Angle" ) + 90, 0 )
 					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-					call RemoveLocation( MUILocation( 109 ) )
 					call ClearAllData( HandleID )
-				else
-					call RemoveLocation( MUILocation( 103 ) )
-					call RemoveLocation( MUILocation( 107 ) )
-					call RemoveLocation( MUILocation( 109 ) )
 				endif
 			endif
 		endif
@@ -153,36 +131,35 @@
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "AkainuQ1" ), 90, 0 )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
-				call PauseUnit( MUIUnit( 100 ), true )
+				call CCUnit( MUIUnit( 100 ), .25, "Stun" )
 				call SetUnitAnimation( MUIUnit( 100 ), "attack" )
+				call SaveReal( HashTable, HandleID, StringHash( "CasterX" ), GetUnitX( MUIUnit( 100 ) ) )
+				call SaveReal( HashTable, HandleID, StringHash( "CasterY" ), GetUnitY( MUIUnit( 100 ) ) )
 			endif
 
 			if LocTime == 20 then
 				call SetUnitTimeScale( MUIUnit( 100 ), 1 )
-				call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-				call SaveLocationHandle( HashTable, HandleID, 127, CreateLocation( MUILocation( 102 ), 300, MUIAngle( 102, 103 ) ) )
-				call AddEffect( "Effects\\Akainu\\LinearMagmaHand.mdl", 2, MUILocation( 127 ), MUIAngle( 102, 103 ), 0 )
-				call RemoveLocation( MUILocation( 127 ) )
+				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
+				call CreateXY( GetReal( "CasterX" ), GetReal( "CasterY" ), 300, GetReal( "Angle" ), "Effect" )
+				call AddEffectXY( "Effects\\Akainu\\LinearMagmaHand.mdl", 2, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ), 0 )
 				call PlaySoundWithVolume( LoadSound( "AkainuR2" ), 60, 0 )
-				call PauseUnit( MUIUnit( 100 ), false )
 				call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
 			endif
 
 			if LocTime > 20 then
 				call SaveReal( HashTable, HandleID, 110, LoadReal( HashTable, HandleID, 110 ) + 100 )
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), LoadReal( HashTable, HandleID, 110 ), MUIAngle( 102, 103 ) ) )
+				call CreateXY( GetReal( "CasterX" ), GetReal( "CasterY" ), LoadReal( HashTable, HandleID, 110 ), GetReal( "Angle" ), "Effect" )
 
 				loop
 					exitwhen i > 2
-					call SaveLocationHandle( HashTable, HandleID, 109, CreateLocation( MUILocation( 107 ), GetRandomReal( 0, 500 ), GetRandomReal( 0, 360 ) ) )
-					call DestroyEffect( AddSpecialEffectLoc( "abilities\\weapons\\catapult\\catapultmissile.mdl", MUILocation( 109 ) ) )
-					call AddEffect( "Effects\\Akainu\\MagmaBlast.mdl", .25, MUILocation( 109 ), GetRandomReal( 0, 360 ), 0 )
-					call RemoveLocation( MUILocation( 109 ) )
+					call SaveReal( HashTable, HandleID, StringHash( "Random" ), GetRandomReal( 0, 360 ) )
+					call CreateXY( GetReal( "EffectX" ), GetReal( "EffectY" ), GetRandomReal( 0, 500 ), GetReal( "Random" ), "Flame" )
+					call DestroyEffect( AddSpecialEffect( "abilities\\weapons\\catapult\\catapultmissile.mdl", GetReal( "FlameX" ), GetReal( "FlameY" ) ) )
+					call AddEffectXY( "Effects\\Akainu\\MagmaBlast.mdl", .25, GetReal( "FlameX" ), GetReal( "FlameY" ), GetReal( "Random" ), 0 )
 					set i = i + 1
 				endloop
 
-				call AoEDamage( HandleID, MUILocation( 107 ), 500, "AoE", "Physical", MUILevel( ) * 100 + MUIPower( ), false, "", 0 )
-				call RemoveLocation( MUILocation( 107 ) )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 500, "AoE", "Physical", MUILevel( ) * 100 + MUIPower( ), false, "", 0 )
 
 				if LoadReal( HashTable, HandleID, 110 ) >= 1500 then
 					call ClearAllData( HandleID )
@@ -204,37 +181,19 @@
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell" )
 			endif
 
-			call SaveReal( HashTable, HandleID, 110, LoadReal( HashTable, HandleID, 110 ) + 1 )
-			call SaveReal( HashTable, HandleID, 118, LoadReal( HashTable, HandleID, 118 ) + 1 )
-			call SaveLocationHandle( HashTable, HandleID, 102, GetUnitLoc( MUIUnit( 100 ) ) )
-
-			if LoadReal( HashTable, HandleID, 118 ) == 1 then
-				call SaveReal( HashTable, HandleID, 5, -90 )
-			else
-				call SaveReal( HashTable, HandleID, 5, 90 )
-				call SaveReal( HashTable, HandleID, 118, 0 )
-			endif
-
-			if LoadReal( HashTable, HandleID, 110 ) < 50 then
-				call SaveLocationHandle( HashTable, HandleID, 107, CreateLocation( MUILocation( 102 ), 70, MUIAngle( 102, 103 ) + LoadReal( HashTable, HandleID, 5 ) ) )
-				call RemoveLocation( MUILocation( 102 ) )
-				call RemoveLocation( MUILocation( 107 ) )
-			endif
-
 			if LocTime > 10 then
 				call SaveInteger( HashTable, HandleID, 1, LocCount + 1 )
-				call SaveLocationHandle( HashTable, HandleID, 109, CreateLocation( MUILocation( 103 ), GetRandomReal( 0, 550 ), GetRandomReal( 0, 360 ) ) )
-				call AddEffect( "Effects\\Akainu\\VerticalMagmaHand.mdl", .65, MUILocation( 109 ), GetRandomReal( 0, 360 ), 0 )
+				call SaveReal( HashTable, HandleID, StringHash( "Random" ), GetRandomReal( 0, 360 ) )
+				call CreateXY( GetReal( "SpellX" ), GetReal( "SpellY" ), GetRandomReal( 0, 550 ), GetReal( "Random" ), "Effect" )
+				call AddEffectXY( "Effects\\Akainu\\VerticalMagmaHand.mdl", .65, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Random" ), 0 )
 				call UnitApplyTimedLife( LoadUnit( "DummyUnit" ), 'BTLF', .5 )
 
 				if LocCount > 7 then
-					call AoEDamage( HandleID, MUILocation( 109 ), 500, "AoE", "Physical", MUILevel( ) * 25 + MUIPower( ) * 0.05, true, "", 0 )
+					call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 500, "AoE", "Physical", MUILevel( ) * 25 + MUIPower( ) * 0.05, true, "", 0 )
 				endif
-
-				call RemoveLocation( MUILocation( 109 ) )
 			endif
 
-			if LoadReal( HashTable, HandleID, 110 ) == 70 then
+			if LocTime == 70 then
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -263,7 +222,8 @@
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-				call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+				call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+				call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 				call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellW )
 			else
 				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
@@ -280,14 +240,16 @@
 		if GetSpellAbilityId( ) == 'A04D' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellR )
 		endif
 		
 		if GetSpellAbilityId( ) == 'A04E' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveLocationHandle( HashTable, HandleID, 103, GetSpellTargetLoc( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
+			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .05, true, function AkainuSpellT )
 		endif
 
