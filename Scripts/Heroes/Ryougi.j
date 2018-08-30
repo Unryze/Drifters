@@ -56,39 +56,6 @@
 	endfunction
 
 	function RyougiSpellE takes nothing returns nothing
-		local integer HandleID = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
-
-		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-
-			if LocTime == 1 then
-				call CCUnit( MUIUnit( 100 ), .6, "Stun" )
-				call SetUnitTimeScale( MUIUnit( 100 ), 1.75 )
-				call SetUnitAnimation( MUIUnit( 100 ), "spell channel two" )
-				call PlaySoundWithVolume( LoadSound( "RyougiE1" ), 100, 0 )
-			endif
-			
-			if LocTime == 25 then
-				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 50, 0 )
-				call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
-				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Distance" ) / 2, GetReal( "Angle" ), "Effect" )
-				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ), .1, .01, false, true, "origin", DashEff( ) )
-				call AddEffectXY( "Effects\\Toono\\LinearSlashBlue1.mdl", 3, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ), 0 )
-				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
-			endif
-
-			if LocTime >= 25 then
-				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 300, "AoE", "Physical", MUILevel( ) * 75 + MUIPower( ), false, "", 0 )
-			endif			
-
-			if LocTime == 50 then
-				call ClearAllData( HandleID )
-			endif
-		endif
-	endfunction
-
-	function RyougiSpellR takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -128,7 +95,7 @@
 		endif
 	endfunction	
 
-	function RyougiSpellT takes nothing returns nothing
+	function RyougiSpellR takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 		local integer LocCount  = LoadInteger( HashTable, HandleID, 1 )
@@ -232,23 +199,11 @@
 			endif
 		endif
 
-		if GetSpellAbilityId( ) == 'A034' then
-			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-				set HandleID = NewMUITimer( LocPID )
-				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-				call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
-				call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-				call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellE )
-			else
-				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-			endif
-		endif
-		
 		if GetSpellAbilityId( ) == 'A036' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellR )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellE )
 		endif		
 		
 		if GetSpellAbilityId( ) == 'A037' then
@@ -256,7 +211,7 @@
 			call SaveBoolean( HashTable, HandleID, 10, false )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellT )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function RyougiSpellR )
 		endif
 
 		return false

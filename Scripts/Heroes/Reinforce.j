@@ -30,48 +30,6 @@
 	endfunction	
 
 	function ReinforceSpellW takes nothing returns nothing
-		local integer i 		= 1
-		local integer HandleID  = MUIHandle( )
-		local integer LocTime   = MUIInteger( 0 )
-
-		if StopSpell( HandleID, 1 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-			
-			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "ReinforceW1" ), 60, 0 )
-				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
-
-				loop
-					exitwhen i > 20
-					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), GetRandomReal( 100, 1000 ), 36 * i, "Effect" )
-					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-					call SaveUnit( "DummyUnit" + I2S( i ), CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u00B', GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ) ) )
-					call DestroyEffect( AddSpecialEffectTarget( "Abilities\\Spells\\Orc\\FeralSpirit\\feralspirittarget.mdl", LoadUnit( "DummyUnit" + I2S( i ) ), "origin" ) )
-					set i = i + 1
-				endloop
-
-				set i = 1
-			endif
-
-			if LocTime == 100 then
-				loop
-					exitwhen i > 20
-					call SetUnitFlyHeight( LoadUnit( "DummyUnit" + I2S( i ) ), 0, 0 )
-					call SetUnitPosition( LoadUnit( "DummyUnit" + I2S( i ) ), GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) )
-					set i = i + 1
-				endloop
-
-				call SaveInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0, LoadInteger( HashTable, GetHandleId( MUIUnit( 100 ) ), 0 ) + 1 )
-				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodCircle.mdl", GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
-				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ) )
-				call ClearAllData( HandleID )
-			endif
-		endif
-	endfunction
-
-	function ReinforceSpellE takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -95,7 +53,7 @@
 		endif
 	endfunction
 
-	function ReinforceSpellR takes nothing returns nothing	
+	function ReinforceSpellE takes nothing returns nothing	
 		local integer HandleID = GetHandleId( GetExpiredTimer( ) )
 		local integer LocTime  = LoadInteger( HashTable, HandleID, 0 )
 
@@ -122,7 +80,7 @@
 		endif
 	endfunction	
 
-	function ReinforceSpellT takes nothing returns nothing
+	function ReinforceSpellR takes nothing returns nothing
 		local real  i			= 1 
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -196,20 +154,13 @@
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellQ )
 		endif
-		
-		if GetSpellAbilityId( ) == 'A04H' then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellW )
-		endif
-		
+
 		if GetSpellAbilityId( ) == 'A04I' then
 			set	HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellE )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellW )
 		endif		
 		
 		if GetSpellAbilityId( ) == 'A04J' then
@@ -217,7 +168,7 @@
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellR )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellE )
 		endif
 
 		if GetSpellAbilityId( ) == 'A04K' then
@@ -226,7 +177,7 @@
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellT )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ReinforceSpellR )
 		endif
 
 		return true

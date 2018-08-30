@@ -151,64 +151,6 @@
 	endfunction
 
 	function SaberArtoriaSpellR takes nothing returns nothing
-		local integer i = 1
-		local integer HandleID = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
-
-		if StopSpell( HandleID, 1 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-
-			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "SaberArtoriaR1" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), 2.6, "Stun" )
-				call DestroyEffect( AddSpecialEffectTarget( "Effects\\SaberArtoria\\HolyEnergy.mdl", MUIUnit( 100 ), "chest" ) )
-				call SetUnitAnimation( MUIUnit( 100 ), "Attack Walk Stand Spin" )
-				call SetUnitTimeScale( MUIUnit( 100 ), 2.5 )
-			endif
-
-			if LocTime == 50 then
-				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
-				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call SetUnitTimeScale( MUIUnit( 100 ), 1.75 )
-				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .2, .01, false, true, "origin", DashEff( ) )
-			endif
-
-			if LocTime == 60 or LocTime == 90 or LocTime == 120 or LocTime == 150 or LocTime == 180 or LocTime == 210 then
-				call PlaySoundWithVolume( LoadSound( "SaberArtoriaQ2" ), 100, 0 )
-			endif
-
-			if LocTime == 150 then
-				call PlaySoundWithVolume( LoadSound( "SaberArtoriaR2" ), 100, 0 )
-			endif
-
-			if LocTime == 250 then
-				call PlaySoundWithVolume( LoadSound( "SaberArtoriaW2" ), 100, 0 )
-				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
-				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 150 + MUIPower( ) )
-				call AddEffectXY( "Effects\\SaberArtoria\\HolyExplosion.mdl", 1, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ), 0 )
-				call ResetAbilityCooldown( MUIUnit( 100 ), 'A04R' )
-
-				if LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ) > 0 then
-					call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-					call AddEffectXY( "Effects\\SaberArtoria\\ExcaliburLinear.mdl", 1, GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "Angle" ), 0 )
-					call ScaleUnit( LoadUnit( "DummyUnit" ), .5 )
-					call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 400, "AoE", "Physical", LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "Stun", 1 )
-					call SaveReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500, 0 )
-				endif
-
-				loop
-					exitwhen i > 4
-					call AddEffectXY( "GeneralEffects\\ValkDust.mdl", GetRandomReal( 2, 3 ), GetReal( "TargetX" ), GetReal( "TargetY" ), GetRandomReal( 0, 360 ), 0 )
-					set i = i + 1
-				endloop
-
-				call ClearAllData( HandleID )
-			endif
-		endif
-	endfunction
-
-	function SaberArtoriaSpellT takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -298,19 +240,12 @@
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellE )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02K' then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellR )
-		endif
-
 		if GetSpellAbilityId( ) == 'A02L' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellT )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellR )
 		endif
 
 		return false

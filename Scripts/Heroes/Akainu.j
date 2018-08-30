@@ -168,37 +168,6 @@
 		endif
 	endfunction
 
-	function AkainuSpellT takes nothing returns nothing
-		local integer HandleID  = MUIHandle( )	
-		local integer LocTime   = MUIInteger( 0 )
-		local integer LocCount  = LoadInteger( HashTable, HandleID, 1 )
-
-		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-
-			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "AkainuT1" ), 90, 0 )
-				call SetUnitAnimation( MUIUnit( 100 ), "Spell" )
-			endif
-
-			if LocTime > 10 then
-				call SaveInteger( HashTable, HandleID, 1, LocCount + 1 )
-				call SaveReal( HashTable, HandleID, StringHash( "Random" ), GetRandomReal( 0, 360 ) )
-				call CreateXY( GetReal( "SpellX" ), GetReal( "SpellY" ), GetRandomReal( 0, 550 ), GetReal( "Random" ), "Effect" )
-				call AddEffectXY( "Effects\\Akainu\\VerticalMagmaHand.mdl", .65, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Random" ), 0 )
-				call UnitApplyTimedLife( LoadUnit( "DummyUnit" ), 'BTLF', .5 )
-
-				if LocCount > 7 then
-					call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 500, "AoE", "Physical", MUILevel( ) * 25 + MUIPower( ) * 0.05, true, "", 0 )
-				endif
-			endif
-
-			if LocTime == 70 then
-				call ClearAllData( HandleID )
-			endif
-		endif
-	endfunction
-	
 	function AkainuSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
@@ -243,14 +212,6 @@
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkainuSpellR )
-		endif
-		
-		if GetSpellAbilityId( ) == 'A04E' then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
-			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .05, true, function AkainuSpellT )
 		endif
 
 		return false

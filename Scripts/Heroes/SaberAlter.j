@@ -131,68 +131,6 @@
 	endfunction
 
 	function SaberAlterSpellR takes nothing returns nothing
-		local integer HandleID = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
-
-		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-
-			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "SaberAlterR1" ), 100, 0 )
-				call PlaySoundWithVolume( LoadSound( "SaberAlterR2" ), 100, 0.50 )
-				call CCUnit( MUIUnit( 100 ), 1.6, "Stun" )
-				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl" )
-			endif
-
-			if LocTime == 10 or LocTime == 50 or LocTime == 90 then
-				if LocTime == 50 then
-					call SetUnitAnimation( MUIUnit( 100 ), "spell Six" )
-				else
-					call SetUnitAnimation( MUIUnit( 100 ), "spell Three" )
-				endif
-
-				call PlaySoundWithVolume( LoadSound( "SaberAlterR2" ), 100, 0.50 )
-				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 50, GetUnitFacing( MUIUnit( 100 ) ), "Spell" )
-				call AddEffectXY( "Effects\\SaberAlter\\SlashBlack1.mdl", 1, GetReal( "SpellX" ), GetReal( "SpellY" ), GetUnitFacing( MUIUnit( 100 ) ), 0 )
-
-				if IsTerrainPathable( GetReal( "SpellX" ), GetReal( "SpellY" ), PATHING_TYPE_WALKABILITY ) == false then
-					call LinearDisplacement( MUIUnit( 100 ), GetUnitFacing( MUIUnit( 100 ) ), 100, .4, .01, false, false, "origin", DashEff( ) )
-				endif
-
-				call AoEDisplaceXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 100, .35, .01, 300, "" )
-				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 300, "AoE", "Physical", MUILevel( ) * 30 + MUIPower( ) * 0.25, true, "", 0 )
-			endif
-			
-			if LocTime == 120 then
-				call SetUnitAnimation( MUIUnit( 100 ), "spell Slam" )
-			endif
-
-			if LocTime == 150 then
-				call PlaySoundWithVolume( LoadSound( "SaberAlterR2" ), 100, 0.50 )
-				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
-				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 50, GetUnitFacing( MUIUnit( 100 ) ), "Effect" )
-				call AddEffectXY( "Effects\\SaberAlter\\LinearSlashBlack1.mdl", 3, GetReal( "EffectX" ), GetReal( "EffectY" ), GetUnitFacing( MUIUnit( 100 ) ), 0 )
-				call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 75, 0, 130, 255 )
-
-				if IsTerrainPathable( GetReal( "SpellX" ), GetReal( "SpellY" ), PATHING_TYPE_WALKABILITY ) == false then
-					call LinearDisplacement( MUIUnit( 100 ), GetUnitFacing( MUIUnit( 100 ) ), 300, .2, .01, false, false, "origin", DashEff( ) )
-				endif
-
-				call AoEDisplaceXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 300, .35, .01, 0, "" )
-				call SaveBoolean( HashTable, HandleID, StringHash( "IsUpdated" ), false )
-			endif
-
-			if LocTime >= 150 then
-				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 300, "AoE", "Physical", MUILevel( ) * 30 + MUIPower( ) * 0.25, false, "", 0 )
-			endif
-
-			if LocTime == 170 then
-				call ClearAllData( HandleID )
-			endif
-		endif
-	endfunction
-
-	function SaberAlterSpellT takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime  = MUIInteger( 0 )
 
@@ -283,19 +221,13 @@
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellE )
 		endif
-		
-		if GetSpellAbilityId( ) == 'A03W' then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellR )
-		endif		
-		
+
 		if GetSpellAbilityId( ) == 'A03X' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellT )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellR )
 		endif
 
 		return false

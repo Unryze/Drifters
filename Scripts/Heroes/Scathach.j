@@ -149,10 +149,6 @@
 		endif
 	endfunction
 
-	function ScathachSpellE takes nothing returns nothing
-
-	endfunction
-
 	function ScathachSpellR takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
@@ -308,16 +304,7 @@
 				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
 			endif
 		endif		
-		
-		if GetSpellAbilityId( ) == 'A042' then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveBoolean( HashTable, HandleID, 10, false )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call SaveGroupHandle( HashTable, HandleID, 111, CreateGroup( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ScathachSpellE )
-		endif		
-		
+
 		if GetSpellAbilityId( ) == 'A043' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )

@@ -151,47 +151,6 @@
 		endif
 	endfunction
 
-	function ArcueidSpellT takes nothing returns nothing
-		local integer i = 1
-		local integer HandleID = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
-
-		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-
-			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "ArcueidT1" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), .6, "Stun" )
-				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
-				call AddEffectXY( "GeneralEffects\\BlackBlink.mdl", 1.5, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
-				call SetUnitAnimation( MUIUnit( 100 ), "Spell Six" )
-			endif
-
-			if LocTime == 25 then
-				call ShowUnit( MUIUnit( 100 ), false )
-				call SetUnitPosition( MUIUnit( 100 ), GetReal( "SpellX" ), GetReal( "SpellY" ) )
-			endif
-
-			if LocTime == 45 then
-				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 600, "AoE", "Physical", MUILevel( ) * 200 + MUIPower( ), false, "Stun", 1 )
-			endif
-
-			if LocTime == 50 then
-				call ShowUnit( MUIUnit( 100 ), true )
-				call SetUnitAnimation( MUIUnit( 100 ), "Stand" )
-				call UnitSelect( MUIUnit( 100 ) )
-
-				loop
-					exitwhen i == 3
-					call AddEffectXY( "GeneralEffects\\ValkDust" + I2S( 50 * GetRandomInt( 1, 3 ) ) + ".mdl", GetRandomReal( 1.5, 2 ), GetReal( "SpellX" ), GetReal( "SpellY" ), GetRandomReal( 0, 360 ), 0 )
-					set i = i + 1
-				endloop
-
-				call ClearAllData( HandleID )
-			endif
-		endif
-	endfunction
-	
 	function ArcueidSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
@@ -226,19 +185,7 @@
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellR )
 		endif
-		
-		if GetSpellAbilityId( ) == 'A02A' then
-			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
-				set HandleID = NewMUITimer( LocPID )
-				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-				call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
-				call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-				call TimerStart( LoadMUITimer( LocPID ), .01, true, function ArcueidSpellT )
-			else
-				call IssueImmediateOrder( GetTriggerUnit( ), "stop" )
-			endif
-		endif
-		
+
 		return false
 	endfunction	
 

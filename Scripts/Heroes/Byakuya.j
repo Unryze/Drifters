@@ -44,43 +44,6 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "ByakuyaW1" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), .9, "Stun" )
-				call SetUnitAnimation( MUIUnit( 100 ), "spell channel one" )
-				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
-			endif
-
-			if GetIteration( LocTime, 5 ) and LocTime <= 40 then
-				call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), 100, 45 * ( LocTime / 5 ), "Effect" )
-				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-				call SetUnitPosition( MUIUnit( 101 ), GetReal( "TargetX" ), GetReal( "TargetY" ) )
-				call SaveUnit( "DummyUnit", CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u009', GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ) ) )
-				call UnitApplyTimedLife( LoadUnit( "DummyUnit" ), 'BTLF', .9 - I2R( LocTime * 2 ) / 100 )
-				call ScaleUnit( LoadUnit( "DummyUnit" ), 3 )
-				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 200, 20000 )
-			endif
-
-			if LocTime == 50 then
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 245 + MUILevel( ) * 65 + MUIPower( ) )
-				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\Spark_Pink.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\Deadspirit Asuna.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-			endif
-
-			if LocTime == 80 then
-				call ClearAllData( HandleID )
-			endif
-		endif
-	endfunction
-
-	function KuchikiByakuyaSpellE takes nothing returns nothing
-		local integer HandleID  = MUIHandle( )
-		local integer LocTime   = MUIInteger( 0 )
-
-		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-
-			if LocTime == 1 then
 				call MUIDummyXY( 101, 'u001', GetReal( "SpellX" ), GetReal( "SpellY" ), 0 )
 				call MUISaveEffect( 104, "GeneralEffects\\Plasma.mdl", 101 )
 				call ScaleUnit( MUIUnit( 101 ), 1.5 )
@@ -109,7 +72,7 @@
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellR takes nothing returns nothing
+	function KuchikiByakuyaSpellE takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 		local real	  LocCount  = LoadReal( HashTable, HandleID, 1 )
@@ -174,7 +137,7 @@
 		endif
 	endfunction
 
-	function KuchikiByakuyaSpellT takes nothing returns nothing
+	function KuchikiByakuyaSpellR takes nothing returns nothing
 		local integer HandleID  = MUIHandle( )
 		local integer LocTime   = MUIInteger( 0 )
 
@@ -239,33 +202,26 @@
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellQ )
 		endif
 
-		if GetSpellAbilityId( ) == 'A03D' then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellW )
-		endif
-
 		if GetSpellAbilityId( ) == 'A03G' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellE )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellW )
 		endif	
 	
 		if GetSpellAbilityId( ) == 'A03H' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellR )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellE )
 		endif
 		
 		if GetSpellAbilityId( ) == 'A03I' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellT )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function KuchikiByakuyaSpellR )
 		endif
 
 		return false

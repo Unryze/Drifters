@@ -62,54 +62,52 @@
 	endfunction
 
 	function SaberNeroSpellE takes nothing returns nothing
-		local integer i = 1
 		local integer HandleID  = MUIHandle( )
-		local integer LocTime   = MUIInteger( 0 )
+		local integer LocTime 	= MUIInteger( 0 )
 
 		if StopSpell( HandleID, 1 ) == false then
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "SaberNeroE1" ), 100, 0 )
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .1, .015, false, true, "origin", DashEff( ) )
-				call CCUnit( MUIUnit( 100 ), 1.8, "Stun" )
+				call CCUnit( MUIUnit( 100 ), 1.6, "Stun" )
+				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
+				call SetUnitPathing( MUIUnit( 100 ), false )
+				call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw Two" )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .25, .01, false, false, "origin", "" )
+			endif
+
+			if LocTime == 50 then
+				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
+				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 60 )
+				call PlaySoundWithVolume( LoadSound( "SaberNeroT1" ), 100, 0 )
 				call SetUnitTimeScale( MUIUnit( 100 ), 1.5 )
-				call SetUnitAnimation( MUIUnit( 100 ), "Spell Three" )
+				call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw One" )
+				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\LightningStrike1.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2., GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
 			endif
 
-			if LocTime == 35 or LocTime == 70 or LocTime == 105 or LocTime == 140 then
+			if LocTime == 100 then
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 10 )
-				call SetUnitFacing( MUIUnit( 100 ), GetReal( "Angle" ) )
-				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\RedAftershock.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-				call DestroyEffect( AddSpecialEffectTarget( "Abilities\\Weapons\\FireBallMissile\\FireBallMissile.mdl", MUIUnit( 101 ), "chest" ) )
+				call PlaySoundWithVolume( LoadSound( "KickSound1" ), 60, 0 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetReal( "CasterX" ), GetReal( "CasterY" ), 0, 0 )
+				call AddMultipleEffectsXY( 3, "Effects\\SaberNero\\FireCut.mdl", 2.5, GetReal( "TargetX" ), GetReal( "TargetY" ), GetUnitFacing( MUIUnit( 100 ) ), 0, 255, 255, 255, 255 )
+				call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 350, .5, .01, false, false, "origin", DashEff( ) )
 			endif
 
-			if LocTime == 170 then
-				call SetUnitTimeScale( MUIUnit( 100 ), 1 )
-				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
-				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call AddEffectXY( "GeneralEffects\\MoonWrath.mdl", 4, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
-				call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 0, 255, 255 )
-				call AddEffectXY( "GeneralEffects\\ApocalypseCowStomp.mdl", 1.5, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
-				call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 0, 255, 255 )
+			if LocTime == 120 then
+				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 240 + MUIPower( ) )
+			endif
 
-				loop
-					exitwhen i > 4
-					call AddEffectXY( "GeneralEffects\\ValkDust.mdl", GetRandomReal( 2, 3 ), GetReal( "TargetX" ), GetReal( "TargetY" ), GetRandomReal( 0, 360 ), 0 )
-					set i = i + 1
-				endloop
-
-				call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 400, "AoE", "Physical", MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
+			if LocTime == 150 then
 				call ClearAllData( HandleID )
 			endif
 		endif
-	endfunction
+	endfunction	
 
 	function SaberNeroSpellR takes nothing returns nothing
 		local integer i = 1
@@ -182,55 +180,6 @@
 			endif
 		endif
 	endfunction
-
-	function SaberNeroSpellT takes nothing returns nothing
-		local real 			i 	= 1.
-		local integer HandleID  = MUIHandle( )
-		local integer LocTime 	= MUIInteger( 0 )
-
-		if StopSpell( HandleID, 1 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
-
-			if LocTime == 1 then
-				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
-				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call CCUnit( MUIUnit( 100 ), 1.6, "Stun" )
-				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
-				call SetUnitPathing( MUIUnit( 100 ), false )
-				call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw Two" )
-				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 150, .25, .01, false, false, "origin", "" )
-			endif
-
-			if LocTime == 50 then
-				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
-				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 60 )
-				call PlaySoundWithVolume( LoadSound( "SaberNeroT1" ), 100, 0 )
-				call SetUnitTimeScale( MUIUnit( 100 ), 1.5 )
-				call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw One" )
-				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\LightningStrike1.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2., GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
-			endif
-
-			if LocTime == 100 then
-				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
-				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call PlaySoundWithVolume( LoadSound( "KickSound1" ), 60, 0 )
-				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetReal( "CasterX" ), GetReal( "CasterY" ), 0, 0 )
-				call AddMultipleEffectsXY( 3, "Effects\\SaberNero\\FireCut.mdl", 2.5, GetReal( "TargetX" ), GetReal( "TargetY" ), GetUnitFacing( MUIUnit( 100 ) ), 0, 255, 255, 255, 255 )
-				call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 350, .5, .01, false, false, "origin", DashEff( ) )
-			endif
-
-			if LocTime == 120 then
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 240 + MUIPower( ) )
-			endif
-
-			if LocTime == 150 then
-				call ClearAllData( HandleID )
-			endif
-		endif
-	endfunction
 	
 	function SaberNeroSpells takes nothing returns boolean
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
@@ -254,13 +203,6 @@
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellW )
 		endif
 
-		if GetSpellAbilityId( ) == 'A03A' then
-			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
-			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellE )
-		endif
-
 		if GetSpellAbilityId( ) == 'A03B' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
@@ -273,7 +215,7 @@
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
-			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellT )
+			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellE )
 		endif
 		
 		return false
