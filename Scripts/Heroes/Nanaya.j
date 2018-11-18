@@ -6,7 +6,7 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call CCUnit( MUIUnit( 100 ), .4, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .4, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell slam one" )
 				call PlaySoundWithVolume( LoadSound( "NanayaQ1" ), 100, 0 )
 			endif
@@ -22,9 +22,9 @@
 
 			if LocTime >= 25 then
 				if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
-					call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", ( 250 + MUILevel( ) * 50 + MUIPower( ) ) * 1.5, false, "Stun", 1 )
+					call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", ( 250 + MUIPower( 1. ) ) * 1.5, false, "Stun", 1 )
 				else
-					call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
+					call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", 250 + MUIPower( 1. ), false, "", 0 )
 				endif
 			endif			
 
@@ -42,7 +42,7 @@
 		if StopSpell( HandleID, 0 ) == false then
 			if LoadInteger( HashTable, HandleID, 110 ) < 1 then
 				call PlaySoundWithVolume( LoadSound( "NanayaW1" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), .8, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .8, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell two" )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
 			endif
@@ -53,9 +53,9 @@
 			call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 255, 100, 255, 255 )
 			call KillUnit( LoadUnit( "DummyUnit" ) )
 			if GetUnitAbilityLevel( MUIUnit( 100 ), 'B001' ) > 0 then
-				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 350, "AoE", "Physical", ( MUILevel( ) * 5 + MUIPower( ) * 0.033 ) * 1.5, true, "", 0 )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 350, "AoE", "Physical", ( MUIPower( .033 ) ) * 1.5, true, "", 0 )
 			else
-				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 350, "AoE", "Physical", MUILevel( ) * 5 + MUIPower( ) * 0.033, true, "", 0 )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 350, "AoE", "Physical", MUIPower( .033 ), true, "", 0 )
 			endif
 
 			if LoadInteger( HashTable, HandleID, 110 ) >= 30 then
@@ -73,7 +73,7 @@
 		call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 		
 		if LocTime == 1 then
-			call CCUnit( MUIUnit( 100 ), .6, "Stun" )
+			call CCUnit( MUIUnit( 100 ), .6, "Stun", false )
 			call SetUnitAnimation( MUIUnit( 100 ), "spell slam one" )
 			call PlaySoundWithVolume( LoadSound( "NanayaR2" ), 90, 0 )
 		endif
@@ -93,7 +93,7 @@
 				endif
 
 				if LocTime == 50 then
-					call CCUnit( MUIUnit( 100 ), 1., "Stun" )
+					call CCUnit( MUIUnit( 100 ), 1., "Stun", false )
 					call PlaySoundWithVolume( LoadSound( "KickSound1" ), 60, 0 )
 					call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
@@ -102,7 +102,7 @@
 					call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 1.5, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ), 45 )
 					call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
 					call MakeUnitAirborne( MUIUnit( 101 ), 800, 4000 )
-					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) )
+					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 100 + MUIPower( 1. ) )
 					call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 300, .4, .01, false, false, "origin", "" )
 				endif
 
@@ -111,7 +111,7 @@
 					call MakeUnitAirborne( MUIUnit( 100 ), 600, 4000 )
 					call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), 200, -GetReal( "Angle" ), "Move" )
+					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), -200, GetReal( "Angle" ), "Move" )
 					call SetUnitAnimation( MUIUnit( 100 ), "spell throw three" )
 					call SetUnitPosition( MUIUnit( 100 ), GetReal( "MoveX" ), GetReal( "MoveY" ) )
 					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
@@ -123,7 +123,7 @@
 				call PlaySoundWithVolume( LoadSound( "NanayaE2" ), 100, 0 )
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUIPower( .5 ) )
 				call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 1.25, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) + 180, 45 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 800, 99999 )
 				call SetUnitFlyHeight( MUIUnit( 101 ), 0, 2000 )
@@ -137,19 +137,19 @@
 				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
 				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw two" )
-				call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 500, "AoE", "Physical", 250 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "Stun", 1 )
+				call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 500, "AoE", "Physical", 250 + MUIPower( .5 ), false, "Stun", 1 )
 				call UnitRemoveAbility( MUIUnit( 100 ), 'B001' )
 				call ClearAllData( HandleID )
 			endif
 		else
 			if StopSpell( HandleID, 0 ) == false then
 				if LocTime == 50 then
-					call CCUnit( MUIUnit( 101 ), 1, "Stun" )
+					call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
 					call SetUnitAnimation( MUIUnit( 100 ), "spell throw six" )
 					call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 					call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
 					call CreateXY( GetReal( "TargetX" ), GetReal( "TargetY" ), 300, GetReal( "Angle" ), "Move" )
-					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) )
+					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 100 + MUIPower( 1. ) )
 					call SetUnitPosition( MUIUnit( 100 ), GetReal( "MoveX" ), GetReal( "MoveY" ) )
 					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BlackBlink.mdl", GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
 					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
@@ -172,8 +172,8 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "NanayaT1" ), 100, 0 )
-				call ResetAbilityCooldown( MUIUnit( 100 ), 'A02P' )
-				call CCUnit( MUIUnit( 100 ), 2.3, "Stun" )
+				call ResetAbilityCooldown( MUIUnit( 100 ), 'A020' )
+				call CCUnit( MUIUnit( 100 ), 2.3, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell throw four" )
 			endif
 			
@@ -228,8 +228,8 @@
 					set i = i + 1
 				endloop
 
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 4000 + MUILevel( ) * 300 + MUIPower( ) )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 4000 + MUIPower( 1. ) )
 			endif
 
 			if LocTime == 220 then
@@ -249,8 +249,8 @@
 			endif
 			
 			if LocTime == 1 then
-				call CCUnit( MUIUnit( 100 ), 1.9, "Stun" )
-				call ResetAbilityCooldown( MUIUnit( 100 ), 'A02P' )
+				call CCUnit( MUIUnit( 100 ), 1.9, "Stun", false )
+				call ResetAbilityCooldown( MUIUnit( 100 ), 'A020' )
 				call SetUnitAnimation( MUIUnit( 100 ), "stand" )
 			endif
 
@@ -314,8 +314,8 @@
 			endif
 			
 			if LocTime == 160 then
-				call CCUnit( MUIUnit( 101 ), 2, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 6000 + MUILevel( ) * 400 + MUIPower( ) )
+				call CCUnit( MUIUnit( 101 ), 2, "Stun", true )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 400 + MUIPower( 1. ) )
 			endif
 			
 			if LocTime == 180 then
@@ -328,11 +328,11 @@
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 		
-		if GetSpellAbilityId( ) == 'A02P' then
+		if GetSpellAbilityId( ) == 'A020' then
 			call PlaySoundWithVolume( LoadSound( "NanayaD1" ), 90, 0 )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02M' then
+		if GetSpellAbilityId( ) == 'A017' then
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
@@ -344,7 +344,7 @@
 			endif
 		endif
 
-		if GetSpellAbilityId( ) == 'A02N' then
+		if GetSpellAbilityId( ) == 'A018' then
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
@@ -354,21 +354,21 @@
 			endif
 		endif
 
-		if GetSpellAbilityId( ) == 'A02O' then
+		if GetSpellAbilityId( ) == 'A019' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaSpellE )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02Q' then
+		if GetSpellAbilityId( ) == 'A021' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function NanayaSpellR )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02R' then
+		if GetSpellAbilityId( ) == 'A022' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveBoolean( HashTable, HandleID, 10, true )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
@@ -390,9 +390,6 @@
 		call SaveSound( "NanayaT1", "Nanaya\\SpellT1.mp3" )
 		call SaveSound( "NanayaT2", "Nanaya\\SpellT2.mp3" )
 		call SaveSound( "NanayaT3", "Nanaya\\SpellT3.mp3" )
-
-		call SaveTrig( "NanayaSpells" )
-		call GetUnitEvent( LoadTrig( "NanayaSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "NanayaSpells" ), Condition( function NanayaSpells ) )
+		call TriggerAddCondition( LoadTrig( "RemoveInvisTrig" ), Condition( function NanayaSpells ) )
 	endfunction	
 

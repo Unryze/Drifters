@@ -8,7 +8,7 @@
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "SaberNeroQ1" ), 100, 0 )
 				call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
-				call CCUnit( MUIUnit( 100 ), .7, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .7, "Stun", false )
 				call AddEffectXY( "GeneralEffects\\Dash\\Effect1.mdl", 1, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Angle" ), 0 )
 				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
 				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ), .5, .01, false, true, "origin", DashEff( ) )
@@ -21,7 +21,7 @@
 				call AddMultipleEffectsXY( 2, "Effects\\SaberNero\\FireCut.mdl", 2.5, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ), 0, 255, 255, 255, 255 )
 				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
 				call AoEDisplaceXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, .3, .01, 0, DashEff( ) )
-				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 400, "AoE", "Physical", 250 + MUIPower( 1. ), false, "", 0 )
 			endif
 
 			if LocTime == 60 then
@@ -40,7 +40,7 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "SaberNeroW1" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), .5, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .5, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "attack slam" )
 			endif
 
@@ -55,7 +55,7 @@
 				endloop
 
 				call AoEDisplaceXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, .25, .01, 0, DashEff( ) )
-				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 450, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
+				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 450, "AoE", "Physical", 250 + MUIPower( 1. ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -71,7 +71,7 @@
 			if LocTime == 1 then
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call CCUnit( MUIUnit( 100 ), 1.6, "Stun" )
+				call CCUnit( MUIUnit( 100 ), 1.6, "Stun", false )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
 				call SetUnitPathing( MUIUnit( 100 ), false )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw Two" )
@@ -81,8 +81,8 @@
 			if LocTime == 50 then
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 60 )
-				call PlaySoundWithVolume( LoadSound( "SaberNeroT1" ), 100, 0 )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 70 + MUIPower( .4 ) )
+				call PlaySoundWithVolume( LoadSound( "SaberNeroE1" ), 100, 0 )
 				call SetUnitTimeScale( MUIUnit( 100 ), 1.5 )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw One" )
 				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\LightningStrike1.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
@@ -99,8 +99,8 @@
 			endif
 
 			if LocTime == 120 then
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", MUILevel( ) * 240 + MUIPower( ) )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 70 + MUIPower( .4 ) )
 			endif
 
 			if LocTime == 150 then
@@ -120,7 +120,7 @@
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "SaberNeroR1" ), 100, 0 )
 				call SaveReal( HashTable, HandleID, 110, 800 )
-				call CCUnit( MUIUnit( 100 ), 2., "Stun" )
+				call CCUnit( MUIUnit( 100 ), 2., "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell One" )
 				call InitSpiralXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 300, 15, 800, "Abilities\\Spells\\Other\\Doom\\DoomDeath.mdl" )
 			endif
@@ -175,7 +175,7 @@
 				endloop
 
 				call AoEDisplaceXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 200, 1., .01, 1000, DashEff( ) )
-				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 800, "AoE", "Physical", 2000 + MUILevel( ) * 125 + MUIPower( ), false, "Stun", 1 )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 800, "AoE", "Physical", 250 + MUIPower( .8 ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -185,7 +185,7 @@
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 		
-		if GetSpellAbilityId( ) == 'A038' then
+		if GetSpellAbilityId( ) == 'A036' then
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
@@ -197,13 +197,13 @@
 			endif
 		endif
 
-		if GetSpellAbilityId( ) == 'A039' then
+		if GetSpellAbilityId( ) == 'A037' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellW )
 		endif
 
-		if GetSpellAbilityId( ) == 'A03B' then
+		if GetSpellAbilityId( ) == 'A038' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
@@ -211,7 +211,7 @@
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberNeroSpellR )
 		endif
 
-		if GetSpellAbilityId( ) == 'A03C' then
+		if GetSpellAbilityId( ) == 'A039' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
@@ -226,10 +226,6 @@
 		call SaveSound( "SaberNeroW1", "SaberNero\\SpellW1.mp3" )
 		call SaveSound( "SaberNeroE1", "SaberNero\\SpellE1.mp3" )
 		call SaveSound( "SaberNeroR1", "SaberNero\\SpellR1.mp3" )
-		call SaveSound( "SaberNeroT1", "SaberNero\\SpellT1.mp3" )
-
-		call SaveTrig( "SaberNeroSpells" )
-		call GetUnitEvent( LoadTrig( "SaberNeroSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberNeroSpells" ), Condition( function SaberNeroSpells ) )
+		call TriggerAddCondition( LoadTrig( "RemoveInvisTrig" ), Condition( function SaberNeroSpells ) )
 	endfunction	
 

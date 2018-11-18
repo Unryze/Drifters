@@ -6,7 +6,7 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call CCUnit( MUIUnit( 100 ), .4, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .4, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell three" )
 				call PlaySoundWithVolume( LoadSound( "NanayaQ1" ), 100, 0 )
 			endif
@@ -21,7 +21,7 @@
 			endif
 
 			if LocTime >= 25 then
-				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
+				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", 250 + MUIPower( 1. ), false, "", 0 )
 			endif			
 
 			if LocTime == 30 then
@@ -37,7 +37,7 @@
 		if StopSpell( HandleID, 0 ) == false then
 			if LoadInteger( HashTable, HandleID, 110 ) < 1 then
 				call PlaySoundWithVolume( LoadSound( "ToonoW1" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), .8, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .8, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell two" )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
 			endif
@@ -47,7 +47,7 @@
 			call AddEffectXY( "Effects\\Nanaya\\Sensa1.mdl", 2, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetUnitFacing( MUIUnit( 100 ) ) + GetRandomReal( -45, 45 ), 0 )
 			call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 200, 200, 255, 255 )
 			call KillUnit( LoadUnit( "DummyUnit" ) )
-			call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 350, "AoE", "Physical", MUILevel( ) * 5 + MUIPower( ) * 0.033, true, "", 0 )
+			call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 350, "AoE", "Physical", MUIPower( .033 ), true, "", 0 )
 
 			if LoadInteger( HashTable, HandleID, 110 ) >= 30 then
 				call SetUnitAnimation( MUIUnit( 100 ), "stand" )
@@ -67,34 +67,30 @@
 				call PlaySoundWithVolume( LoadSound( "ToonoE2" ), 100, 0 )
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
-				call CCUnit( MUIUnit( 100 ), 1., "Stun" )
+				call CCUnit( MUIUnit( 100 ), 1., "Stun", false )
 				call SetUnitPathing( MUIUnit( 100 ), false )
-				call SetUnitTimeScale( MUIUnit( 100 ), 2.5 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell channel three" )
 				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.25, GetReal( "CasterX" ), GetReal( "CasterY" ), 0, 0 )
-				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) + 50, .2, .01, false, false, "origin", DashEff( ) )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) + 150, .2, .01, false, false, "origin", DashEff( ) )
 				call DestroyEffect( AddSpecialEffect( "Abilities\\Spells\\Orc\\MirrorImage\\MirrorImageCaster.mdl", GetReal( "CasterX" ), GetReal( "CasterY" ) ) )
 			endif
 
-			if LocTime == 20 then
-				call PlaySoundWithVolume( LoadSound( "ToonoE1" ), 100, 0 )
+			if LocTime == 25 then
+				call SetUnitTimeScale( MUIUnit( 100 ), 2.5 )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell five" )
+				call PlaySoundWithVolume( LoadSound( "ToonoE1" ), 100, 0 )
 			endif
 
 			if LocTime == 70 then
 				call PlaySoundWithVolume( LoadSound( "GlassShatter1" ), 60, 0 )
-				call SetUnitTimeScale( MUIUnit( 100 ), 1 )
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetReal( "TargetX" ), GetReal( "TargetY" ) ) )
-				call LinearDisplacement( MUIUnit( 100 ), GetUnitFacing( MUIUnit( 100 ) ) - 180, 300, .25, .01, false, false, "origin", DashEff( ) )
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500 + MUILevel( ) * 75 + MUIPower( ) )
+				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), 300, .25, .01, false, false, "origin", DashEff( ) )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500 + MUIPower( 1. ) )
 				call AddEffectXY( "Effects\\Toono\\LinearSlashBlue1.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) + 45, 0 )
 				call AddEffectXY( "Effects\\Toono\\LinearSlashBlue1.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ) - 45, 0 )
-			endif
-
-			if LocTime == 90 then
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -114,7 +110,7 @@
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
 				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ) - 250, .1, .015, false, false, "origin", DashEff( ) )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
-				call CCUnit( MUIUnit( 100 ), 1.2, "Stun" )
+				call CCUnit( MUIUnit( 100 ), 1.2, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell channel five" )
 			endif
 
@@ -129,8 +125,8 @@
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 200, 99999 )
 				call AddMultipleEffectsXY( 5, "GeneralEffects\\ValkDust.mdl", 2, GetReal( "TargetX" ), GetReal( "TargetY" ), 0, 0, 255, 255, 255, 255 )
 				call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 150, .2, .01, false, false, "origin", DashEff( ) )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 325 + MUILevel( ) * 32.5 + MUIPower( ) * 0.20 )
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 32.5 + MUIPower( .2 ) )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
 			endif
 
 			if LocTime == 40 then
@@ -146,7 +142,7 @@
 			endif
 			
 			if LocTime == 110 then
-				call CCUnit( MUIUnit( 100 ), 1., "Stun" )
+				call CCUnit( MUIUnit( 100 ), 1., "Stun", false )
 				call SetUnitTimeScale( MUIUnit( 100 ), 3 )
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )	
@@ -154,7 +150,7 @@
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 200, 99999 )
 				call AddEffectXY( "GeneralEffects\\SlamEffect.mdl", 1.25, GetReal( "TargetX" ), GetReal( "TargetY" ), GetReal( "Angle" ), 45 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 200, 99999 )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 750 + MUILevel( ) * 60 + MUIPower( ) * 0.25 )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 60 + MUIPower( .25 ) )
 				call MakeUnitAirborne( MUIUnit( 100 ), 800, 2000 )
 				call MakeUnitAirborne( MUIUnit( 101 ), 800, 2000 )
 				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), 200, .4, .01, false, false, "origin", "" )
@@ -174,7 +170,7 @@
 			call SetUnitFlyHeight( MUIUnit( 101 ), 0, 3000 )
 			call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), 200, .25, .01, false, false, "origin", "" )
 			call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), 200, .25, .01, false, false, "origin", "" )
-			call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 750 + MUILevel( ) * 60 + MUIPower( ) * 0.25 )
+			call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 60 + MUIPower( .25 ) )
 			call SetUnitAnimation( MUIUnit( 100 ), "spell channel four" )
 		endif
 
@@ -190,7 +186,7 @@
 				set i = i + 1
 			endloop
 
-			call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 600, "AoE", "Physical", 500 + MUILevel( ) * 40 + MUIPower( ) * 0.50, false, "Stun", 1 )
+			call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 600, "AoE", "Physical", 40 + MUIPower( .5 ), false, "Stun", 1 )
 			call ClearAllData( HandleID )
 		endif
 	endfunction
@@ -205,7 +201,7 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "ToonoE2" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), 1.4, "Stun" )
+				call CCUnit( MUIUnit( 100 ), 1.4, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell one" )
 				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
 				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
@@ -233,8 +229,8 @@
 					set i = i + 1
 				endloop
 
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 3000 + MUILevel( ) * 300 + MUIPower( ) )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 3000 + MUIPower( 1. ) )
 				call SaveReal( HashTable, HandleID, 110, 0 )
 			endif
 			
@@ -248,11 +244,11 @@
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 		
-		if GetSpellAbilityId( ) == 'A02X' then
+		if GetSpellAbilityId( ) == 'A027' then
 			call PlaySoundWithVolume( LoadSound( "ToonoD1" ), 100, 0 )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02U' then
+		if GetSpellAbilityId( ) == 'A024' then
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
@@ -264,7 +260,7 @@
 			endif
 		endif
 		
-		if GetSpellAbilityId( ) == 'A02V' then
+		if GetSpellAbilityId( ) == 'A025' then
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
 				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
@@ -274,21 +270,21 @@
 			endif
 		endif
 
-		if GetSpellAbilityId( ) == 'A02W' then
+		if GetSpellAbilityId( ) == 'A026' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellE )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02Y' then
+		if GetSpellAbilityId( ) == 'A028' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function ToonoShikiSpellR )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02Z' then
+		if GetSpellAbilityId( ) == 'A029' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
@@ -308,9 +304,6 @@
 		call SaveSound( "ToonoR3", "Toono\\SpellR3.mp3" )
 		call SaveSound( "ToonoT1", "Toono\\SpellT1.mp3" )
 		call SaveSound( "ToonoT2", "Toono\\SpellT2.mp3" )
-		
-		call SaveTrig( "ToonoShikiSpells" )
-		call GetUnitEvent( LoadTrig( "ToonoShikiSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "ToonoShikiSpells" ), Condition( function ToonoShikiSpells ) )
+		call TriggerAddCondition( LoadTrig( "RemoveInvisTrig" ), Condition( function ToonoShikiSpells ) )
 	endfunction	
 

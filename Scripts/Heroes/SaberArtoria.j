@@ -8,7 +8,7 @@
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "SaberArtoriaD1" ), 100, 0 )
 				call SaveReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500, 0 )
-				call CCUnit( MUIUnit( 100 ), 2.1, "Stun" )
+				call CCUnit( MUIUnit( 100 ), 2.1, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell One" )
 			endif
 
@@ -22,7 +22,7 @@
 			endif
 
 			if LocTime == 200 then
-				call UnitRemoveAbility( MUIUnit( 100 ), 'B04J' )
+				call UnitRemoveAbility( MUIUnit( 100 ), 'B008' )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -38,20 +38,20 @@
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "SaberArtoriaQ1" ), 100, 0 )
 				call PlaySoundWithVolume( LoadSound( "SaberArtoriaQ2" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), .5, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .5, "Stun", false )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw Two" )
 			endif
 
 			if LocTime == 15 then
 				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl" )
-				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 400, "AoE", "Physical", 125 + MUILevel( ) * 25 + MUIPower( ) * 0.5 + 2 * LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), true, "", 0 )
+				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 400, "AoE", "Physical", 125 + MUIPower( .5 ) + 2 * LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), true, "", 0 )
 			endif
 
 			if LocTime == 35 then
 				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 300, GetUnitFacing( MUIUnit( 100 ) ), "Spell" )
 				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
-				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 200, "AoE", "Physical", 125 + MUILevel( ) * 25 + MUIPower( ) * 0.5 + 2 * LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), true, "", 0 )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 200, "AoE", "Physical", 125 + MUIPower( .5 ) + 2 * LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), true, "", 0 )
 			endif
 
 			if LocTime == 40 then
@@ -70,12 +70,12 @@
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "SaberArtoriaW1" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), .35, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .35, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Throw One" )
 			endif
 
 			if LocTime == 15 then
-				call CCUnit( MUIUnit( 101 ), 1, "Silence" )
+				call CCUnit( MUIUnit( 101 ), 1, "Silence", true )
 				call PlaySoundWithVolume( LoadSound( "SaberArtoriaW2" ), 100, 0 )
 				call CreateTargetXY( HandleID, MUIUnit( 100 ), MUIUnit( 101 ) )
 				call CreateDistanceAndAngle( GetReal( "CasterX" ), GetReal( "CasterY" ), "Target" )
@@ -83,11 +83,11 @@
 
 				if LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ) > 0 then
 					call AoEDisplaceXY( HandleID, GetReal( "CasterX" ), GetReal( "CasterY" ), -200, .25, .01, 0, DashEff( ) )
-					call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 300, "AoE", "Physical", 300 + MUILevel( ) * 50 + MUIPower( ) * 1 + 2 * LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "", 0 )
+					call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 300, "AoE", "Physical", 300 + MUIPower( 1. ) + 2 * LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "", 0 )
 				else
 					call LinearDisplacement( MUIUnit( 101 ), GetReal( "Angle" ), -( GetReal( "Distance" ) - 200 ), .25, .01, false, true, "origin", DashEff( ) )
-					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 150 + MUILevel( ) * 25 + MUIPower( ) * 0.5 )
-					call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 300, "AoE", "Physical", 150 + MUILevel( ) * 25 + MUIPower( ) * 0.5, false, "Silence", 1 )
+					call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 150 + MUIPower( .5 ) )
+					call AoEDamageXY( HandleID, GetReal( "TargetX" ), GetReal( "TargetY" ), 300, "AoE", "Physical", 150 + MUIPower( .5 ), false, "Silence", 1 )
 				endif
 			endif
 
@@ -110,7 +110,7 @@
 
 		if LocTime == 1 then
 			call PlaySoundWithVolume( LoadSound( "SaberArtoriaE1" ), 100, 0 )
-			call CCUnit( MUIUnit( 100 ), .35, "Stun" )
+			call CCUnit( MUIUnit( 100 ), .35, "Stun", false )
 			call SetUnitTimeScale( MUIUnit( 100 ), 1.5 )
 			call SetUnitAnimation( MUIUnit( 100 ), "Spell Seven" )
 		endif
@@ -120,7 +120,6 @@
 		endif
 
 		if LocTime == 25 then
-			call PauseUnit( MUIUnit( 100 ), false )
 			call SetUnitTimeScale( MUIUnit( 100 ), 1 )
 			call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u001', GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Angle" ) ) )
@@ -134,18 +133,17 @@
 			call SetUnitPosition( MUIUnit( 101 ), GetReal( "EffectX" ), GetReal( "EffectY" ) )
 
 			if LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ) > 0 then
-				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 300, "AoE", "Physical", MUILevel( ) * 50 + MUIPower( ) + LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "Stun", 1 )
+				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 300, "AoE", "Physical", MUIPower( 1. ) + LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "Stun", 1 )
 			else
-				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 300, "AoE", "Physical", MUILevel( ) * 50 + MUIPower( ), false, "", 0 )
+				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 300, "AoE", "Physical", MUIPower( 1. ), false, "", 0 )
 			endif
 
 			if GetReal( "Distance" ) >= 1250. or UnitLife( MUIUnit( 100 ) ) <= 0 then
 				call SaveReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500, 0 )
 				call DestroyEffect( MUIEffect( 104 ) )
 				call RemoveUnit( MUIUnit( 101 ) )
-				call PauseTimer( GetExpiredTimer( ) )
+				call TimerPause( GetExpiredTimer( ) )
 				call FlushChildHashtable( HashTable, HandleID )
-				call DestroyTimer( GetExpiredTimer( ) )
 			endif
 		endif
 	endfunction
@@ -158,11 +156,11 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call PlaySoundWithVolume( LoadSound( "SaberArtoriaT1" ), 100, 0 )
+				call PlaySoundWithVolume( LoadSound( "SaberArtoriaR1" ), 100, 0 )
 				call SaveReal( HashTable, HandleID, StringHash( "CasterX" ), GetUnitX( MUIUnit( 100 ) ) )
 				call SaveReal( HashTable, HandleID, StringHash( "CasterY" ), GetUnitY( MUIUnit( 100 ) ) )
 				call SaveReal( HashTable, MUIHandle( ), StringHash( "Angle" ), MUIAngleData( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "SpellX" ), GetReal( "SpellY" ) ) )
-				call CCUnit( MUIUnit( 100 ), 1.1, "Stun" )
+				call CCUnit( MUIUnit( 100 ), 1.1, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Slam One" )
 				call DestroyEffect( AddSpecialEffectTarget( "Effects\\SaberArtoria\\GoldGlow.mdl", MUIUnit( 100 ), "weapon" ) )
 				call MUIDummyXY( 125, 'u001', GetReal( "CasterX" ), GetReal( "CasterY" ), 0 )
@@ -182,7 +180,7 @@
 			endif
 
 			if LocTime == 100 then
-				call PlaySoundWithVolume( LoadSound( "SaberArtoriaT2" ), 100, 0 )
+				call PlaySoundWithVolume( LoadSound( "SaberArtoriaR2" ), 100, 0 )
 				call DestroyEffect( MUIEffect( 104 ) )
 				call DestroyEffect( MUIEffect( 105 ) )
 				call AddEffectXY( "Effects\\SaberArtoria\\ExcaliburLinear.mdl", 1, GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "Angle" ), 0 )
@@ -199,7 +197,7 @@
 				endif
 
 				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\NewDirtEx.mdl", GetReal( "MoveX" ), GetReal( "MoveY" ) ) )
-				call AoEDamageXY( HandleID, GetReal( "MoveX" ), GetReal( "MoveY" ), 500, "AoE", "Physical", MUILevel( ) * 300 + MUIPower( ) + LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "Slow", 1 )
+				call AoEDamageXY( HandleID, GetReal( "MoveX" ), GetReal( "MoveY" ), 500, "AoE", "Physical", MUIPower( 1. ) + LoadReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500 ), false, "Slow", 1 )
 
 				if GetReal( "Distance" ) >= 3000 then
 					call SaveReal( HashTable, GetHandleId( MUIUnit( 100 ) ), 500, 0 )
@@ -213,26 +211,26 @@
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 		
-		if GetSpellAbilityId( ) == 'A04R' then
+		if GetSpellAbilityId( ) == 'A073' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellD )
 		endif
 		
-		if GetSpellAbilityId( ) == 'A02D' then
+		if GetSpellAbilityId( ) == 'A011' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellQ )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02E' then
+		if GetSpellAbilityId( ) == 'A012' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellW )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02G' then
+		if GetSpellAbilityId( ) == 'A014' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
@@ -240,7 +238,7 @@
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberArtoriaSpellE )
 		endif
 
-		if GetSpellAbilityId( ) == 'A02L' then
+		if GetSpellAbilityId( ) == 'A016' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
@@ -262,11 +260,6 @@
 		call SaveSound( "SaberArtoriaE2", "SaberArtoria\\SpellE2.mp3" )
 		call SaveSound( "SaberArtoriaR1", "SaberArtoria\\SpellR1.mp3" )
 		call SaveSound( "SaberArtoriaR2", "SaberArtoria\\SpellR2.mp3" )
-		call SaveSound( "SaberArtoriaT1", "SaberArtoria\\SpellT1.mp3" )
-		call SaveSound( "SaberArtoriaT2", "SaberArtoria\\SpellT2.mp3" )
-
-		call SaveTrig( "SaberArtoriaSpells" )
-		call GetUnitEvent( LoadTrig( "SaberArtoriaSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "SaberArtoriaSpells" ), Condition( function SaberArtoriaSpells ) )
+		call TriggerAddCondition( LoadTrig( "RemoveInvisTrig" ), Condition( function SaberArtoriaSpells ) )
 	endfunction	
 

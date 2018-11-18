@@ -6,23 +6,19 @@
 			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
 
 			if LocTime == 1 then
-				call CCUnit( MUIUnit( 100 ), .25, "Stun" )
+				call CCUnit( MUIUnit( 100 ), .25, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Four" )
 			endif
 
 			if LocTime == 20 then
-				call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A03L', false )
-				call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A052', true )
 				call PlaySoundWithVolume( LoadSound( "AkameQ1" ), 60, 0 )
 				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200., GetUnitFacing( MUIUnit( 100 ) ), "Effect" )
 				call AddEffectXY( "GeneralEffects\\AkihaClaw.mdl", 1.5, GetReal( "EffectX" ), GetReal( "EffectY" ), GetUnitFacing( MUIUnit( 100 ) ) - 90, 0 )
 				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
-				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 400, "AoE", "Physical", 250 + MUILevel( ) * 50 + MUIPower( ), false, "Stun", 1 )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 400, "AoE", "Physical", 250 + MUIPower( 1. ), false, "Stun", 1 )
 			endif
 
-			if LocTime == 220 then
-				call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A03L', true )
-				call SetPlayerAbilityAvailable( GetOwningPlayer( MUIUnit( 100 ) ), 'A052', false )
+			if LocTime == 25 then
 				call FlushChildHashtable( HashTable, HandleID )
 			endif
 		endif
@@ -34,7 +30,7 @@
 		if StopSpell( HandleID, 1 ) == false then
 			if MUIInteger( 0 ) < 1 then
 				call SaveInteger( HashTable, HandleID, 0, MUIInteger( 0 ) + 1 )
-				call CCUnit( MUIUnit( 100 ), ( DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) - 150 ) / 1000, "Stun" )
+				call CCUnit( MUIUnit( 100 ), ( DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) - 150 ) / 1000, "Stun", false )
 				call SetUnitPathing( MUIUnit( 100 ), false )
 				call SetUnitAnimation( MUIUnit( 100 ), "Spell Channel" )
 				call SaveInteger( HashTable, HandleID, 110, 255 )
@@ -51,9 +47,9 @@
 				call AddEffectXY( "GeneralEffects\\FireSlashSlow\\FireSlashSlow.mdl", 4, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), 0 )
 				call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 153, 0, 0, 255 )
 				call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), 150, 99999 )
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "origin" ) )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 200 + MUILevel( ) * 100 + MUIPower( ) )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 100 + MUIPower( 1. ) )
 				call SetUnitAnimation( MUIUnit( 100 ), "attack" )
 				call ClearAllData( HandleID )
 			endif
@@ -74,10 +70,11 @@
 			endif
 
 			if LocTime == 1 then
-				call LinearDisplacement( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) - 150, .6, .01, false, false, "origin", DashEff( ) )
-				call CCUnit( MUIUnit( 100 ), 2.8, "Stun" )
+				call LinearDisplacement( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) - 150, .4, .01, false, false, "origin", DashEff( ) )
+				call CCUnit( MUIUnit( 100 ), 2.8, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell three" )
 				call SetUnitTimeScale( MUIUnit( 100 ), 2 )
+				call PlaySoundWithVolume( LoadSound( "AkameE1" ), 80, 0 )
 			endif
 
 			if LocTime == 40 then
@@ -89,14 +86,13 @@
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
 				call LinearDisplacement( MUIUnit( 101 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), 400, .5, .01, false, false, "origin", DashEff( ) )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 250 + MUILevel( ) * 30 )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 30 + MUIPower( .25 ) )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell two" )
 				call DisplaceUnitWithArgs( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 101 ), MUIUnit( 100 ) ), 400, 1, .01, 0 )
 			endif
 
 			if LocTime == 140 then
 				call SaveBoolean( HashTable, HandleID, 10, false )
-				call PlaySoundWithVolume( LoadSound( "AkameR2" ), 80, 0 )
 				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BlackBlink.mdl", GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ) ) )
 				call ShowUnit( MUIUnit( 100 ), false )
 			endif
@@ -107,7 +103,7 @@
 					call SaveReal( HashTable, HandleID, 110, LoadReal( HashTable, HandleID, 110 ) + 1 )
 					
 					if LoadReal( HashTable, HandleID, 110 ) < 20 then
-						call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 25 + MUILevel( ) )
+						call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 5 + MUIPower( .01 ) )
 
 						if LoadReal( HashTable, HandleID, 110 ) < 16 then
 							call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
@@ -136,17 +132,17 @@
 			endif
 			
 			if LocTime == 210 then
-				call PlaySoundWithVolume( LoadSound( "AkameR1" ), 90, 0 )
+				call PlaySoundWithVolume( LoadSound( "AkameE2" ), 80, 0 )
 				call LinearDisplacement( MUIUnit( 100 ), GetUnitFacing( MUIUnit( 100 ) ), 700, .2, .01, false, false, "origin", DashEff( ) )
 				call AddEffectXY( "GeneralEffects\\AkihaClaw.mdl", 4, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetUnitFacing( MUIUnit( 100 ) ), 0 )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "origin" ) )
 			endif
 			
 			if LocTime == 260 then
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 60, 0 )
 				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500 + MUILevel( ) * 50 + MUIPower( ) )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500 + MUIPower( 1. ) )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -161,9 +157,9 @@
 
 			if LocTime == 1 then
 				call LinearDisplacement( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) - 150, .6, .01, false, false, "origin", DashEff( ) )
-				call CCUnit( MUIUnit( 100 ), 2.25, "Stun" )
+				call CCUnit( MUIUnit( 100 ), 2.25, "Stun", false )
 				call SetUnitAnimation( MUIUnit( 100 ), "spell three" )
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", true )
 				call SaveEffectHandle( HashTable, HandleID, 108, AddSpecialEffectTarget( "Abilities\\Weapons\\PhoenixMissile\\Phoenix_Missile.mdl", MUIUnit( 100 ), "weapon" ) )
 			endif
 
@@ -175,24 +171,24 @@
 				call MakeUnitAirborne( LoadUnit( "DummyUnit" ), 200, 99999 )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
 				call LinearDisplacement( MUIUnit( 101 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), 600, 1, .01, false, false, "origin", DashEff( ) )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500 + MUILevel( ) * 50 )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 500  )
 			endif
 			
 			if LocTime == 75 then
-				call PlaySoundWithVolume( LoadSound( "AkameT1" ), 80, 0 )
+				call PlaySoundWithVolume( LoadSound( "AkameR1" ), 80, 0 )
 				call DisplaceUnitWithArgs( MUIUnit( 100 ), AngleBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ), DistanceBetweenUnits( MUIUnit( 100 ), MUIUnit( 101 ) ) + 600, .8, .01, 400 )
 			endif
-			
+
 			if LocTime == 155 then
 				call SetUnitTimeScale( MUIUnit( 100 ), 1.75 )
 				call PlaySoundWithVolume( LoadSound( "AkameQ1" ), 80, 0 )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodEffect1.mdl", MUIUnit( 101 ), "chest" ) )
 			endif
-			
+
 			if LocTime == 205 then
 				call PlaySoundWithVolume( LoadSound( "BloodFlow1" ), 60, 0 )
-				call CCUnit( MUIUnit( 101 ), 1, "Stun" )
-				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 1000 + MUILevel( ) * 100 + MUIPower( ) )
+				call CCUnit( MUIUnit( 101 ), 1, "Stun", false )
+				call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 100 + MUIPower( 1. ) )
 				call DestroyEffect( AddSpecialEffectTarget( "GeneralEffects\\BloodExplosion.mdl", MUIUnit( 101 ), "chest" ) )
 				call ClearAllData( HandleID )
 			endif
@@ -203,20 +199,20 @@
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 		
-		if GetSpellAbilityId( ) == 'A03L' then
+		if GetSpellAbilityId( ) == 'A046' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellQ )
 		endif
 
-		if GetSpellAbilityId( ) == 'A03M' then
+		if GetSpellAbilityId( ) == 'A047' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellW )
 		endif
 
-		if GetSpellAbilityId( ) == 'A03O' then
+		if GetSpellAbilityId( ) == 'A048' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveBoolean( HashTable, HandleID, 10, true )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
@@ -224,7 +220,7 @@
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function AkameSpellE )
 		endif
 
-		if GetSpellAbilityId( ) == 'A03P' then
+		if GetSpellAbilityId( ) == 'A049' then
 			set HandleID = NewMUITimer( LocPID )
 			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
 			call SaveUnitHandle( HashTable, HandleID, 101, GetSpellTargetUnit( ) )
@@ -239,12 +235,8 @@
 		call SaveSound( "AkameQ1", "Akame\\SpellQ1.mp3" )
 		call SaveSound( "AkameW1", "Akame\\SpellW1.mp3" )
 		call SaveSound( "AkameE1", "Akame\\SpellE1.mp3" )
+		call SaveSound( "AkameE2", "Akame\\SpellE2.mp3" )
 		call SaveSound( "AkameR1", "Akame\\SpellR1.mp3" )
-		call SaveSound( "AkameR2", "Akame\\SpellR2.mp3" )
-		call SaveSound( "AkameT1", "Akame\\SpellT1.mp3" )
-
-		call SaveTrig( "AkameSpells" )
-		call GetUnitEvent( LoadTrig( "AkameSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddCondition( LoadTrig( "AkameSpells" ), Condition( function AkameSpells ) )
+		call TriggerAddCondition( LoadTrig( "RemoveInvisTrig" ), Condition( function AkameSpells ) )
 	endfunction	
 
