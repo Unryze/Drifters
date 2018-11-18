@@ -1,7 +1,7 @@
 	function ReviveSystemTriggerFunction3 takes nothing returns nothing
 		call DestroyEffect( LoadEffectHandle( HashTable, MUIHandle( ), 1 ) )
 		call ReviveHero( MUIUnit( 0 ), -11000, 10000, true )
-		call SetUnitFlyHeight( MUIUnit( 0 ), 0, 2000 )
+		call SetUnitFlyHeight( MUIUnit( 0 ), 0, 0 )
 
 		if GetLocalPlayer( ) == GetOwningPlayer( MUIUnit( 0 ) ) then
 			call ClearSelection( )
@@ -13,9 +13,8 @@
 			call IssuePointOrder( MUIUnit( 0 ), "attack", GetRandomReal( -1900., 1900. ), GetRandomReal( -1200., 200. ) )
 		endif
 
-		call PauseTimer( GetExpiredTimer( ) )
+		call TimerPause( GetExpiredTimer( ) )
 		call FlushChildHashtable( HashTable, MUIHandle( ) )
-		call DestroyTimer( GetExpiredTimer( ) )
 	endfunction
 
 	function ReviveSystemAction takes nothing returns boolean

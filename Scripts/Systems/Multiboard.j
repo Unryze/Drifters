@@ -42,7 +42,7 @@
 				endif
 
 				call SaveMultiboardItemHandle( HashTable, GetHandleId( CameraSet ), StringHash( "MBItem" ), MultiboardGetItem( GetMultiboard( ), MID, 0 ) )
-				call MultiboardSetItemValue(  GetMBItem( ), GetPlayerName( Player( PID ) ) )
+				call MultiboardSetItemValue( GetMBItem( ), GetTeamColour( PID ) + GetPlayerName( Player( PID ) ) + "|r" )
 				call ReleaseMBItem( )
 
 				call SaveMultiboardItemHandle( HashTable, GetHandleId( CameraSet ), StringHash( "MBItem" ), MultiboardGetItem( GetMultiboard( ), MID, 1 ) )

@@ -12,6 +12,7 @@
 		call SaveUnit( "DummyUnit", CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), DummyID, LocX, LocY, LocFacing ) )
 		call DestroyEffect( AddSpecialEffectTarget( LocName, LoadUnit( "DummyUnit" ), "origin" ) )
 		call ScaleUnit( LoadUnit( "DummyUnit" ), LocScale )
+		call SetUnitFlyHeight( LoadUnit( "DummyUnit" ), GetReal( "DummyHeight" ), 0 )
 	endfunction	
 
 	function AddMultipleEffectsXY takes integer LocCount, string LocName, real LocScale, real LocX, real LocY, real LocFacing, real LocRotation, integer LocRed, integer LocBlue, integer LocGreen, integer LocAlpha returns nothing

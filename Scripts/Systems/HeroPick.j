@@ -8,6 +8,7 @@
 
 	function InitHeroPickData takes nothing returns nothing
 		local integer i 	   = 1
+		local integer Iterator = 0
 		local integer SysIconX = -2600
 		local integer SysIconY = 6200
 		local integer SysHeroX = 700
@@ -23,8 +24,8 @@
 		call FillHeroPickInfo( 8,  'H007', 2.4, "Scathach"      )
 		call FillHeroPickInfo( 9,  'H008', 1.8, "Akainu"        )
 		call FillHeroPickInfo( 10, 'H009', 3.0, "Reinforce"     )
-		call FillHeroPickInfo( 11, 'H00A', 2.4, "Arcueid"       )
-		call FillHeroPickInfo( 12, 'H00B', 2.0, "SaberArtoria"  )
+		call FillHeroPickInfo( 11, 'H010', 2.4, "Arcueid"       )
+		call FillHeroPickInfo( 12, 'H011', 2.0, "SaberArtoria"  )
 		call FillHeroPickInfo( 13, 'H00C', 2.0, "RubyRouse"     )
 		call SaveUnitHandle( HashTable, GetHandleId( HashTable ), 8000, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u005', -1800, 5525, 270 ) )
 		call ScaleUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 8000 ), 2.5 )
@@ -34,11 +35,12 @@
 		loop
 			exitwhen i > LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalHeroes" ) )
 
-			if i == 6 or i == 11 then
+			if Iterator == 5 then
 				set SysIconX = -2600
 				set SysIconY = SysIconY - 100
 				set SysHeroX = 700
 				set SysHeroY = SysHeroY - 150
+				set Iterator = 0
 			endif
 
 			call SaveUnitHandle( HashTable, GetHandleId( HashTable ), 1000 + i, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u006', SysIconX, SysIconY, 270 ) )
@@ -50,6 +52,7 @@
 			set SysIconX = SysIconX + 100
 			set SysHeroX = SysHeroX + 150
 			set i = i + 1
+			set Iterator = Iterator + 1
 		endloop
 	endfunction
 
@@ -84,7 +87,7 @@
 		call MultiboardSetItemIcon( GetMBItem( ), LoadStr( HashTable, GetHandleId( HashTable ), HeroID + 4000 ) )
 
 		if GetPlayerController( Player( LocID ) ) == MAP_CONTROL_USER then
-			call SetPlayerName( Player( LocID ), GetPlayerName( Player( LocID ) ) + " [ " + GetHeroProperName( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0 ) ) + " ]" )
+			call SetPlayerName( Player( LocID ), GetPlayerName( Player( LocID ) ) + " [ " + GetHeroProperName( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0 ) ) + " ]" + "|r" )
 			if GetLocalPlayer( ) == Player( LocID ) then
 				call CameraSetupSetField( CameraSet, CAMERA_FIELD_ANGLE_OF_ATTACK, 305, 0 )
 				call CameraSetupApplyForceDuration( CameraSet, true, 0 )

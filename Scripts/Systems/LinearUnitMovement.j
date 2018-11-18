@@ -5,57 +5,43 @@
 
 	function LinearDisplacementAction takes nothing returns nothing
 		local integer 	HandleID 	= MUIHandle( )
-		local real 		LocCos 		= LoadReal( HashTable, HandleID, 0 )
-		local real 		LocSin 		= LoadReal( HashTable, HandleID, 1 )
-		local real 		MaxDist 	= LoadReal( HashTable, HandleID, 2 )
-		local real 		MoveRate 	= LoadReal( HashTable, HandleID, 3 )
-		local real 		InitX 		= LoadReal( HashTable, HandleID, 4 )
-		local real 		InitY 		= LoadReal( HashTable, HandleID, 5 )
-	// 	local unit		MovedUnit	= MUIUnit( 6 )
-	//	local boolean	DestroyDest	= LoadBoolean( HashTable, HandleID, 7 )
-		local boolean 	LocPathing 	= LoadBoolean( HashTable, HandleID, 8 )
-	//	local string 	LocAttach 	= LoadStr( HashTable, HandleID, 9 )
-		local string 	LocEffect 	= LoadStr( HashTable, HandleID, 10 )
-		local integer 	IsStopped 	= MUIInteger( 11 )
-		local integer 	IsEffect 	= MUIInteger( 12 )
-		local real 		MoveX 		= GetUnitX( MUIUnit( 6 ) ) + MaxDist * LocCos
-		local real 		MoveY 		= GetUnitY( MUIUnit( 6 ) ) + MaxDist * LocSin
-		local real 		Duration 	= LoadReal( HashTable, HandleID, 13 )
+		local real 		MoveX 		= GetUnitX( GetUnit( "Displaced" ) ) + GetReal( "MaxDistance" ) * GetReal( "AngleX" )
+		local real 		MoveY 		= GetUnitY( GetUnit( "Displaced" ) ) + GetReal( "MaxDistance" ) * GetReal( "AngleY" )
 
-		if Duration > 0 and UnitLife( MUIUnit( 6 ) ) > 0 then
-			call SaveReal( HashTable, HandleID, 13, Duration - 1 )
+		if GetReal( "Duration" ) > 0 and UnitLife( GetUnit( "Displaced" ) ) > 0 then
+			call IssueImmediateOrder( GetUnit( "Displaced" ), "stop" )
+			call SaveReal( HashTable, HandleID, StringHash( "Duration" ), GetReal( "Duration" ) - 1 )
 
-			if LocPathing == false and IsTerrainPathable( MoveX, MoveY, PATHING_TYPE_WALKABILITY ) then
-				call SaveInteger( HashTable, HandleID, 11, 1 )
+			if GetBool( "Pathing" ) == false and IsTerrainPathable( MoveX, MoveY, PATHING_TYPE_WALKABILITY ) then
+				call SaveInteger( HashTable, HandleID, StringHash( "StopMovement" ), 1 )
 			else
-				call SetUnitX( MUIUnit( 6 ), MoveX )
-				call SetUnitY( MUIUnit( 6 ), MoveY )
+				call SetUnitX( GetUnit( "Displaced" ), MoveX )
+				call SetUnitY( GetUnit( "Displaced" ), MoveY )
 			endif
 
-			if IsEffect == 0 then
-				if GetUnitFlyHeight( MUIUnit( 6 ) ) < 5. then
-					call DestroyEffect( AddSpecialEffect( LocEffect, GetUnitX( MUIUnit( 6 ) ), GetUnitY( MUIUnit( 6 ) ) ) )
+			if GetInt( "ShowEffect" ) == 0 then
+				if GetUnitFlyHeight( GetUnit( "Displaced" ) ) < 5. then
+					call DestroyEffect( AddSpecialEffect( GetStr( "Effect" ), GetUnitX( GetUnit( "Displaced" ) ), GetUnitY( GetUnit( "Displaced" ) ) ) )
 				endif
 			endif
 
-			if IsEffect == 2 then
-				call SaveInteger( HashTable, HandleID, 12, 0 )
+			if GetInt( "ShowEffect" ) == 2 then
+				call SaveInteger( HashTable, HandleID, StringHash( "ShowEffect" ), 0 )
 			endif
 
-			call SaveReal( HashTable, HandleID, 2, MaxDist - MoveRate )
+			call SaveReal( HashTable, HandleID, StringHash( "MaxDistance" ), GetReal( "MaxDistance" ) - GetReal( "MoveRate" ) )
 
-			if MaxDist <= 0 or RMin( RMax( InitX * 1, GetMapBound( "MinX" ) ), GetMapBound( "MaxX" ) ) != InitX or RMin( RMax( InitY * 1, GetMapBound( "MinY" ) ), GetMapBound( "MaxY" ) ) != InitY then
-				call SaveInteger( HashTable, HandleID, 11, 1 )
+			if GetReal( "MaxDistance" ) <= 0 or RMin( RMax( GetReal( "InitX" )  * 1, GetMapBound( "MinX" ) ), GetMapBound( "MaxX" ) ) != GetReal( "InitX" )  or RMin( RMax( GetReal( "InitY" )  * 1, GetMapBound( "MinY" ) ), GetMapBound( "MaxY" ) ) != GetReal( "InitY" )  then
+				call SaveInteger( HashTable, HandleID, StringHash( "StopMovement" ), 1 )
 			endif
 
-			if IsStopped == 1 then
-				call SetUnitFlyHeight( MUIUnit( 6 ), GetUnitDefaultFlyHeight( MUIUnit( 6 ) ), 200 )
-				call SetUnitTimeScale( MUIUnit( 6 ), 1 )
+			if GetInt( "StopMovement" ) == 1 then
+				call SetUnitFlyHeight( GetUnit( "Displaced" ), GetUnitDefaultFlyHeight( GetUnit( "Displaced" ) ), 200 )
+				call SetUnitTimeScale( GetUnit( "Displaced" ), 1 )
 			endif
 		else
-			call PauseTimer( GetExpiredTimer( ) )
+			call TimerPause( GetExpiredTimer( ) )
 			call FlushChildHashtable( HashTable, HandleID )
-			call DestroyTimer( GetExpiredTimer( ) )
 		endif
 	endfunction
 
@@ -66,20 +52,18 @@
 		if LocTrigUnit != null then
 			set LocPID = GetPlayerId( GetOwningPlayer( LocTrigUnit ) )
 			set HandleID = NewMUITimer( LocPID )
-			call SaveReal( HashTable, HandleID, 0, Cos( Deg2Rad( LocFacing ) ) )
-			call SaveReal( HashTable, HandleID, 1, Sin( Deg2Rad( LocFacing ) ) )
-			call SaveReal( HashTable, HandleID, 2, 2 * LocDistance * LocRate / LocTime )
-			call SaveReal( HashTable, HandleID, 3, ( 2 * LocDistance * LocRate / LocTime ) * LocRate / LocTime )
-			call SaveReal( HashTable, HandleID, 4, GetUnitX( LocTrigUnit ) )
-			call SaveReal( HashTable, HandleID, 5, GetUnitY( LocTrigUnit ) )
-			call SaveUnitHandle( HashTable, HandleID, 6, LocTrigUnit )
-			call SaveBoolean( HashTable, HandleID, 7, LocDestrDestruct )
-			call SaveBoolean( HashTable, HandleID, 8, LocPathing )
-			call SaveStr( HashTable, HandleID, 9, LocAttach )
-			call SaveStr( HashTable, HandleID, 10, LocEffect )
-			call SaveInteger( HashTable, HandleID, 11, 0 )
-			call SaveInteger( HashTable, HandleID, 12, 0 )
-			call SaveReal( HashTable, HandleID, 13, LocTime / LocRate )
+			call SaveReal( HashTable, HandleID, StringHash( "AngleX" ), Cos( Deg2Rad( LocFacing ) ) )
+			call SaveReal( HashTable, HandleID, StringHash( "AngleY" ), Sin( Deg2Rad( LocFacing ) ) )
+			call SaveReal( HashTable, HandleID, StringHash( "MaxDistance" ), 2 * LocDistance * LocRate / LocTime )
+			call SaveReal( HashTable, HandleID, StringHash( "MoveRate" ), ( 2 * LocDistance * LocRate / LocTime ) * LocRate / LocTime )
+			call SaveReal( HashTable, HandleID, StringHash( "InitX" ), GetUnitX( LocTrigUnit ) )
+			call SaveReal( HashTable, HandleID, StringHash( "InitY" ), GetUnitY( LocTrigUnit ) )
+			call SaveUnitHandle( HashTable, HandleID, StringHash( "Displaced" ), LocTrigUnit )
+		//	call SaveBoolean( HashTable, HandleID, StringHash( "DestroysDoodads" ), LocDestrDestruct )
+			call SaveBoolean( HashTable, HandleID, StringHash( "Pathing" ), LocPathing )
+		//	call SaveStr( HashTable, HandleID, StringHash( "Attachment" ), LocAttach )
+			call SaveStr( HashTable, HandleID, StringHash( "Effect" ), LocEffect )
+			call SaveReal( HashTable, HandleID, StringHash( "Duration" ), LocTime / LocRate )
 			call SaveBoolean( HashTable, GetHandleId( LocTrigUnit ), 1000, true )
 			call TimerStart( LoadMUITimer( LocPID ), LocRate, true, function LinearDisplacementAction )
 		endif

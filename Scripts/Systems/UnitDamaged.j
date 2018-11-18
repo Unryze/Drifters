@@ -7,7 +7,7 @@
 	endfunction	
 
 	function ReinforceAoEDamage takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( GetSource( ) ) ) then
+		if UnitLife( GetFilterUnit( ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( GetSource( ) ) ) then
 			call DestroyEffect( AddSpecialEffectTarget( "Effects\\Reinforce\\BlackMist.mdl", GetFilterUnit( ), "chest" ) )
 			call TargetDamage( GetSource( ), GetFilterUnit( ), "AoE", "Magical", LoadReal( HashTable, GetHandleId( GetSource( ) ), 200 ) )
 			call DamageVisualDrawNumberAction( GetSource( ), GetFilterUnit( ), LoadReal( HashTable, GetHandleId( GetSource( ) ), 200 ) )
@@ -17,8 +17,8 @@
 	endfunction	
 
 	function AkamePoisonDamage takes nothing returns nothing
-		if GetUnitAbilityLevel( MUIUnit( 101 ), 'B006' ) > 0 then
-			call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 10 + MUILevel( ) + .1 * MUIPower( ) )
+		if GetUnitAbilityLevel( MUIUnit( 101 ), 'B003' ) > 0 then
+			call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 10 + MUIPower( .1 ) )
 		else
 			call ClearAllData( MUIHandle( ) )
 		endif
@@ -34,87 +34,59 @@
 	endfunction 
 
 	function UnitDamagedAction takes nothing returns nothing
-		local real 		SourceDmg 	= GetEventDamage( )
-		local real		Multiplier	= 1
-		local real 		DealtDmg 	= 0
-		local real 		DmgMult		= 0
-		local real 		LocReqHP	= 0
+		local integer SourceID
+		local integer TargetID 
+		local real SourceDmg  = GetEventDamage( )
+		local real Multiplier = 1
 
 		if SourceDmg > 1 then
 			call DisableTrigger( GetTriggeringTrigger( ) )
 			call SaveUnitHandle( HashTable, GetHandleId( LoadTrig( "UnitDamagedTrig" ) ), StringHash( "Source" ), GetEventDamageSource( ) )
 			call SaveUnitHandle( HashTable, GetHandleId( LoadTrig( "UnitDamagedTrig" ) ), StringHash( "Target" ), GetTriggerUnit( ) )
+			set SourceID = GetUnitTypeId( GetSource( ) )
+			set TargetID = GetUnitTypeId( GetTarget( ) )
 
-			if GetUnitTypeId( GetSource( ) ) == 'H00A' then
+			if SourceID == 'H005' or SourceID == 'H007' then
+				call SaveBoolean( HashTable, GetHandleId( GetSource( ) ), StringHash( "HideDamage" ), true )
+
+				if SourceID == 'H005' then
+					call TargetDamage( GetSource( ), GetTarget( ), "Target", "Magical", 20 + GetHeroInt( GetSource( ), true ) * .1 )
+				endif
+
+				if SourceID == 'H007' then
+					if IsUnitType( GetTarget( ), UNIT_TYPE_HERO ) == false then
+						set Multiplier = 2
+					endif
+
+					call TargetDamage( GetSource( ), GetTarget( ), "Target", "Physical", .005 * Multiplier * UnitMaxLife( GetTarget( ) ) )
+					call SetWidgetLife( GetSource( ), ( UnitMaxLife( GetSource( ) ) * Multiplier ) / 100 + UnitLife( GetSource( ) ) )
+				endif
+
+				call SaveBoolean( HashTable, GetHandleId( GetSource( ) ), StringHash( "HideDamage" ), false )
+			endif
+
+			if SourceID == 'H010' then
 				call SetWidgetLife( GetSource( ), UnitLife( GetSource( ) ) + SourceDmg * .15 )
 			endif
 
-			if GetUnitTypeId( GetSource( ) ) == 'H006' then
-				if GetUnitAbilityLevel( GetTarget( ), 'B006' ) <= 0 then
+			if SourceID == 'H006' then
+				if GetUnitAbilityLevel( GetTarget( ), 'B003' ) <= 0 then
 					call InitAkamePoison( GetSource( ), GetTarget( ) )
 				endif
 
-				call IssueTargetOrder( LoadUnit( I2S( GetPlayerId( GetOwningPlayer( GetSource( ) ) ) ) ), "slow", GetTarget( ) )
+				call IssueTargetOrder( LoadUnit( I2S( GetPlayerId( GetOwningPlayer( GetSource( ) ) ) ) ), "cripple", GetTarget( ) )
 			endif
 
-			if GetUnitAbilityLevel( GetSource( ), 'B002' ) > 0 or GetUnitAbilityLevel( GetSource( ), 'B000' ) > 0 then
-				if GetUnitAbilityLevel( GetSource( ), 'B002' ) > 0 then
-					set DmgMult = 10
-				endif
-
-				if GetUnitAbilityLevel( GetSource( ), 'B000' ) > 0 then
-					set DmgMult = 20
-				endif
-
-				if UnitHasItemById( GetSource( ), 'NONE' ) then
-					set DmgMult = DmgMult + DmgMult / 2
-					set LocReqHP = 10
-				else
-					set LocReqHP = 5
-				endif
-
-				set DealtDmg = GetHeroLevel( GetSource( ) ) * DmgMult + GetHeroInt( GetSource( ), true ) * DmgMult / 100
-
-				if GetUnitStatePercentage( GetTarget( ), UNIT_STATE_LIFE, UNIT_STATE_MAX_LIFE ) <= LocReqHP then
-					if GetUnitAbilityLevel( GetSource( ), 'B002' ) > 0 then
-						call ResetAbilityCooldown( GetSource( ), 'A02X' )
-						call UnitRemoveAbility( GetSource( ), 'B002' )
-					endif
-
-					if GetUnitAbilityLevel( GetSource( ), 'B000' ) > 0 then
-						call ResetAbilityCooldown( GetSource( ), 'A035' )
-						call UnitRemoveAbility( GetSource( ), 'B000' )
-					endif
-
-					call AddEffectXY( "Effects\\Nanaya\\ArcDrive1.mdl", 4, GetUnitX( GetTarget( ) ), GetUnitY( GetTarget( ) ), 270, 0 )
-					set DealtDmg = 100000000
-					call DestroyEffect( AddSpecialEffect( "GeneralEffects\\BloodEffect1.mdl", GetUnitX( GetTarget( ) ), GetUnitY( GetTarget( ) ) ) )
-				endif
-
-				call TargetDamage( GetSource( ), GetTarget( ), "Target", "Physical", DealtDmg )
-			endif 
-
-			if GetUnitTypeId( GetSource( ) ) == 'H009' and LoadInteger( HashTable, GetHandleId( GetSource( ) ), 0 ) > 0 then
+			if SourceID == 'H009' and LoadInteger( HashTable, GetHandleId( GetSource( ) ), 0 ) > 0 then
 				call SaveReal( HashTable, GetHandleId( GetSource( ) ), 200, GetHeroInt( GetSource( ), true ) * .25 )
 				call GroupEnumUnitsInRange( EnumUnits( ), GetUnitX( GetTarget( ) ), GetUnitY( GetTarget( ) ), 250, Filter( function ReinforceAoEDamage ) )
 				call SaveInteger( HashTable, GetHandleId( GetSource( ) ), 0, LoadInteger( HashTable, GetHandleId( GetSource( ) ), 0 ) - 1 )
 			endif
 
-			if GetUnitTypeId( GetSource( ) ) == 'H007' then
-				if IsUnitType( GetTarget( ), UNIT_TYPE_HERO ) == false then
-					set Multiplier = 2
-				endif
-
-				set DmgMult = 0.01 * Multiplier
-				set DealtDmg = .005 * Multiplier * UnitMaxLife( GetTarget( ) )
-				call TargetDamage( GetSource( ), GetTarget( ), "Target", "Physical", DealtDmg )
-				call SetWidgetLife( GetSource( ), UnitMaxLife( GetSource( ) ) * DmgMult + UnitLife( GetSource( ) ) )
-			endif
-
-			if GetUnitTypeId( GetTarget( ) ) == 'tstu' then
+			if TargetID == 'tstu' then
 				call SetWidgetLife( GetTarget( ), UnitMaxLife( GetTarget( ) ) )
 			endif
-			
+
 			call FlushChildHashtable( HashTable, GetHandleId( LoadTrig( "UnitDamagedTrig" ) ) )
 			call EnableTrigger( GetTriggeringTrigger( ) )
 		endif

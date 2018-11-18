@@ -96,26 +96,72 @@
 		return LoadQuestHandle( HashTable, GetHandleId( LoadUnit( "WayGate" ) ), StringHash( QuestHashName ) )
 	endfunction	
 	
+	function MUIHandle takes nothing returns integer
+		return GetHandleId( GetExpiredTimer( ) )
+	endfunction
+
+	function GetUnit takes string HashName returns unit
+		return LoadUnitHandle( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
+
+	function GetStr takes string HashName returns string
+		return LoadStr( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction
+	
+	function GetInt takes string HashName returns integer
+		return LoadInteger( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
+
+	function GetReal takes string HashName returns real
+		return LoadReal( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction
+	
+	function GetBool takes string HashName returns boolean 
+		return LoadBoolean( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
+	
 	function NewMUITimer takes integer PID returns integer
 		local integer GetIterator = LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) )
 
-		if LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) ) <= 4000 then
-			call SaveInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ), GetIterator + 1 )
-			set GetIterator = LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) ) - 1
-		else
-			call SaveInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ), 0 )
+		if GetIterator > LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TimerMaximumCount" ) ) then
 			set GetIterator = 0
 		endif
+
+		loop
+			exitwhen LoadBoolean( HashTable, GetHandleId( LoadTimerHandle( HashTable, GetHandleId( Player( PID ) ), GetIterator ) ), StringHash( "TimerStarted" ) ) == false
+			set GetIterator = GetIterator + 1
+			if GetIterator > LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TimerMaximumCount" ) ) then
+				set GetIterator = 0
+			endif
+		endloop
+
+		call SaveInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ), GetIterator )
+		set GetIterator = LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) )
 
 		if LoadTimerHandle( HashTable, GetHandleId( Player( PID ) ), GetIterator ) == null then
 			call SaveTimerHandle( HashTable, GetHandleId( Player( PID ) ), GetIterator, CreateTimer( ) )
 		endif
 
+		call SaveBoolean( HashTable, GetHandleId( LoadTimerHandle( HashTable, GetHandleId( Player( PID ) ), GetIterator ) ), StringHash( "TimerStarted" ), true )
 		return GetHandleId( LoadTimerHandle( HashTable, GetHandleId( Player( PID ) ), GetIterator ) )
 	endfunction
 
 	function LoadMUITimer takes integer PID returns timer
-		return LoadTimerHandle( HashTable, GetHandleId( Player( PID ) ), LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) ) - 1 )
+		return LoadTimerHandle( HashTable, GetHandleId( Player( PID ) ), LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) ) )
+	endfunction	
+
+	function TimerPause takes timer LocTimer returns nothing
+		if LoadBoolean( HashTable, GetHandleId( LocTimer ), StringHash( "TimerStarted" ) ) == true then
+			call PauseTimer( LocTimer )
+			call SaveBoolean( HashTable, GetHandleId( LocTimer ), StringHash( "TimerStarted" ), false )
+		endif
+	endfunction	
+
+	function TimerResume takes timer LocTimer returns nothing
+		if LoadBoolean( HashTable, GetHandleId( LocTimer ), StringHash( "TimerStarted" ) ) == false then
+			call ResumeTimer( LocTimer )
+			call SaveBoolean( HashTable, GetHandleId( LocTimer ), StringHash( "TimerStarted" ), true )
+		endif
 	endfunction	
 
 	function UnitMaxLife takes unit LocUnit returns real
@@ -185,26 +231,6 @@
 		call SetUnitFacing( LocUnit, LocAngle )
 	endfunction
 
-	function MUIHandle takes nothing returns integer
-		return GetHandleId( GetExpiredTimer( ) )
-	endfunction
-
-	function GetStr takes string HashName returns string
-		return LoadStr( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction
-	
-	function GetInt takes string HashName returns integer
-		return LoadInteger( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction	
-
-	function GetReal takes string HashName returns real
-		return LoadReal( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction
-	
-	function GetBool takes string HashName returns boolean 
-		return LoadBoolean( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction	
-
 	function GetEffect takes string HashName returns effect 
 		return LoadEffectHandle( HashTable, MUIHandle( ), StringHash( HashName ) )
 	endfunction	
@@ -238,12 +264,12 @@
 		return GetPlayerId( GetOwningPlayer( MUIUnit( 100 ) ) )
 	endfunction
 
-	function MUILevel takes nothing returns integer
-		return GetHeroLevel( MUIUnit( 100 ) )
+	function MUILevel takes real Multiplier returns real
+		return GetHeroLevel( MUIUnit( 100 ) ) * Multiplier
 	endfunction
 
-	function MUIPower takes nothing returns integer
-		return GetHeroInt( MUIUnit( 100 ), true )
+	function MUIPower takes real Percent returns real
+		return GetHeroInt( MUIUnit( 100 ), true ) * Percent
 	endfunction	
 
 	function MUIInteger takes integer ID returns integer

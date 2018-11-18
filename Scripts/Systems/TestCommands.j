@@ -78,16 +78,16 @@
 	endfunction
 
 	function SetUnitStatAction takes nothing returns nothing
-		local string  LocStatStr = SubString( GetEventPlayerChatString( ), 0, 5 )
+		local string  GetCommand = SubString( GetEventPlayerChatString( ), 0, 5 )
 		local integer LocalStat  = S2I( GetSubString( 5 ) )
 
 		call SaveUnit( "SysUnit", SelectedUnit( GetTriggerPlayer( ) ) )
 
-		if LocStatStr == "-STR " or LocStatStr == "-str " then
+		if GetCommand == "-STR " or GetCommand == "-str " then
 			call SetHeroStr( LoadUnit( "SysUnit" ), LocalStat, true )
-	elseif LocStatStr == "-AGI " or LocStatStr == "-agi " then
+	elseif GetCommand == "-AGI " or GetCommand == "-agi " then
 			call SetHeroAgi( LoadUnit( "SysUnit" ), LocalStat, true )
-	elseif LocStatStr == "-INT " or LocStatStr == "-int " then
+	elseif GetCommand == "-INT " or GetCommand == "-int " then
 			call SetHeroInt( LoadUnit( "SysUnit" ), LocalStat, true )
 		endif
 	endfunction
@@ -121,7 +121,7 @@
 	function SetUnitOwnerAction takes nothing returns nothing
 		local integer LocalID = S2I( GetSubString( 7 ) )
 
-		if LocalID >= 0 and LocalID < 16 then
+		if LocalID >= 0 and LocalID <= 15 then
 			call SaveUnit( "SysUnit", SelectedUnit( GetTriggerPlayer( ) ) )
 			call SetUnitOwner( LoadUnit( "SysUnit" ), Player( LocalID ), true )
 			call StartAI( LoadUnit( "SysUnit" ) )
@@ -179,4 +179,8 @@
 	function PickedUpItemIDAction takes nothing returns nothing
 		call DisplayTimedTextToPlayer( GetTriggerPlayer( ), 0, 0, 10, "|c0000ff00Picked Item ID|r: " + "[" + Id2String( GetItemTypeId( GetManipulatedItem( ) ) ) + "]" )
 	endfunction
+
+	function ExecuteFunction takes nothing returns nothing
+		call ExecuteFunc( GetSubString( 9 ) )
+	endfunction	
 

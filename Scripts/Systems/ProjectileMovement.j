@@ -3,7 +3,7 @@
 			call SaveReal( HashTable, HandleID, StringHash( "InitDistance" ), GetReal( "InitDistance" ) + GetReal( "Step" ) )
 			call CreateXY( GetReal( "InitProjectileX" ), GetReal( "InitProjectileY" ), GetReal( "InitDistance" ), GetReal( "ProjectileAngle" ), "ProjectileMove" )
 			call SetUnitPosition( MUIUnit( StringHash( "GetProjectile" ) ), GetReal( "ProjectileMoveX" ), GetReal( "ProjectileMoveY" ) )
-			call AoEDamageXY( MUIHandle( ), GetReal( "ProjectileMoveX" ), GetReal( "ProjectileMoveY" ), 200, "", "", 0, true, "", 0 )
+			call AoEDamageXY( MUIHandle( ), GetReal( "ProjectileMoveX" ), GetReal( "ProjectileMoveY" ), GetReal( "AoE" ), "", "", 0, true, "", 0 )
 		else
 			call KillUnit( MUIUnit( StringHash( "GetProjectile" ) ) )
 			call DestroyEffect( MUIEffect( StringHash( "DummyEffect" ) ) )

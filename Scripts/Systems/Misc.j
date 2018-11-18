@@ -19,10 +19,10 @@
 	endfunction		
 
 	function RemoveInvisForCast takes nothing returns nothing
-		if GetSpellAbilityId( ) != 'A021' and GetSpellAbilityId( ) != 'A00X' then
-			call UnitRemoveAbility( GetTriggerUnit( ), 'B018' )
-			call UnitRemoveAbility( GetTriggerUnit( ), 'Binv' )
-		endif
+	//	if GetSpellAbilityId( ) != 'A021' and GetSpellAbilityId( ) != 'A00X' then
+	//		call UnitRemoveAbility( GetTriggerUnit( ), 'B018' )
+	//		call UnitRemoveAbility( GetTriggerUnit( ), 'Binv' )
+	//	endif
 	endfunction
 	
 	function ClearMessagesAction takes nothing returns nothing

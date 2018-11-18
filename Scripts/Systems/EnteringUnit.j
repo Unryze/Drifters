@@ -1,21 +1,17 @@
 	function SaberNeroHealthRegen takes nothing returns nothing
-		local real 		MaxHP 		= UnitMaxLife( MUIUnit( 999 ) )
-		local real 		CurrentHP 	= UnitLife( MUIUnit( 999 ) )
-	//	local real		LocalLevel	= MUILevel( )
-
-		call SetWidgetLife( MUIUnit( 999 ), ( MaxHP - CurrentHP ) * .04 + CurrentHP )
+		call SetWidgetLife( MUIUnit( 0 ), UnitLife( MUIUnit( 0 ) ) + UnitMaxLife( MUIUnit( 0 ) ) * .005 )
 	endfunction
 
 	function EnteringUnitCheckAction takes nothing returns boolean
-		if IsUnitInGroup( GetEnteringUnit( ), LoadGroupHandle( HashTable, GetHandleId( CameraSet ), StringHash( "DamagedGroup" ) ) ) == false and GetUnitAbilityLevel( GetEnteringUnit( ), 'Aloc' ) <= 0 then
-			call GroupAddUnit( LoadGroupHandle( HashTable, GetHandleId( CameraSet ), StringHash( "DamagedGroup" ) ), GetEnteringUnit( ) )
-			call TriggerRegisterUnitEvent( LoadTrig( "UnitDamagedTrig" ), GetEnteringUnit( ), EVENT_UNIT_DAMAGED )
+		if LoadBoolean( HashTable, GetHandleId( GetFilterUnit(  ) ), StringHash( "Registered" ) ) == false then
+			call SaveBoolean( HashTable, GetHandleId( GetFilterUnit(  ) ), StringHash( "Registered" ), true )
+			call TriggerRegisterUnitEvent( LoadTrig( "UnitDamagedTrig" ), GetFilterUnit( ), EVENT_UNIT_DAMAGED )
 
-			if IsUnitType( GetEnteringUnit( ), UNIT_TYPE_HERO ) != null then
-				if GetUnitTypeId( GetEnteringUnit( ) ) == 'H00E' then
-					call SaveTimerHandle( HashTable, GetHandleId( GetEnteringUnit( ) ), StringHash( "NeroPassiveTimer" ), CreateTimer( ) )
-					call SaveUnitHandle( HashTable, GetHandleId( LoadTimerHandle( HashTable, GetHandleId( GetEnteringUnit( ) ), StringHash( "NeroPassiveTimer" ) ) ), 999, GetEnteringUnit( ) )
-					call TimerStart( LoadTimerHandle( HashTable, GetHandleId( GetEnteringUnit( ) ), StringHash( "NeroPassiveTimer" ) ), 1, true, function SaberNeroHealthRegen )
+			if IsUnitType( GetFilterUnit( ), UNIT_TYPE_HERO ) != null then
+				if GetUnitTypeId( GetFilterUnit( ) ) == 'H004' then
+					call SaveTimerHandle( HashTable, GetHandleId( GetFilterUnit( ) ), StringHash( "NeroPassiveTimer" ), CreateTimer( ) )
+					call SaveUnitHandle( HashTable, GetHandleId( LoadTimerHandle( HashTable, GetHandleId( GetFilterUnit( ) ), StringHash( "NeroPassiveTimer" ) ) ), 0, GetFilterUnit( ) )
+					call TimerStart( LoadTimerHandle( HashTable, GetHandleId( GetFilterUnit( ) ), StringHash( "NeroPassiveTimer" ) ), 1, true, function SaberNeroHealthRegen )
 				endif
 			endif
 		endif

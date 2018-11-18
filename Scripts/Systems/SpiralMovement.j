@@ -1,5 +1,5 @@
 	function SpiralMovementAction takes nothing returns boolean
-		if IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) and UnitLife( GetFilterUnit( ) ) > 0 then
+		if UnitLife( GetFilterUnit( ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
 			call SetUnitPosition( GetFilterUnit( ), GetReal( "SpiralX" ), GetReal( "SpiralY" ) )
 		endif
 
