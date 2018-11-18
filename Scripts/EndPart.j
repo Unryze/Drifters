@@ -35,7 +35,7 @@
 			set i = i + 1
 		endloop
 
-		call TriggerAddAction( LoadTrig( "AllianceChange" ), function DisableSharedUnitsAct )		
+		call TriggerAddAction( LoadTrig( "AllianceChange" ), function DisableSharedUnitsAct )
 
 		call SaveTrig( "InitMultiboard" )
 		call TriggerRegisterTimerEvent( LoadTrig( "InitMultiboard" ), 0, false )
@@ -50,11 +50,6 @@
 		call TriggerRegisterTimerEvent( LoadTrig( "NoCDTrig" ), .01, true )
 		call TriggerAddAction( LoadTrig( "NoCDTrig" ), function ResetCooldownTimedAction )
 
-		call SaveTrig( "HeroDeathTrig" )
-		call GetUnitEvent( LoadTrig( "HeroDeathTrig" ), EVENT_PLAYER_UNIT_DEATH )
-		call TriggerAddCondition( LoadTrig( "HeroDeathTrig" ), Condition( function RegisterHeroDeathCondition ) )
-		call TriggerAddAction( LoadTrig( "HeroDeathTrig" ), function RegisterHeroDeathAction )
-
 		call SaveTrig( "PlayerLeaveTrig" )
 		call GetPlayerEvent( LoadTrig( "PlayerLeaveTrig" ), EVENT_PLAYER_LEAVE )
 		call TriggerAddAction( LoadTrig( "PlayerLeaveTrig" ), function RegisterPlayerLeaveAction )
@@ -66,7 +61,7 @@
 
 		call SaveTrig( "ItemOwnerTrig" )
 		call GetUnitEvent( LoadTrig( "ItemOwnerTrig" ), EVENT_PLAYER_UNIT_PICKUP_ITEM )
-		call TriggerAddAction( LoadTrig( "ItemOwnerTrig" ), function ItemOwnerSettingAction )
+		call TriggerAddAction( LoadTrig( "ItemOwnerTrig" ), function ItemPickUpAction )
 
 		call SaveTrig( "ItemRemoveTrig" )
 		call GetUnitEvent( LoadTrig( "ItemRemoveTrig" ), EVENT_PLAYER_UNIT_DROP_ITEM )
@@ -84,26 +79,17 @@
 		call TriggerRegisterDialogEvent( LoadTrig( "InitModeSelect2" ), GetDialog( ) )
 		call TriggerAddAction( LoadTrig( "InitModeSelect2" ), function ModeDialogAction )
 
-		call SaveTrig( "ItemAoEFireTrig" )
-		call GetUnitEvent( LoadTrig( "ItemAoEFireTrig" ), EVENT_PLAYER_UNIT_PICKUP_ITEM )
-		call TriggerAddAction( LoadTrig( "ItemAoEFireTrig" ), function ItemAoEFirePickUp )
-
 		call SaveTrig( "UnitDamagedTrig" )
 		call TriggerAddAction( LoadTrig( "UnitDamagedTrig" ), function UnitDamagedAction )		
 
 		call SaveTrig( "GetEnteringUnitTrig" )
 		call SaveRegionHandle( HashTable, GetHandleId( LoadTrig( "GetEnteringUnitTrig" ) ), 0, CreateRegion( ) )
 		call RegionAddRect( LoadRegionHandle( HashTable, GetHandleId( LoadTrig( "GetEnteringUnitTrig" ) ), 0 ), GetWorldBounds( ) )
-		call TriggerRegisterEnterRegion( LoadTrig( "GetEnteringUnitTrig" ), LoadRegionHandle( HashTable, GetHandleId( LoadTrig( "GetEnteringUnitTrig" ) ), 0 ), null )
-		call TriggerAddAction( LoadTrig( "GetEnteringUnitTrig" ), function EnteringUnitCheckAction )
+		call TriggerRegisterEnterRegion( LoadTrig( "GetEnteringUnitTrig" ), LoadRegionHandle( HashTable, GetHandleId( LoadTrig( "GetEnteringUnitTrig" ) ), 0 ), Filter( function EnteringUnitCheckAction ) )
 
 		call SaveTrig( "ReviveSystemTrig" )
 		call GetUnitEvent( LoadTrig( "ReviveSystemTrig" ), EVENT_PLAYER_UNIT_DEATH )
-		call TriggerAddAction( LoadTrig( "ReviveSystemTrig" ), function ReviveSystemAction )
-
-		call SaveTrig( "ItemCombinationTrig" )
-		call GetUnitEvent( LoadTrig( "ItemCombinationTrig" ), EVENT_PLAYER_UNIT_PICKUP_ITEM )
-		call TriggerAddAction( LoadTrig( "ItemCombinationTrig" ), function ItemCombinationAction )
+		call TriggerAddCondition( LoadTrig( "ReviveSystemTrig" ), Condition( function ReviveSystemAction ) )
 
 		call SaveTrig( "CameraHeightTrig" )
 		call TimerStart( CreateTimer( ), .0, true, function CameraSetHeight )
@@ -158,27 +144,24 @@
 			exitwhen i > 11
 
 			if GetPlayerSlotState( Player( i ) ) == PLAYER_SLOT_STATE_PLAYING and GetPlayerController( Player( i ) ) == MAP_CONTROL_USER then
-				if GetPlayerName( Player( i ) ) == "Unryze" or GetPlayerName( Player( i ) ) == "WorldEdit" then		
+				if GetPlayerName( Player( i ) ) == "Unryze" or GetPlayerName( Player( i ) ) == "WorldEdit" then	
+					call SaveTrig( "GetUsedAbilTrig" )
+					call GetUnitEvent( LoadTrig( "GetUsedAbilTrig" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+					call TriggerAddAction( LoadTrig( "GetUsedAbilTrig" ), function GetUsedAbilityIDAction )
+
+					call SaveTrig( "GetUnitIDTrig" )
+					call GetUnitEvent( LoadTrig( "GetUnitIDTrig" ), EVENT_PLAYER_UNIT_SELECTED )
+					call TriggerAddAction( LoadTrig( "GetUnitIDTrig" ), function UnitIDAction )
+
+					call SaveTrig( "GetItemIDTrig" )
+					call GetUnitEvent( LoadTrig( "GetItemIDTrig" ), EVENT_PLAYER_UNIT_PICKUP_ITEM )
+					call TriggerAddAction( LoadTrig( "GetItemIDTrig" ), function PickedUpItemIDAction )
 					set i = 20
 				endif
 			endif
 
 			set i = i + 1
 		endloop
-
-		if i == 20 then
-			call SaveTrig( "GetUsedAbilTrig" )
-			call GetUnitEvent( LoadTrig( "GetUsedAbilTrig" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-			call TriggerAddAction( LoadTrig( "GetUsedAbilTrig" ), function GetUsedAbilityIDAction )
-
-			call SaveTrig( "GetUnitIDTrig" )
-			call GetUnitEvent( LoadTrig( "GetUnitIDTrig" ), EVENT_PLAYER_UNIT_SELECTED )
-			call TriggerAddAction( LoadTrig( "GetUnitIDTrig" ), function UnitIDAction )
-
-			call SaveTrig( "GetItemIDTrig" )
-			call GetUnitEvent( LoadTrig( "GetItemIDTrig" ), EVENT_PLAYER_UNIT_PICKUP_ITEM )
-			call TriggerAddAction( LoadTrig( "GetItemIDTrig" ), function PickedUpItemIDAction )
-		endif
 
 		call SaveTrig( "NCDTextTrig" )
 		call GetChatEvent( LoadTrig( "NCDTextTrig" ), "-nc", true )
@@ -249,12 +232,17 @@
 		call SaveTrig( "SpawnTestUnitTrig" )
 		call GetChatEvent( LoadTrig( "SpawnTestUnitTrig" ), "-TestUnit", true )
 		call TriggerAddAction( LoadTrig( "SpawnTestUnitTrig" ), function TestUnitSpawnAction )
+
+		call SaveTrig( "ExecuteFunction" )
+		call GetChatEvent( LoadTrig( "ExecuteFunction" ), "-Execute ", false )
+		call TriggerAddAction( LoadTrig( "ExecuteFunction" ), function ExecuteFunction )
 	endfunction
 
 	function InitSoloDetection takes nothing returns nothing
 		local integer i = 0
 
 		if LoadInteger( HashTable, GetHandleId( CameraSet ), 500 ) == 0 or LoadInteger( HashTable, GetHandleId( CameraSet ), 501 ) == 0 then
+			call SaveBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "TestMode" ), true )
 			call SaveBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "IsSameHero" ), true )
 
 			loop
@@ -264,6 +252,7 @@
 			endloop
 
 			call SaveInteger( HashTable, GetHandleId( CameraSet ), StringHash( "RoundLimit" ), 999999999 )
+			call SaveInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TimerMaximumCount" ), 4000 )
 			call ExecuteFunc( "TestTriggers" )
 			call DestroyTrigger( LoadTrig( "InitModeSelect1" ) )
 			call EnableTrigger( LoadTrig( "HeroSelectionTrig" ) )
