@@ -1,26 +1,22 @@
 	function ClearAllData takes integer HandleID returns nothing
-		if MUIUnit( 100 ) != null then
-			call ShowUnit( MUIUnit( 100 ), true )
-			call SetUnitTimeScale( MUIUnit( 100 ), 1 )
-			call SetUnitPathing( MUIUnit( 100 ), true )
-			call UnitRemoveAbility( MUIUnit( 100 ), 'Amrf' )
-			call SetUnitFlyHeight( MUIUnit( 100 ), 0, 0 )
-			call SetUnitInvulnerable( MUIUnit( 100 ), false )
-			call SetUnitVertexColor( MUIUnit( 100 ), 255, 255, 255, 255 )
+		if GetUnit( "Source" ) != null then
+			call ShowUnit( GetUnit( "Source" ), true )
+			call SetUnitTimeScale( GetUnit( "Source" ), 1 )
+			call SetUnitPathing( GetUnit( "Source" ), true )
+			call UnitRemoveAbility( GetUnit( "Source" ), 'Amrf' )
+			call SetUnitFlyHeight( GetUnit( "Source" ), 0, 0 )
+			call SetUnitInvulnerable( GetUnit( "Source" ), false )
+			call SetUnitVertexColor( GetUnit( "Source" ), 255, 255, 255, 255 )
 		endif
 
-		if MUIUnit( 101 ) != null then
-			call UnitRemoveAbility( MUIUnit( 101 ), 'A058' )
-			call SetUnitFlyHeight( MUIUnit( 101 ), 0, 0 )
-			call UnitRemoveAbility( MUIUnit( 101 ), 'Amrf' )
+		if GetUnit( "Target" ) != null then
+			call UnitRemoveAbility( GetUnit( "Target" ), 'A058' )
+			call SetUnitFlyHeight( GetUnit( "Target" ), 0, 0 )
+			call UnitRemoveAbility( GetUnit( "Target" ), 'Amrf' )
 		endif
 
-		if MUIUnit( 106 ) != null then
-			call KillUnit( MUIUnit( 106 ) )
-		endif
-
-		if LoadEffectHandle( HashTable, HandleID, 108 ) != null then
-			call DestroyEffect( LoadEffectHandle( HashTable, HandleID, 108 ) )
+		if GetEffect( "Effect0" ) != null then
+			call DestroyEffect( GetEffect( "Effect0" ) )
 		endif
 
 		call TimerPause( GetExpiredTimer( ) )
@@ -29,12 +25,12 @@
 
 	function StopSpell takes integer HandleID, integer LocType returns boolean
 		if LocType == 0 then
-			if UnitLife( MUIUnit( 100 ) ) <= 0 then
+			if UnitLife( GetUnit( "Source" ) ) <= 0 then
 				call ClearAllData( HandleID )
 				return true
 			endif
 		else
-			if UnitLife( MUIUnit( 100 ) ) <= 0 or UnitLife( MUIUnit( 101 ) ) <= 0 then
+			if UnitLife( GetUnit( "Source" ) ) <= 0 or UnitLife( GetUnit( "Target" ) ) <= 0 then
 				call ClearAllData( HandleID )
 				return true
 			endif

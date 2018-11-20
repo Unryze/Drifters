@@ -2,9 +2,9 @@
 		local real Healing
 
 		if GetUnitAbilityLevel( LocTargUnit, 'B008' ) > 0 and UnitLife( LocTargUnit ) > LocDamage then
-			call SaveReal( HashTable, GetHandleId( LocTargUnit ), 500, LocDamage + LoadReal( HashTable, GetHandleId( LocTargUnit ), 500 ) )
+			call SaveReal( HashTable, GetHandleId( LocTargUnit ), StringHash( "Mitigated" ), LocDamage + LoadReal( HashTable, GetHandleId( LocTargUnit ), StringHash( "Mitigated" ) ) )
 			set LocDamage = 0
-			call DisplayTextToPlayer( GetOwningPlayer( LocTargUnit ), 0, 0, "Damage Absorbed: " + I2S( R2I( LoadReal( HashTable, GetHandleId( LocTargUnit ), 500 ) ) ) )
+			call DisplayTextToPlayer( GetOwningPlayer( LocTargUnit ), 0, 0, "Damage Absorbed: " + I2S( R2I( LoadReal( HashTable, GetHandleId( LocTargUnit ), StringHash( "Mitigated" ) ) ) ) )
 		endif
 
 		if GetUnitTypeId( LocTrigUnit ) == 'H010' and IsHealed == true then

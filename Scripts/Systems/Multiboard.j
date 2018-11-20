@@ -80,25 +80,25 @@
 
 		call MultiboardDisplay( GetMultiboard( ), true )
 	endfunction
+	
+	function StoreTime takes string Type, integer Time returns nothing
+		call SaveInteger( HashTable, MUIHandle( ), StringHash( Type ), Time )
+	endfunction
 
 	function InGameTimerAction takes nothing returns nothing
-		local integer LocSeconds = MUIInteger( 0 )
-		local integer LocMinutes = MUIInteger( 1 )
-		local integer LocalHours = MUIInteger( 2 )
-
-		if LocSeconds == 59 then
-			call SaveInteger( HashTable, MUIHandle( ), 0, 0 )
-			call SaveInteger( HashTable, MUIHandle( ), 1, LocMinutes + 1 )
+		if GetInt( "Seconds" ) == 59 then
+			call StoreTime( "Seconds", 0 )
+			call StoreTime( "Minutes", GetInt( "Minutes" ) + 1 )
 		else
-			call SaveInteger( HashTable, MUIHandle( ), 0, LocSeconds + 1 )
+			call StoreTime( "Seconds", GetInt( "Seconds" ) + 1 )
 		endif		
 
-		if LocMinutes == 59 then
-			call SaveInteger( HashTable, MUIHandle( ), 1, 0 )
-			call SaveInteger( HashTable, MUIHandle( ), 2, LocalHours + 1 )
+		if GetInt( "Minutes" ) == 59 then
+			call StoreTime( "Minutes", 0 )
+			call StoreTime( "Hours", GetInt( "Hours" ) + 1 )
 		endif
 
-		call MultiboardSetTitleText( GetMultiboard( ), "     Round|c00FFFFFF: X|r Time|c00FFFFFF: " + I2S( LocalHours ) + ":" + I2S( LocMinutes ) + ":" + I2S( LocSeconds ) + "|r     " )
+		call MultiboardSetTitleText( GetMultiboard( ), "     Round|c00FFFFFF: X|r Time|c00FFFFFF: " + I2S( GetInt( "Hours" ) ) + ":" + I2S( GetInt( "Minutes" ) ) + ":" + I2S( GetInt( "Seconds" ) ) + "|r     " )
 	endfunction	
 
 	function ModeDialogAction takes nothing returns nothing

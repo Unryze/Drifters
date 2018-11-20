@@ -1,8 +1,8 @@
 	function FillHeroPickInfo takes integer HeroIndex, integer HeroID, real HeroScale, string ModelName returns nothing
-		call SaveInteger( HashTable, GetHandleId( HashTable ), HeroIndex, HeroID )
-		call SaveReal( HashTable, GetHandleId( HashTable ), HeroIndex, HeroScale )
-		call SaveStr( HashTable, GetHandleId( HashTable ), HeroIndex, "Characters\\" + ModelName + "\\" )
-		call SaveStr( HashTable, GetHandleId( HashTable ), HeroIndex + 4000, LoadStr( HashTable, GetHandleId( HashTable ), HeroIndex ) + "ReplaceableTextures\\CommandButtons\\BTN" + ModelName + "Icon.blp" )
+		call SaveInteger( HashTable, GetHandleId( HashTable ), StringHash( "HeroID" ) + HeroIndex, HeroID )
+		call SaveReal( HashTable, GetHandleId( HashTable ), StringHash( "HeroScale" ) + HeroIndex, HeroScale )
+		call SaveStr( HashTable, GetHandleId( HashTable ), StringHash( "ModelPath" ) + HeroIndex, "Characters\\" + ModelName + "\\" )
+		call SaveStr( HashTable, GetHandleId( HashTable ), StringHash( "HeroIcon" ) + HeroIndex, LoadStr( HashTable, GetHandleId( HashTable ), StringHash( "ModelPath" ) + HeroIndex ) + "ReplaceableTextures\\CommandButtons\\BTN" + ModelName + "Icon.blp" )
 		call SaveInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalHeroes" ), HeroIndex )
 	endfunction
 
@@ -27,10 +27,10 @@
 		call FillHeroPickInfo( 11, 'H010', 2.4, "Arcueid"       )
 		call FillHeroPickInfo( 12, 'H011', 2.0, "SaberArtoria"  )
 		call FillHeroPickInfo( 13, 'H00C', 2.0, "RubyRouse"     )
-		call SaveUnitHandle( HashTable, GetHandleId( HashTable ), 8000, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u005', -1800, 5525, 270 ) )
-		call ScaleUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 8000 ), 2.5 )
-		call SaveEffectHandle( HashTable, GetHandleId( HashTable ), 8001, AddSpecialEffectTarget( "HeroSelectionSystem\\HeroSelectionEffect.mdl", LoadUnitHandle( HashTable, GetHandleId( HashTable ), 8000 ), "origin" ) )
-		call SaveEffectHandle( HashTable, GetHandleId( HashTable ), 8002, AddSpecialEffectTarget( "HeroSelectionSystem\\HeroSelectionBackground.mdl", LoadUnitHandle( HashTable, GetHandleId( HashTable ), 8000 ), "origin" ) )
+		call SaveUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy1" ), CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u005', -1800, 5525, 270 ) )
+		call ScaleUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy1" ) ), 2.5 )
+		call SaveEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionEffect1" ), AddSpecialEffectTarget( "PickSystem\\Effect.mdl", LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy1" ) ), "origin" ) )
+		call SaveEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionEffect2" ), AddSpecialEffectTarget( "PickSystem\\Background.mdl", LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy1" ) ), "origin" ) )
 
 		loop
 			exitwhen i > LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalHeroes" ) )
@@ -43,12 +43,12 @@
 				set Iterator = 0
 			endif
 
-			call SaveUnitHandle( HashTable, GetHandleId( HashTable ), 1000 + i, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u006', SysIconX, SysIconY, 270 ) )
-			call SetUnitVertexColor( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 1000 + i ), 255, 255, 255, 0 )
-			call SetUnitUserData( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 1000 + i ), i )
-			call SaveEffectHandle( HashTable, GetHandleId( HashTable ), 2000 + i, AddSpecialEffect( LoadStr( HashTable, GetHandleId( HashTable ), i ) + "Icon.mdl", SysIconX, SysIconY ) )
-			call SaveUnitHandle( HashTable, GetHandleId( HashTable ), i, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), LoadInteger( HashTable, GetHandleId( HashTable ), i ), SysHeroX, SysHeroY, 270 ) )
-			call SetUnitInvulnerable( LoadUnitHandle( HashTable, GetHandleId( HashTable ), i ), true )
+			call SaveUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "Button" ) + i, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u006', SysIconX, SysIconY, 270 ) )
+			call SetUnitVertexColor( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "Button" ) + i ), 255, 255, 255, 0 )
+			call SetUnitUserData( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "Button" ) + i ), i )
+			call SaveEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "ButtonIcon" ) + i, AddSpecialEffect( LoadStr( HashTable, GetHandleId( HashTable ), StringHash( "ModelPath" ) + i ) + "Icon.mdl", SysIconX, SysIconY ) )
+			call SaveUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "WhatHero" ) + i, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), LoadInteger( HashTable, GetHandleId( HashTable ), StringHash( "HeroID" ) + i ), SysHeroX, SysHeroY, 270 ) )
+			call SetUnitInvulnerable( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "WhatHero" ) + i ), true )
 			set SysIconX = SysIconX + 100
 			set SysHeroX = SysHeroX + 150
 			set i = i + 1
@@ -57,49 +57,46 @@
 	endfunction
 
 	function InitHeroTrig takes integer LocID returns nothing
-		if LoadBoolean( HashTable, GetHandleId( CameraSet ), 6000 + LocID ) == false then
-			call SaveBoolean( HashTable, GetHandleId( CameraSet ), 6000 + LocID, true ) 
+		if LoadBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "WasPicked" ) + LocID ) == false then
+			call SaveBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "WasPicked" ) + LocID, true ) 
 			call ExecuteFunc( "HeroInit" + I2S( LocID ) )
 		endif
 	endfunction
 
 	function MoveHeroToTeamLocation takes integer LocID, integer HeroID returns nothing
+		local integer Team = GetPlayerTeam( Player( LocID ) )
 		if LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "PlayersPicked" ) ) < LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalPlayers" ) ) then
 			call SaveInteger( HashTable, GetHandleId( CameraSet ), StringHash( "PlayersPicked" ), LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "PlayersPicked" ) ) + 1 )
-			call SaveBoolean( HashTable, GetHandleId( CameraSet ), LocID, true ) // Disabling Camera Lock For Player( LocID )
+			call SaveBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "HasSelected" ) + LocID, true ) // Disabling Camera Lock For Player( LocID )
 		endif
 
-		if GetPlayerTeam( Player( LocID ) ) == 0 then // IsSelected saving for each team
-			call SaveBoolean( HashTable, GetHandleId( CameraSet ), 1000 + HeroID, true )
-		else
-			call SaveBoolean( HashTable, GetHandleId( CameraSet ), 2000 + HeroID, true )
-		endif
+		call SaveBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "Team" + I2S( Team + 1 ) + "Picked" ) + HeroID, true )
 
 		if LoadBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "IsSameHero" ) ) then
 			call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), HeroID ) )
-			call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 1000 + HeroID ) )
+			call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "Button" ) + HeroID ) )
 		endif
 
 		call InitHeroTrig( HeroID )
-		call SaveUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0, CreateUnit( Player( LocID ), LoadInteger( HashTable, GetHandleId( HashTable ), HeroID ), -11000, 10000, 270 ) )
+		call SaveUnitHandle( HashTable, GetHandleId( Player( LocID ) ), StringHash( "PickedHero" ), CreateUnit( Player( LocID ), LoadInteger( HashTable, GetHandleId( HashTable ), StringHash( "HeroID" ) + HeroID ), -11000, 10000, 270 ) )
 		call SaveMultiboardItemHandle( HashTable, GetHandleId( CameraSet ), StringHash( "MBItem" ), MultiboardGetItem( GetMultiboard( ), LoadInteger( HashTable, GetHandleId( Player( LocID ) ), 0 ) + 1, 0 ) )
 		call MultiboardSetItemStyle( GetMBItem( ), true, true )
-		call MultiboardSetItemIcon( GetMBItem( ), LoadStr( HashTable, GetHandleId( HashTable ), HeroID + 4000 ) )
+		call MultiboardSetItemIcon( GetMBItem( ), LoadStr( HashTable, GetHandleId( HashTable ), StringHash( "HeroIcon" ) + HeroID ) )
 
 		if GetPlayerController( Player( LocID ) ) == MAP_CONTROL_USER then
-			call SetPlayerName( Player( LocID ), GetPlayerName( Player( LocID ) ) + " [ " + GetHeroProperName( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0 ) ) + " ]" + "|r" )
+			call SetPlayerName( Player( LocID ), GetPlayerName( Player( LocID ) ) + " [ " + GetHeroProperName( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), StringHash( "PickedHero" ) ) ) + " ]" + "|r" )
 			if GetLocalPlayer( ) == Player( LocID ) then
 				call CameraSetupSetField( CameraSet, CAMERA_FIELD_ANGLE_OF_ATTACK, 305, 0 )
 				call CameraSetupApplyForceDuration( CameraSet, true, 0 )
 				call SaveReal( HashTable, GetHandleId( CameraSet ), StringHash( "CameraDistance" ), 3000 )
-				call PanCameraToTimed( GetUnitX( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0 ) ), GetUnitY( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0 ) ), 0 )
+				call PanCameraToTimed( GetUnitX( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), StringHash( "PickedHero" ) ) ), GetUnitY( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), StringHash( "PickedHero" ) ) ), 0 )
 				call ClearSelection( )
-				call SelectUnit( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0 ), true )
+				call SelectUnit( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), StringHash( "PickedHero" ) ), true )
 			endif
 		else
-			call StartAI( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0 ) )
+			call StartAI( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), StringHash( "PickedHero" ) ) )
 			call MultiboardSetItemValue( GetMBItem( ), GetPlayerName( Player( LocID ) ) )
-			call SetPlayerName( Player( LocID ), GetTeamColour( LocID ) + "Bot|r [ " + GetHeroProperName( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), 0 ) ) + " ]" )
+			call SetPlayerName( Player( LocID ), GetTeamColour( LocID ) + "Bot|r [ " + GetHeroProperName( LoadUnitHandle( HashTable, GetHandleId( Player( LocID ) ), StringHash( "PickedHero" ) ) ) + " ]" )
 		endif
 
 		call ReleaseMBItem( )
@@ -110,16 +107,16 @@
 		local integer HeroID = GetRandomInt( 1, LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalHeroes" ) ) )
 
 		if LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "PlayersPicked" ) ) == LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalPlayers" ) ) then
-			call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), 8001 ) )
-			call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), 8002 ) )
-			call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 8000 ) )
+			call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionEffect1" ) ) )
+			call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionEffect2" ) ) )
+			call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy1" ) ) )
 
 			loop
 				exitwhen i > 9
 
 				if GetPlayerSlotState( Player( i ) ) == PLAYER_SLOT_STATE_PLAYING and GetPlayerController( Player( i ) ) == MAP_CONTROL_COMPUTER then
 					loop
-						exitwhen LoadBoolean( HashTable, GetHandleId( CameraSet ), 1000 + HeroID ) == false and LoadBoolean( HashTable, GetHandleId( CameraSet ), 2000 + HeroID ) == false
+						exitwhen LoadBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "Team1Picked" ) + HeroID ) == false and LoadBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "Team2Picked" ) + HeroID ) == false
 						set HeroID = GetRandomInt( 1, LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalHeroes" ) ) )
 					endloop
 
@@ -133,9 +130,9 @@
 
 			loop
 				exitwhen i > LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalHeroes" ) )
-				call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), 2000 + i ) )
-				call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 1000 + i ) )
-				call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), i ) )
+				call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "ButtonIcon" ) + i ) )
+				call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "Button" ) + i ) )
+				call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "WhatHero" ) + i ) )
 				set i = i + 1
 			endloop
 
@@ -153,28 +150,28 @@
 		local integer UnitData 	 = GetUnitUserData( GetTriggerUnit( ) )
 		local string  LocEffect1 = ""
 
-		if LoadBoolean( HashTable, GetHandleId( CameraSet ), ID ) == false and GetUnitTypeId( GetTriggerUnit( ) ) == 'u006' then //IsSelected 
+		if LoadBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "HasSelected" ) + ID ) == false and GetUnitTypeId( GetTriggerUnit( ) ) == 'u006' then //IsSelected 
 			if GetLocalPlayer( ) != GetTriggerPlayer( ) then
 				set LocEffect1 = ""
 			else
-				set LocEffect1 = LoadStr( HashTable, GetHandleId( HashTable ), UnitData ) + "Skin00.mdl"
+				set LocEffect1 = LoadStr( HashTable, GetHandleId( HashTable ), StringHash( "ModelPath" ) + UnitData ) + "Skin00.mdl"
 				call ClearSelection( )
-				call SelectUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), UnitData ), true )
+				call SelectUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "WhatHero" ) + UnitData ), true )
 			endif
 
-			call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), 5000 + ID ) )
-			call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 3000 + ID ) )
-			call SaveUnitHandle( HashTable, GetHandleId( HashTable ), 3000 + ID, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u005', -1800, 5525, 270 ) )
-			call SetUnitTimeScale( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 3000 + ID ), 1.5 )
-			call ScaleUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 3000 + ID ), LoadReal( HashTable, GetHandleId( HashTable ), UnitData ) )
-			call SaveEffectHandle( HashTable, GetHandleId( HashTable ), 5000 + ID, AddSpecialEffectTarget( LocEffect1, LoadUnitHandle( HashTable, GetHandleId( HashTable ), 3000 + ID ), "origin" ) )
+			call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "HeroPreview" ) + ID ) )
+			call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy2" ) + ID ) )
+			call SaveUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy2" ) + ID, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u005', -1800, 5525, 270 ) )
+			call SetUnitTimeScale( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy2" ) + ID ), 1.5 )
+			call ScaleUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy2" ) + ID ), LoadReal( HashTable, GetHandleId( HashTable ), StringHash( "HeroScale" ) + UnitData ) )
+			call SaveEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "HeroPreview" ) + ID, AddSpecialEffectTarget( LocEffect1, LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy2" ) + ID ), "origin" ) )
 
-			if LoadUnitHandle( HashTable, GetHandleId( HashTable ), 4000 + ID ) != LoadUnitHandle( HashTable, GetHandleId( HashTable ), UnitData ) then
-				call SaveUnitHandle( HashTable, GetHandleId( HashTable ), 4000 + ID, LoadUnitHandle( HashTable, GetHandleId( HashTable ), UnitData ) )
+			if LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectedHero" ) + ID ) != LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "WhatHero" ) + UnitData ) then
+				call SaveUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectedHero" ) + ID, LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "WhatHero" ) + UnitData ) )
 			else
-				if ( LoadBoolean( HashTable, GetHandleId( CameraSet ), 1000 + UnitData ) == false and TeamID == 0 ) or ( LoadBoolean( HashTable, GetHandleId( CameraSet ), 2000 + UnitData ) == false and TeamID == 1 ) then //IsSelected checking
-					call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), 5000 + ID ) )
-					call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), 3000 + ID ) )
+				if LoadBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "Team" + I2S( TeamID + 1 ) + "Picked" ) + UnitData ) == false then
+					call DestroyEffect( LoadEffectHandle( HashTable, GetHandleId( HashTable ), StringHash( "HeroPreview" ) + ID ) )
+					call RemoveUnit( LoadUnitHandle( HashTable, GetHandleId( HashTable ), StringHash( "SelectionDummy2" ) + ID ) )
 					call MoveHeroToTeamLocation( ID, UnitData )
 					call ComputerHeroSelection( )
 				else

@@ -1,6 +1,6 @@
 	function ItemAoEFireDamage takes nothing returns boolean
-		if UnitLife( MUIUnit( 100 ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) then
-			call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), "AoE", "Magical", 30 + MUILevel( 2. ) )
+		if UnitLife( GetUnit( "RobeOwner" ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( GetUnit( "RobeOwner" ) ) ) then
+			call TargetDamage( GetUnit( "RobeOwner" ), GetFilterUnit( ), "AoE", "Magical", 30 + GetLevel( 2. ) )
 			call DestroyEffect( AddSpecialEffectTarget( "Abilities\\Spells\\Other\\ImmolationRed\\ImmolationRedDamage.mdl", GetFilterUnit( ), "chest" ) )
 		endif
 
@@ -8,17 +8,17 @@
 	endfunction
 
 	function ItemAoEFireAction takes nothing returns nothing
-		local integer LocTime = MUIInteger( 0 )
+		local integer LocTime = GetInt( "SpellTime" )
 
-		call SaveInteger( HashTable, MUIHandle( ), 0, LocTime + 1 )
+		call SpellTime( )
 
-		if UnitHasItemById( MUIUnit( 100 ), 'I000' ) then
+		if UnitHasItemById( GetUnit( "RobeOwner" ), 'I000' ) then
 			if LocTime == 100 then
 				call SaveInteger( HashTable, MUIHandle( ), 0, 0 )
-				call GroupEnumUnitsInRange( EnumUnits( ), GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 300, Filter( function ItemAoEFireDamage ) )
+				call GroupEnumUnitsInRange( EnumUnits( ), GetUnitX( GetUnit( "RobeOwner" ) ), GetUnitY( GetUnit( "RobeOwner" ) ), 300, Filter( function ItemAoEFireDamage ) )
 			endif
 		else
-			call SaveBoolean( HashTable, GetHandleId( MUIUnit( 100 ) ), 300, false )
+			call SaveBoolean( HashTable, GetHandleId( GetUnit( "RobeOwner" ) ), 300, false )
 			call TimerPause( GetExpiredTimer( ) )
 			call FlushChildHashtable( HashTable, MUIHandle( ) )
 		endif

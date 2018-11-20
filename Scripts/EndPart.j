@@ -1,5 +1,6 @@
 	function InitTriggers takes nothing returns nothing
 		local integer i = 0
+		local integer Hash
 
 		loop
 			exitwhen i > 9
@@ -14,12 +15,8 @@
 					endif
 
 					call SaveInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalPlayers" ), LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalPlayers" ) ) + 1 )
-
-					if GetPlayerTeam( Player( i ) ) == 0 then
-						call SaveInteger( HashTable, GetHandleId( CameraSet ), 500, LoadInteger( HashTable, GetHandleId( CameraSet ), 500 ) + 1 )
-					else
-						call SaveInteger( HashTable, GetHandleId( CameraSet ), 501, LoadInteger( HashTable, GetHandleId( CameraSet ), 501 ) + 1 )
-					endif
+					set Hash = StringHash( "Team" + I2S( GetPlayerTeam( Player( i ) ) + 1 ) + "Players" )
+					call SaveInteger( HashTable, GetHandleId( CameraSet ), Hash, LoadInteger( HashTable, GetHandleId( CameraSet ), Hash ) + 1 )
 				endif
 			endif
 
@@ -71,9 +68,9 @@
 		call GetUnitEvent( LoadTrig( "UnlockSpellsTrig" ), EVENT_PLAYER_HERO_LEVEL )
 		call TriggerAddAction( LoadTrig( "UnlockSpellsTrig" ), function HeroAbilityUnlockAction )
 
-		call SaveTrig( "RemoveInvisTrig" )
-		call GetUnitEvent( LoadTrig( "RemoveInvisTrig" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
-		call TriggerAddAction( LoadTrig( "RemoveInvisTrig" ), function RemoveInvisForCast )
+		call SaveTrig( "AllHeroSpells" )
+		call GetUnitEvent( LoadTrig( "AllHeroSpells" ), EVENT_PLAYER_UNIT_SPELL_EFFECT )
+		call TriggerAddCondition( LoadTrig( "AllHeroSpells" ), Condition( function CastCondition ) )
 
 		call SaveTrig( "InitModeSelect2" )
 		call TriggerRegisterDialogEvent( LoadTrig( "InitModeSelect2" ), GetDialog( ) )
@@ -89,7 +86,7 @@
 
 		call SaveTrig( "ReviveSystemTrig" )
 		call GetUnitEvent( LoadTrig( "ReviveSystemTrig" ), EVENT_PLAYER_UNIT_DEATH )
-		call TriggerAddCondition( LoadTrig( "ReviveSystemTrig" ), Condition( function ReviveSystemAction ) )
+		call TriggerAddAction( LoadTrig( "ReviveSystemTrig" ), function ReviveSystemAction )
 
 		call SaveTrig( "CameraHeightTrig" )
 		call TimerStart( CreateTimer( ), .0, true, function CameraSetHeight )
@@ -241,7 +238,7 @@
 	function InitSoloDetection takes nothing returns nothing
 		local integer i = 0
 
-		if LoadInteger( HashTable, GetHandleId( CameraSet ), 500 ) == 0 or LoadInteger( HashTable, GetHandleId( CameraSet ), 501 ) == 0 then
+		if LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "Team1Players" ) ) == 0 or LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "Team2Players" ) ) == 0 then
 			call SaveBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "TestMode" ), true )
 			call SaveBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "IsSameHero" ), true )
 

@@ -1,22 +1,22 @@
 	function SaberAlterSpellQ takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
+		local integer LocTime  = GetInt( "SpellTime" )
 
 		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
+			call SpellTime( )
 
 			if LocTime == 1 then
-				call CCUnit( MUIUnit( 100 ), .6, "Stun", false )
-				call SetUnitTimeScale( MUIUnit( 100 ), 1.5 )
-				call SetUnitAnimation( MUIUnit( 100 ), "spell Slam" )
+				call CCUnit( GetUnit( "Source" ), .6, "Stun", false )
+				call SetUnitTimeScale( GetUnit( "Source" ), 1.5 )
+				call SetUnitAnimation( GetUnit( "Source" ), "spell Slam" )
 				call PlaySoundWithVolume( LoadSound( "SaberAlterQ1" ), 100, 0 )
 			endif
 
 			if LocTime == 25 then
 				call PlaySoundWithVolume( LoadSound( "SaberAlterQ2" ), 100, 0 )
-				call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
-				call CreateXY( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Distance" ) / 2, GetReal( "Angle" ), "Effect" )
-				call LinearDisplacement( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ), .1, .01, false, true, "origin", DashEff( ) )
+				call CreateDistanceAndAngle( GetUnitX( GetUnit( "Source" ) ), GetUnitY( GetUnit( "Source" ) ), "Spell" )
+				call CreateXY( GetUnitX( GetUnit( "Source" ) ), GetUnitY( GetUnit( "Source" ) ), GetReal( "Distance" ) / 2, GetReal( "Angle" ), "Effect" )
+				call LinearDisplacement( GetUnit( "Source" ), GetReal( "Angle" ), GetReal( "Distance" ), .1, .01, false, true, "origin", DashEff( ) )
 				call AddEffectXY( "Effects\\SaberAlter\\LinearSlashBlack1.mdl", 3, GetReal( "EffectX" ), GetReal( "EffectY" ), GetReal( "Angle" ), 0 )
 				call SetUnitVertexColor( LoadUnit( "DummyUnit" ), 75, 0, 130, 255 )
 				call SaveStr( HashTable, HandleID, StringHash( "UnitEffect" ), "GeneralEffects\\BloodEffect1.mdl" )
@@ -24,7 +24,7 @@
 			endif
 
 			if LocTime >= 25 then
-				call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 200, "AoE", "Physical", 250 + MUIPower( 1. ), false, "Stun", 1 )
+				call AoEDamageXY( HandleID, GetUnitX( GetUnit( "Source" ) ), GetUnitY( GetUnit( "Source" ) ), 200, "AoE", "Physical", 250 + GetPower( 1. ), false, "Stun", 1 )
 			endif
 
 			if LocTime == 50 then
@@ -35,19 +35,19 @@
 
 	function SaberAlterSpellW takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
+		local integer LocTime  = GetInt( "SpellTime" )
 
 		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
+			call SpellTime( )
 
 			if LocTime == 1 then
 				call PlaySoundWithVolume( LoadSound( "SaberAlterW1" ), 100, 0 )
-				call CCUnit( MUIUnit( 100 ), .5, "Stun", false )
-				call SetUnitAnimation( MUIUnit( 100 ), "spell Two" )
-				call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
-				call AddEffectXY( "Effects\\SaberAlter\\DarkExplosion.mdl", .4, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
-				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1, GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), 0, 0 )
-				call DisplaceUnitWithArgs( MUIUnit( 100 ), GetReal( "Angle" ), GetReal( "Distance" ), .4, .01, 600 )
+				call CCUnit( GetUnit( "Source" ), .5, "Stun", false )
+				call SetUnitAnimation( GetUnit( "Source" ), "spell Two" )
+				call CreateDistanceAndAngle( GetUnitX( GetUnit( "Source" ) ), GetUnitY( GetUnit( "Source" ) ), "Spell" )
+				call AddEffectXY( "Effects\\SaberAlter\\DarkExplosion.mdl", .4, GetUnitX( GetUnit( "Source" ) ), GetUnitY( GetUnit( "Source" ) ), 0, 0 )
+				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1, GetUnitX( GetUnit( "Source" ) ), GetUnitY( GetUnit( "Source" ) ), 0, 0 )
+				call DisplaceUnitWithArgs( GetUnit( "Source" ), GetReal( "Angle" ), GetReal( "Distance" ), .4, .01, 600 )
 			endif
 
 			if LocTime == 40 then
@@ -57,7 +57,7 @@
 				call AddEffectXY( "GeneralEffects\\LightningStrike1.mdl", .75, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
 				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 1.5, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
 				call AddEffectXY( "GeneralEffects\\ValkDust.mdl", 2.5, GetReal( "SpellX" ), GetReal( "SpellY" ), 0, 0 )
-				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 300, "AoE", "Physical", 150 + MUIPower( 1. ), false, "Stun", 1 )
+				call AoEDamageXY( HandleID, GetReal( "SpellX" ), GetReal( "SpellY" ), 300, "AoE", "Physical", 150 + GetPower( 1. ), false, "Stun", 1 )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -65,36 +65,36 @@
 
 	function SaberAlterSpellE takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
+		local integer LocTime  = GetInt( "SpellTime" )
 
 		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
+			call SpellTime( )
 		else
-			call RemoveUnit( MUIUnit( 101 ) )
+			call RemoveUnit( GetUnit( "Dummy1" ) )
 		endif
 		
 		if LocTime == 1 then
 			call PlaySoundWithVolume( LoadSound( "SaberAlterE1" ), 100, 0 )
-			call CCUnit( MUIUnit( 100 ), .7, "Stun", false )
-			call SetUnitAnimation( MUIUnit( 100 ), "spell Five" )
-			call CreateDistanceAndAngle( GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), "Spell" )
-			call SaveUnitHandle( HashTable, HandleID, 101, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u001', GetUnitX( MUIUnit( 100 ) ), GetUnitY( MUIUnit( 100 ) ), GetReal( "Angle" ) ) )
-			call SetUnitXAndY( MUIUnit( 101 ), GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 150, GetReal( "Angle" ) )
+			call CCUnit( GetUnit( "Source" ), .7, "Stun", false )
+			call SetUnitAnimation( GetUnit( "Source" ), "spell Five" )
+			call CreateDistanceAndAngle( GetUnitX( GetUnit( "Source" ) ), GetUnitY( GetUnit( "Source" ) ), "Spell" )
+			call SaveUnitHandle( HashTable, HandleID, StringHash( "Dummy1" ), CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), 'u001', GetUnitX( GetUnit( "Source" ) ), GetUnitY( GetUnit( "Source" ) ), GetReal( "Angle" ) ) )
+			call SetUnitXAndY( GetUnit( "Dummy1" ), GetUnitX( GetUnit( "Dummy1" ) ), GetUnitY( GetUnit( "Dummy1" ) ), 150, GetReal( "Angle" ) )
 		endif
 
 		if LocTime == 60 then
 			call PlaySoundWithVolume( LoadSound( "SaberAlterE2" ), 100, 0.5 )
-			call IssueImmediateOrder( MUIUnit( 100 ), "stop" )
+			call IssueImmediateOrder( GetUnit( "Source" ), "stop" )
 		endif
 
 		if LocTime > 60 then
 			call SaveReal( HashTable, HandleID, StringHash( "MoveDist" ), GetReal( "MoveDist" ) + 150 )
-			call DestroyEffect( AddSpecialEffect( "Effects\\SaberAlter\\ShadowBurstBig.mdl", GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ) ) )
-			call AoEDisplaceXY( HandleID, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), .1, 1, .01, 400, "" )
-			call AoEDamageXY( HandleID, GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 450, "AoE", "Physical", MUIPower( 1. ), false, "Stun", 1 )
-			call SetUnitXAndY( MUIUnit( 101 ), GetUnitX( MUIUnit( 101 ) ), GetUnitY( MUIUnit( 101 ) ), 150, GetReal( "Angle" ) )
-			if GetReal( "MoveDist" ) >= 1500. or UnitLife( MUIUnit( 100 ) ) <= 0 then
-				call RemoveUnit( MUIUnit( 101 ) )
+			call DestroyEffect( AddSpecialEffect( "Effects\\SaberAlter\\ShadowBurstBig.mdl", GetUnitX( GetUnit( "Dummy1" ) ), GetUnitY( GetUnit( "Dummy1" ) ) ) )
+			call AoEDisplaceXY( HandleID, GetUnitX( GetUnit( "Dummy1" ) ), GetUnitY( GetUnit( "Dummy1" ) ), .1, 1, .01, 400, "" )
+			call AoEDamageXY( HandleID, GetUnitX( GetUnit( "Dummy1" ) ), GetUnitY( GetUnit( "Dummy1" ) ), 450, "AoE", "Physical", GetPower( 1. ), false, "Stun", 1 )
+			call SetUnitXAndY( GetUnit( "Dummy1" ), GetUnitX( GetUnit( "Dummy1" ) ), GetUnitY( GetUnit( "Dummy1" ) ), 150, GetReal( "Angle" ) )
+			if GetReal( "MoveDist" ) >= 1500. or UnitLife( GetUnit( "Source" ) ) <= 0 then
+				call RemoveUnit( GetUnit( "Dummy1" ) )
 				call ClearAllData( HandleID )
 			endif
 		endif
@@ -102,18 +102,18 @@
 
 	function SaberAlterSpellR takes nothing returns nothing
 		local integer HandleID = MUIHandle( )
-		local integer LocTime  = MUIInteger( 0 )
+		local integer LocTime  = GetInt( "SpellTime" )
 
 		if StopSpell( HandleID, 0 ) == false then
-			call SaveInteger( HashTable, HandleID, 0, LocTime + 1 )
+			call SpellTime( )
 
 			if LocTime == 1 then
-				call CCUnit( MUIUnit( 100 ), 1.1, "Stun", false )
-				call SetUnitAnimation( MUIUnit( 100 ), "spell Channel One" )
+				call CCUnit( GetUnit( "Source" ), 1.1, "Stun", false )
+				call SetUnitAnimation( GetUnit( "Source" ), "spell Channel One" )
 				call PlaySoundWithVolume( LoadSound( "SaberAlterR1" ), 100, 0 )
-				call SaveReal( HashTable, HandleID, StringHash( "CasterX" ), GetUnitX( MUIUnit( 100 ) ) )
-				call SaveReal( HashTable, HandleID, StringHash( "CasterY" ), GetUnitY( MUIUnit( 100 ) ) )
-				call DestroyEffect( AddSpecialEffectTarget( "Effects\\SaberAlter\\ShadowBurst.mdl", MUIUnit( 100 ), "weapon" ) )
+				call SaveReal( HashTable, HandleID, StringHash( "CasterX" ), GetUnitX( GetUnit( "Source" ) ) )
+				call SaveReal( HashTable, HandleID, StringHash( "CasterY" ), GetUnitY( GetUnit( "Source" ) ) )
+				call DestroyEffect( AddSpecialEffectTarget( "Effects\\SaberAlter\\ShadowBurst.mdl", GetUnit( "Source" ), "weapon" ) )
 			endif
 
 			if LocTime == 1 or LocTime == 10 then
@@ -123,15 +123,15 @@
 			endif
 
 			if LocTime == 100 then
-				call SetUnitAnimation( MUIUnit( 100 ), "spell Channel Two" )
+				call SetUnitAnimation( GetUnit( "Source" ), "spell Channel Two" )
 				call PlaySoundWithVolume( LoadSound( "SaberAlterR2" ), 100, 0 )
 				call PlaySoundWithVolume( LoadSound( "SaberAlterR3" ), 100, 0 )
-				call AddEffectXY( "Effects\\SaberAlter\\DarkWave.mdl", 1, GetReal( "CasterX" ), GetReal( "CasterY" ), GetUnitFacing( MUIUnit( 100 ) ), 0 )
+				call AddEffectXY( "Effects\\SaberAlter\\DarkWave.mdl", 1, GetReal( "CasterX" ), GetReal( "CasterY" ), GetUnitFacing( GetUnit( "Source" ) ), 0 )
 			endif
 
 			if LocTime >= 100 then
 				call SaveReal( HashTable, HandleID, StringHash( "GetPosition" ), GetReal( "GetPosition" ) + 100 )
-				call CreateXY( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "GetPosition" ), GetUnitFacing( MUIUnit( 100 ) ), "Effect" )
+				call CreateXY( GetReal( "CasterX" ), GetReal( "CasterY" ), GetReal( "GetPosition" ), GetUnitFacing( GetUnit( "Source" ) ), "Effect" )
 
 				if LoadReal( HashTable, HandleID, 112 ) >= 4 then
 					call AddEffectXY( "GeneralEffects\\FuzzyStomp.mdl", 2, GetReal( "EffectX" ), GetReal( "EffectY" ), 0, 0 )
@@ -141,7 +141,7 @@
 				endif
 
 				call DestroyEffect( AddSpecialEffect( "GeneralEffects\\NewDirtEx.mdl", GetReal( "EffectX" ), GetReal( "EffectY" ) ) )
-				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 500, "AoE", "Physical", MUIPower( 1. ), false, "", 0 )
+				call AoEDamageXY( HandleID, GetReal( "EffectX" ), GetReal( "EffectY" ), 500, "AoE", "Physical", GetPower( 1. ), false, "", 0 )
 
 				if GetReal( "GetPosition" ) >= 3000 then
 					call ClearAllData( HandleID )
@@ -150,14 +150,14 @@
 		endif
 	endfunction
 	
-	function SaberAlterSpells takes nothing returns boolean
+	function SaberAlterSpells takes nothing returns nothing
 		local integer LocPID = GetPlayerId( GetTriggerPlayer( ) )
 		local integer HandleID
 
 		if GetSpellAbilityId( ) == 'A051' then
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
-				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveUnitHandle( HashTable, HandleID, StringHash( "Source" ), GetTriggerUnit( ) )
 				call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 				call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 				call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellQ )
@@ -169,7 +169,7 @@
 		if GetSpellAbilityId( ) == 'A052' then
 			if IsTerrainPathable( GetSpellTargetX( ), GetSpellTargetY( ), PATHING_TYPE_WALKABILITY ) == false then
 				set HandleID = NewMUITimer( LocPID )
-				call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+				call SaveUnitHandle( HashTable, HandleID, StringHash( "Source" ), GetTriggerUnit( ) )
 				call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 				call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 				call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellW )
@@ -180,7 +180,7 @@
 		
 		if GetSpellAbilityId( ) == 'A053' then
 			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, StringHash( "Source" ), GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellE )
@@ -188,13 +188,11 @@
 
 		if GetSpellAbilityId( ) == 'A054' then
 			set HandleID = NewMUITimer( LocPID )
-			call SaveUnitHandle( HashTable, HandleID, 100, GetTriggerUnit( ) )
+			call SaveUnitHandle( HashTable, HandleID, StringHash( "Source" ), GetTriggerUnit( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellX" ), GetSpellTargetX( ) )
 			call SaveReal( HashTable, HandleID, StringHash( "SpellY" ), GetSpellTargetY( ) )
 			call TimerStart( LoadMUITimer( LocPID ), .01, true, function SaberAlterSpellR )
 		endif
-
-		return false
 	endfunction	
 
 	function HeroInit4 takes nothing returns nothing
@@ -209,6 +207,6 @@
 		call SaveSound( "SaberAlterR1", "SaberAlter\\SpellR1.mp3" )
 		call SaveSound( "SaberAlterR2", "SaberAlter\\SpellR2.mp3" )
 		call SaveSound( "SaberAlterR3", "SaberAlter\\SpellR3.mp3" )
-		call TriggerAddCondition( LoadTrig( "RemoveInvisTrig" ), Condition( function SaberAlterSpells ) )
+		call TriggerAddAction( LoadTrig( "AllHeroSpells" ), function SaberAlterSpells )
 	endfunction	
 

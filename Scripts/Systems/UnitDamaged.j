@@ -9,16 +9,16 @@
 	function ReinforceAoEDamage takes nothing returns boolean
 		if UnitLife( GetFilterUnit( ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( GetSource( ) ) ) then
 			call DestroyEffect( AddSpecialEffectTarget( "Effects\\Reinforce\\BlackMist.mdl", GetFilterUnit( ), "chest" ) )
-			call TargetDamage( GetSource( ), GetFilterUnit( ), "AoE", "Magical", LoadReal( HashTable, GetHandleId( GetSource( ) ), 200 ) )
-			call DamageVisualDrawNumberAction( GetSource( ), GetFilterUnit( ), LoadReal( HashTable, GetHandleId( GetSource( ) ), 200 ) )
+			call TargetDamage( GetSource( ), GetFilterUnit( ), "AoE", "Magical", LoadReal( HashTable, GetHandleId( GetSource( ) ), StringHash( "ShadowDamage" ) ) )
+			call DamageVisualDrawNumberAction( GetSource( ), GetFilterUnit( ), LoadReal( HashTable, GetHandleId( GetSource( ) ), StringHash( "ShadowDamage" ) ) )
 		endif
 
 		return true
 	endfunction	
 
 	function AkamePoisonDamage takes nothing returns nothing
-		if GetUnitAbilityLevel( MUIUnit( 101 ), 'B003' ) > 0 then
-			call TargetDamage( MUIUnit( 100 ), MUIUnit( 101 ), "Target", "Physical", 10 + MUIPower( .1 ) )
+		if GetUnitAbilityLevel( GetUnit( "Target" ), 'B003' ) > 0 then
+			call TargetDamage( GetUnit( "Source" ), GetUnit( "Target" ), "Target", "Physical", 10 + GetPower( .1 ) )
 		else
 			call ClearAllData( MUIHandle( ) )
 		endif
@@ -28,8 +28,8 @@
 		local integer LocPID = GetPlayerId( GetOwningPlayer( LocTrigUnit ) )
 		local integer HandleID = NewMUITimer( LocPID )
 
-		call SaveUnitHandle( HashTable, HandleID, 100, LocTrigUnit )
-		call SaveUnitHandle( HashTable, HandleID, 101, LocTargUnit )
+		call SaveUnitHandle( HashTable, HandleID, StringHash( "Source" ), LocTrigUnit )
+		call SaveUnitHandle( HashTable, HandleID, StringHash( "Target" ), LocTargUnit )
 		call TimerStart( LoadMUITimer( LocPID ), 1, true, function AkamePoisonDamage )
 	endfunction 
 
@@ -77,10 +77,10 @@
 				call IssueTargetOrder( LoadUnit( I2S( GetPlayerId( GetOwningPlayer( GetSource( ) ) ) ) ), "cripple", GetTarget( ) )
 			endif
 
-			if SourceID == 'H009' and LoadInteger( HashTable, GetHandleId( GetSource( ) ), 0 ) > 0 then
-				call SaveReal( HashTable, GetHandleId( GetSource( ) ), 200, GetHeroInt( GetSource( ), true ) * .25 )
+			if SourceID == 'H009' and LoadInteger( HashTable, GetHandleId( GetSource( ) ), StringHash( "ShadowStack" ) ) > 0 then
+				call SaveReal( HashTable, GetHandleId( GetSource( ) ), StringHash( "ShadowDamage" ), GetHeroInt( GetSource( ), true ) * .25 )
 				call GroupEnumUnitsInRange( EnumUnits( ), GetUnitX( GetTarget( ) ), GetUnitY( GetTarget( ) ), 250, Filter( function ReinforceAoEDamage ) )
-				call SaveInteger( HashTable, GetHandleId( GetSource( ) ), 0, LoadInteger( HashTable, GetHandleId( GetSource( ) ), 0 ) - 1 )
+				call SaveInteger( HashTable, GetHandleId( GetSource( ) ), StringHash( "ShadowStack" ), LoadInteger( HashTable, GetHandleId( GetSource( ) ), StringHash( "ShadowStack" ) ) - 1 )
 			endif
 
 			if TargetID == 'tstu' then

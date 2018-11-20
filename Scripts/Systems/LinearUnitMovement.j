@@ -31,7 +31,7 @@
 
 			call SaveReal( HashTable, HandleID, StringHash( "MaxDistance" ), GetReal( "MaxDistance" ) - GetReal( "MoveRate" ) )
 
-			if GetReal( "MaxDistance" ) <= 0 or RMin( RMax( GetReal( "InitX" )  * 1, GetMapBound( "MinX" ) ), GetMapBound( "MaxX" ) ) != GetReal( "InitX" )  or RMin( RMax( GetReal( "InitY" )  * 1, GetMapBound( "MinY" ) ), GetMapBound( "MaxY" ) ) != GetReal( "InitY" )  then
+			if GetReal( "MaxDistance" ) <= 0 or RMin( RMax( GetReal( "InitX" )  * 1, GetMapBound( "MinX" ) ), GetMapBound( "MaxX" ) ) != GetReal( "InitX" ) or RMin( RMax( GetReal( "InitY" ) * 1, GetMapBound( "MinY" ) ), GetMapBound( "MaxY" ) ) != GetReal( "InitY" ) then
 				call SaveInteger( HashTable, HandleID, StringHash( "StopMovement" ), 1 )
 			endif
 

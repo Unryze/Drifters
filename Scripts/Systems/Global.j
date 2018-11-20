@@ -119,7 +119,31 @@
 	function GetBool takes string HashName returns boolean 
 		return LoadBoolean( HashTable, MUIHandle( ), StringHash( HashName ) )
 	endfunction	
+
+	function GetEffect takes string HashName returns effect
+		return LoadEffectHandle( HashTable, MUIHandle( ), StringHash( HashName ) )
+	endfunction	
+
+	function GetLevel takes real Multiplier returns real
+		return GetHeroLevel( GetUnit( "Source" ) ) * Multiplier
+	endfunction
+
+	function GetPower takes real Percent returns real
+		return GetHeroInt( GetUnit( "Source" ), true ) * Percent
+	endfunction	
 	
+	function SaveEffect takes string HashName, string EffName, string UnitHashName returns nothing
+		call SaveEffectHandle( HashTable, MUIHandle( ), StringHash( HashName ), AddSpecialEffectTarget( EffName, GetUnit( UnitHashName ), "origin" ) )
+	endfunction 
+
+	function GetDummyXY takes string HashName, integer UID, real LocX, real LocY, real LocFacing returns nothing
+		call SaveUnitHandle( HashTable, MUIHandle( ), StringHash( HashName ), CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), UID, LocX, LocY, LocFacing ) )
+	endfunction	
+
+	function SpellTime takes nothing returns nothing
+		call SaveInteger( HashTable, MUIHandle( ), StringHash( "SpellTime" ), GetInt( "SpellTime" ) + 1 )
+	endfunction
+
 	function NewMUITimer takes integer PID returns integer
 		local integer GetIterator = LoadInteger( HashTable, GetHandleId( Player( PID ) ), StringHash( "TimerIterator" ) )
 
@@ -231,10 +255,6 @@
 		call SetUnitFacing( LocUnit, LocAngle )
 	endfunction
 
-	function GetEffect takes string HashName returns effect 
-		return LoadEffectHandle( HashTable, MUIHandle( ), StringHash( HashName ) )
-	endfunction	
-
 	function CreateXY takes real InitX, real InitY, real LocDistance, real LocAngle, string HashName returns nothing
 		call SaveReal( HashTable, MUIHandle( ), StringHash( HashName + "X" ), InitX + LocDistance * Cos( LocAngle * bj_DEGTORAD ) )
 		call SaveReal( HashTable, MUIHandle( ), StringHash( HashName + "Y" ), InitY + LocDistance * Sin( LocAngle * bj_DEGTORAD ) )
@@ -255,38 +275,6 @@
 	function GetIteration takes integer Init, integer Divider returns boolean
 		return Init / ( Init / Divider ) == Divider
 	endfunction
-
-	function MUIUnit takes integer UID returns unit
-		return LoadUnitHandle( HashTable, MUIHandle( ), UID )
-	endfunction
-
-	function MUICasterID takes nothing returns integer
-		return GetPlayerId( GetOwningPlayer( MUIUnit( 100 ) ) )
-	endfunction
-
-	function MUILevel takes real Multiplier returns real
-		return GetHeroLevel( MUIUnit( 100 ) ) * Multiplier
-	endfunction
-
-	function MUIPower takes real Percent returns real
-		return GetHeroInt( MUIUnit( 100 ), true ) * Percent
-	endfunction	
-
-	function MUIInteger takes integer ID returns integer
-		return LoadInteger( HashTable, MUIHandle( ), ID )
-	endfunction	
-
-	function MUIEffect takes integer ID returns effect
-		return LoadEffectHandle( HashTable, MUIHandle( ), ID )
-	endfunction 
-
-	function MUISaveEffect takes integer EffID, string EffName, integer UID returns nothing
-		call SaveEffectHandle( HashTable, MUIHandle( ), EffID, AddSpecialEffectTarget( EffName, MUIUnit( UID ), "origin" ) )
-	endfunction 
-
-	function MUIDummyXY takes integer ID, integer UID, real LocX, real LocY, real LocFacing returns nothing
-		call SaveUnitHandle( HashTable, MUIHandle( ), ID, CreateUnit( Player( PLAYER_NEUTRAL_PASSIVE ), UID, LocX, LocY, LocFacing ) )
-	endfunction	
 
 	function IsUnitIgnored takes unit LocUnit returns integer
 		return LoadInteger( HashTable, MUIHandle( ), GetHandleId( LocUnit ) )

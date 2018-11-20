@@ -157,7 +157,7 @@
 
 		loop
 			exitwhen i > LoadInteger( HashTable, GetHandleId( CameraSet ), StringHash( "TotalHeroes" ) )
-			call CreateUnit( GetTriggerPlayer( ), LoadInteger( HashTable, GetHandleId( HashTable ), i ), -11000., 10000., 270 )
+			call CreateUnit( GetTriggerPlayer( ), LoadInteger( HashTable, GetHandleId( HashTable ), StringHash( "HeroID" ) + i ), -11000., 10000., 270 )
 			set i = i + 1
 		endloop
 	endfunction

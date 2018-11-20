@@ -1,7 +1,7 @@
 	function CameraSetHeight takes nothing returns nothing
 		call SetCameraField( CAMERA_FIELD_TARGET_DISTANCE, LoadReal( HashTable, GetHandleId( CameraSet ), StringHash( "CameraDistance" ) ), 0 )
 
-		if LoadBoolean( HashTable, GetHandleId( CameraSet ), GetPlayerId( GetLocalPlayer( ) ) ) == false then //IsSelected
+		if LoadBoolean( HashTable, GetHandleId( CameraSet ), StringHash( "HasSelected" ) + GetPlayerId( GetLocalPlayer( ) ) ) == false then
 			call CameraSetupSetDestPosition( CameraSet, -1800., 5800, 0 )
 			call CameraSetupSetField( CameraSet, CAMERA_FIELD_ANGLE_OF_ATTACK, 270, 0 )
 			call CameraSetupApplyForceDuration( CameraSet, true, 0 )
@@ -18,11 +18,12 @@
 		endif
 	endfunction		
 
-	function RemoveInvisForCast takes nothing returns nothing
-	//	if GetSpellAbilityId( ) != 'A021' and GetSpellAbilityId( ) != 'A00X' then
-	//		call UnitRemoveAbility( GetTriggerUnit( ), 'B018' )
-	//		call UnitRemoveAbility( GetTriggerUnit( ), 'Binv' )
+	function CastCondition takes nothing returns boolean
+	//	if something then
+	//		call UnitIssueImmediateOrder( GetTriggerUnit( ), "stop" )
 	//	endif
+
+		return true
 	endfunction
 	
 	function ClearMessagesAction takes nothing returns nothing

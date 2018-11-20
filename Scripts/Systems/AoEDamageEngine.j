@@ -1,5 +1,5 @@
 	function AoEDamageAction takes nothing returns boolean
-		if UnitLife( GetFilterUnit( ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( MUIUnit( 100 ) ) ) and IsUnitIgnored( GetFilterUnit( ) ) != 1 then
+		if UnitLife( GetFilterUnit( ) ) > 0 and IsUnitEnemy( GetFilterUnit( ), GetOwningPlayer( GetUnit( "Source" ) ) ) and IsUnitIgnored( GetFilterUnit( ) ) != 1 then
 			if GetBool( "IsRepeated" ) == false then
 				call SaveInteger( HashTable, MUIHandle( ), GetHandleId( GetFilterUnit( ) ), 1 )
 			endif
@@ -25,7 +25,7 @@
 			endif
 
 			if GetReal( "Damage" ) > 0 then
-				call TargetDamage( MUIUnit( 100 ), GetFilterUnit( ), GetStr( "TargType" ), GetStr( "DmgType" ), GetReal( "Damage" ) )
+				call TargetDamage( GetUnit( "Source" ), GetFilterUnit( ), GetStr( "TargType" ), GetStr( "DmgType" ), GetReal( "Damage" ) )
 			endif
 			
 			if GetBool( "IsSingleTarget" ) == true then
